@@ -9,3 +9,4 @@ apps/server/src/generated/
 playwright-report/
 test-results/
 tools/
+packages/*/src/**/*.js

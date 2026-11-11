@@ -5,7 +5,8 @@ const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{
 
 const isNonEmptyString = (v: unknown): v is string => typeof v === "string" && v.trim() !== "";
 const isStringList = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === "string");
-const isValidDate = (v: unknown) => typeof v === "string" && DATE_PATTERN.test(v) && !Number.isNaN(Date.parse(v));
+/** "YYYY-MM-DD" or RFC 3339. */
+export const isValidDate = (v: unknown): v is string => typeof v === "string" && DATE_PATTERN.test(v) && !Number.isNaN(Date.parse(v));
 const isBlank = (v: unknown) => v === "" || v === null || v === undefined;
 
 export function validateRuleSet(rs: RuleSet): Issue[] {
