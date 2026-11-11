@@ -8,6 +8,8 @@ import { SignUp } from "@/pages/auth/SignUp";
 import { AcceptInvite } from "@/pages/auth/AcceptInvite";
 import { CreateWorkspace } from "@/pages/onboarding/CreateWorkspace";
 import { Placeholder } from "@/pages/Placeholder";
+import { Home } from "@/pages/home/Home";
+import { Welcome } from "@/pages/onboarding/Welcome";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -41,9 +43,15 @@ const authedRoute = createRoute({
 const onboardingRoute = createRoute({ getParentRoute: () => authedRoute, path: "/onboarding", component: CreateWorkspace });
 const shellRoute = createRoute({ getParentRoute: () => authedRoute, id: "shell", component: AppShell });
 
-export const homeRoute = createRoute({ getParentRoute: () => shellRoute, path: "/", component: () => <Placeholder title="Home" /> });
-export const welcomeRoute = createRoute({ getParentRoute: () => shellRoute, path: "/welcome", component: () => <Placeholder title="Welcome" /> });
-export const policiesRoute = createRoute({ getParentRoute: () => shellRoute, path: "/policies", component: () => <Placeholder title="Policies" /> });
+export const homeRoute = createRoute({ getParentRoute: () => shellRoute, path: "/", component: Home });
+export const welcomeRoute = createRoute({ getParentRoute: () => shellRoute, path: "/welcome", component: Welcome });
+export const policiesRoute = createRoute({
+  getParentRoute: () => shellRoute,
+  path: "/policies",
+  validateSearch: (s: Record<string, unknown>) => ({ new: s.new === "blank" ? ("blank" as const) : undefined }),
+  component: () => <Placeholder title="Policies" />,
+});
+export const templatesRoute = createRoute({ getParentRoute: () => shellRoute, path: "/templates", component: () => <Placeholder title="Templates" /> });
 export const activityRoute = createRoute({ getParentRoute: () => shellRoute, path: "/activity", component: () => <Placeholder title="Activity" /> });
 export const connectRoute = createRoute({ getParentRoute: () => shellRoute, path: "/connect", component: () => <Placeholder title="Connect" /> });
 export const settingsRoute = createRoute({ getParentRoute: () => shellRoute, path: "/settings", component: () => <Placeholder title="Settings" /> });
@@ -52,7 +60,7 @@ const routeTree = rootRoute.addChildren([
   signInRoute,
   signUpRoute,
   inviteRoute,
-  authedRoute.addChildren([onboardingRoute, shellRoute.addChildren([homeRoute, welcomeRoute, policiesRoute, activityRoute, connectRoute, settingsRoute])]),
+  authedRoute.addChildren([onboardingRoute, shellRoute.addChildren([homeRoute, welcomeRoute, policiesRoute, templatesRoute, activityRoute, connectRoute, settingsRoute])]),
 ]);
 
 export const router = createRouter({ routeTree, defaultPreload: "intent" });
