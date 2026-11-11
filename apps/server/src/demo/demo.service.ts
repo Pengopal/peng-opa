@@ -13,11 +13,12 @@ import { WorkspacesService } from "../workspaces/workspaces.service.js";
 import type { WorkspaceRef } from "../policies/policies.service.js";
 import { HistorySeeder, SeedPolicy } from "./history-seeder.js";
 import { TrafficSimulator } from "./traffic-simulator.service.js";
+import { PUBLIC_DEMO_EMAIL } from "./public-demo.js";
 
 export const DEMO_NAME = "Acme Retail (Demo)";
 export const DEMO_TEMPLATES = ["checkout-discount", "refund-approval", "admin-console-access", "loan-pre-approval"];
 const PUBLIC_OWNER = "demo-owner@peng-opa.local";
-const PUBLIC_VIEWER = "demo@peng-opa.local";
+const PUBLIC_VIEWER = PUBLIC_DEMO_EMAIL;
 
 @Injectable()
 export class DemoService {

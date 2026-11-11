@@ -2,7 +2,8 @@ import type { INestApplication } from "@nestjs/common";
 import express from "express";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { toNodeHandler } from "better-auth/node";
+import { fromNodeHeaders, toNodeHandler } from "better-auth/node";
+import { PUBLIC_DEMO_EMAIL, publicDemoMayDo } from "./demo/public-demo.js";
 import { AuthService } from "./auth/auth.service.js";
 import { publicErrorBody } from "./decisions/public-error.js";
 
@@ -16,7 +17,15 @@ const API_PATHS = /^\/(api|v1|health)(\/|$)/;
  */
 export function configureApp(app: INestApplication) {
   const server = app.getHttpAdapter().getInstance() as express.Express;
-  server.all("/api/auth/{*splat}", toNodeHandler(app.get(AuthService).auth));
+  const auth = app.get(AuthService).auth;
+  // The shared public-demo account may not change itself (rename, revoke everyone's sessions, …).
+  server.all("/api/auth/{*splat}", async (req, res, next) => {
+    if (publicDemoMayDo(req.method, req.path)) return next();
+    const session = await auth.api.getSession({ headers: fromNodeHeaders(req.headers) }).catch(() => null);
+    if (session?.user.email === PUBLIC_DEMO_EMAIL) return res.status(403).json({ statusCode: 403, message: "The shared demo is read-only." });
+    next();
+  });
+  server.all("/api/auth/{*splat}", toNodeHandler(auth));
   app.use(express.json({ limit: BODY_LIMIT }));
   // Body-parser failures happen before Nest; give them the same error shape as everything else.
   app.use((err: { type?: string; status?: number }, req: express.Request, res: express.Response, next: express.NextFunction) => {

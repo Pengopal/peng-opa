@@ -77,4 +77,26 @@ describe("demo mode", () => {
     expect(count).toBeGreaterThanOrEqual(2);
     expect(count).toBeLessThanOrEqual(4);
   });
+
+  it("the shared public demo account can look and use Try it, but change nothing", async () => {
+    const pub = await createTestApp(stack, { DEMO_PUBLIC: "true" });
+    try {
+      const agent = request.agent(pub.getHttpServer());
+      const login = await agent.post("/api/demo/public-login").send({});
+      expect(login.status).toBe(201);
+      const ws = login.body.workspaceId as string;
+
+      const policies = await agent.get("/api/policies").set("x-workspace-id", ws);
+      expect(policies.status).toBe(200);
+      const tried = await agent.post(`/api/policies/${policies.body[0].id}/try`).set("x-workspace-id", ws).send({ input: {}, target: "live" });
+      expect(tried.status).toBe(201);
+
+      expect((await agent.post("/api/workspaces").send({ name: "Spam relay" })).status).toBe(403);
+      expect((await agent.post("/api/demo").send({})).status).toBe(403);
+      expect((await agent.post("/api/auth/update-user").send({ name: "Hacked" })).status).toBe(403);
+      expect((await agent.post("/api/auth/revoke-sessions").send({})).status).toBe(403);
+    } finally {
+      await pub.close();
+    }
+  });
 });
