@@ -1,10 +1,14 @@
 import type { INestApplication } from "@nestjs/common";
 import express from "express";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { toNodeHandler } from "better-auth/node";
 import { AuthService } from "./auth/auth.service.js";
 import { publicErrorBody } from "./decisions/public-error.js";
 
 const BODY_LIMIT = "64kb";
+const WEB_DIST = join(import.meta.dirname, "..", "..", "web", "dist");
+const API_PATHS = /^\/(api|v1|health)(\/|$)/;
 
 /**
  * Wiring shared by main.ts and tests. Better Auth must see the raw body, so its handler is
@@ -28,5 +32,10 @@ export function configureApp(app: INestApplication) {
     }
     return next(err);
   });
+  // Production: serve the built web app; unknown non-API paths get index.html for client-side routing.
+  if (existsSync(join(WEB_DIST, "index.html"))) {
+    server.use(express.static(WEB_DIST, { index: false, maxAge: "1h" }));
+    server.get("{*splat}", (req, res, next) => (API_PATHS.test(req.path) ? next() : res.sendFile(join(WEB_DIST, "index.html"))));
+  }
   app.enableShutdownHooks();
 }

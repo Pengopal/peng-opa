@@ -4,6 +4,7 @@ import { PrismaModule } from "./prisma/prisma.module.js";
 import { OpaGatewayModule } from "./opa-gateway/opa-gateway.module.js";
 import { AuthModule } from "./auth/auth.module.js";
 import { HealthController } from "./health/health.controller.js";
+import { ConfigController } from "./config/config.controller.js";
 import { WorkspacesController } from "./workspaces/workspaces.controller.js";
 import { WorkspacesService } from "./workspaces/workspaces.service.js";
 import { MembersController } from "./workspaces/members.controller.js";
@@ -37,7 +38,7 @@ import { TrafficSimulator } from "./demo/traffic-simulator.service.js";
 
 @Module({
   imports: [ConfigModule, PrismaModule, OpaGatewayModule, AuthModule],
-  controllers: [HealthController, WorkspacesController, MembersController, ApiKeysController, PoliciesController, VersionsController, EventsController, DecideController, PlaygroundController, DecisionsController, TemplatesController, InsightsController, DemoController],
+  controllers: [HealthController, ConfigController, WorkspacesController, MembersController, ApiKeysController, PoliciesController, VersionsController, EventsController, DecideController, PlaygroundController, DecisionsController, TemplatesController, InsightsController, DemoController],
   providers: [WorkspacesService, MembersService, Mailer, ApiKeysService, ApiKeyGuard, PoliciesService, PolicyEventsService, PublishingService, DecideService, RateLimiter, PlaygroundService, TemplatesService, InsightsService, DemoService, HistorySeeder, TrafficSimulator, DbAuditWriter, { provide: AUDIT_WRITER, useExisting: DbAuditWriter }],
 })
 export class AppModule {}
