@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+.env.test
+coverage/
+*.log
+.superpowers/
+apps/server/src/generated/
+playwright-report/
+test-results/
