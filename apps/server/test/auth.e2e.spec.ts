@@ -53,9 +53,20 @@ describe("auth, workspaces and role guards", () => {
     const prefix = `t_${owner.shortId}/`;
     await opa.upsertPolicy(`${prefix}p`, `package t_${owner.shortId}.p\nimport rego.v1\nx := 1\n`);
 
+    const where = { workspaceId: owner.workspaceId };
+    await prisma.unscoped.decision.create({
+      data: { ...where, policyId: "p-gone", source: "API", input: { secret: "customer data" }, result: {}, allowed: true, latencyMs: 1 },
+    });
+    await prisma.unscoped.usageDaily.create({ data: { ...where, policyId: "p-gone", date: new Date("2026-11-01"), total: 1, allowed: 1 } });
+    await prisma.unscoped.policyEvent.create({ data: { ...where, policyKey: "gone", type: "CREATED", actorId: owner.userId } });
+
     const res = await owner.agent.delete("/api/workspaces/current").set("x-workspace-id", owner.workspaceId);
     expect(res.status).toBe(204);
     expect(await opa.listPolicyIds(prefix)).toEqual([]);
     expect(await prisma.unscoped.workspace.findUnique({ where: { id: owner.workspaceId } })).toBeNull();
+    // The danger zone promises the decision history goes too (it holds customer input).
+    expect(await prisma.unscoped.decision.count({ where })).toBe(0);
+    expect(await prisma.unscoped.usageDaily.count({ where })).toBe(0);
+    expect(await prisma.unscoped.policyEvent.count({ where })).toBe(0);
   });
 });

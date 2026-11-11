@@ -52,7 +52,16 @@ export class WorkspacesService {
 
   /** Deletes the workspace and its data, then removes its policies from OPA (sync cleans up if OPA is down). */
   async delete(workspaceId: string, shortId: string): Promise<void> {
-    await this.prisma.unscoped.workspace.delete({ where: { id: workspaceId } });
+    // Decision, UsageDaily and PolicyEvent have no FK to Workspace (history outlives a deleted policy),
+    // so remove them explicitly with the workspace; the rest cascades.
+    const db = this.prisma.unscoped;
+    const where = { workspaceId };
+    await db.$transaction([
+      db.decision.deleteMany({ where }),
+      db.usageDaily.deleteMany({ where }),
+      db.policyEvent.deleteMany({ where }),
+      db.workspace.delete({ where: { id: workspaceId } }),
+    ]);
     try {
       for (const id of await this.opa.listPolicyIds(workspacePolicyPrefix(shortId))) await this.opa.deletePolicy(id);
     } catch (e) {
