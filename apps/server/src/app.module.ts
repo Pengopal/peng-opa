@@ -9,10 +9,13 @@ import { WorkspacesService } from "./workspaces/workspaces.service.js";
 import { MembersController } from "./workspaces/members.controller.js";
 import { MembersService } from "./workspaces/members.service.js";
 import { Mailer } from "./workspaces/mailer.js";
+import { ApiKeysController } from "./workspaces/api-keys.controller.js";
+import { ApiKeysService } from "./workspaces/api-keys.service.js";
+import { ApiKeyGuard } from "./decisions/api-key.guard.js";
 
 @Module({
   imports: [ConfigModule, PrismaModule, OpaGatewayModule, AuthModule],
-  controllers: [HealthController, WorkspacesController, MembersController],
-  providers: [WorkspacesService, MembersService, Mailer],
+  controllers: [HealthController, WorkspacesController, MembersController, ApiKeysController],
+  providers: [WorkspacesService, MembersService, Mailer, ApiKeysService, ApiKeyGuard],
 })
 export class AppModule {}
