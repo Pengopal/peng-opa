@@ -1,11 +1,12 @@
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useSearch } from "@tanstack/react-router";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ErrorText } from "@/components/ErrorText";
 import { api } from "@/lib/api";
-import type { TryResult } from "@/lib/types";
+import type { DecisionDetail, TryResult } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import type { EditorContext } from "../PolicyEditor";
 import { buildInput, flattenInput, type FormValues } from "./input";
@@ -21,6 +22,15 @@ export function TryItPanel({ policy, draft, canEdit, initialInput }: EditorConte
   const errors = draft.issues.filter((i) => i.severity === "error").length;
   const input = buildInput(fields, values);
   const blocked = target === "draft" && errors > 0;
+
+  // ?replay=<decisionId> (from Activity) loads that decision's input into the form.
+  const { replay } = useSearch({ strict: false }) as { replay?: string };
+  const replayed = useQuery({ queryKey: ["decision", replay], enabled: !!replay, queryFn: () => api<DecisionDetail>(`/api/decisions/${replay}`) });
+  useEffect(() => {
+    if (replayed.data) setValues(flattenInput(fields, replayed.data.input));
+    // Load once per replayed decision; later edits to the fields must not reset the form.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [replayed.data]);
 
   const run = useMutation({
     mutationFn: async () => {
@@ -55,6 +65,7 @@ export function TryItPanel({ policy, draft, canEdit, initialInput }: EditorConte
             </button>
           ))}
         </div>
+        {replayed.data && <p className="text-xs text-muted-foreground">Loaded the input of a decision from Activity.</p>}
         <InputForm fields={fields} values={values} onChange={setValues} />
         {blocked && <p className="text-sm text-danger">Fix {errors} issue{errors > 1 ? "s" : ""} before testing the draft.</p>}
         <Button onClick={() => run.mutate()} disabled={blocked || run.isPending}>

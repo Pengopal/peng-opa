@@ -13,6 +13,8 @@ import { Welcome } from "@/pages/onboarding/Welcome";
 import { PoliciesList } from "@/pages/policies/PoliciesList";
 import { TemplateGallery } from "@/pages/templates/TemplateGallery";
 import { PolicyEditorPage } from "@/pages/policy-editor/PolicyEditorPage";
+import { Activity } from "@/pages/activity/Activity";
+import { parseFilters } from "@/pages/activity/filters";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -54,9 +56,14 @@ export const policiesRoute = createRoute({
   validateSearch: (s: Record<string, unknown>): { new?: "blank" } => (s.new === "blank" ? { new: "blank" } : {}),
   component: PoliciesList,
 });
-export const policyRoute = createRoute({ getParentRoute: () => shellRoute, path: "/policies/$policyId", component: PolicyEditorPage });
+export const policyRoute = createRoute({
+  getParentRoute: () => shellRoute,
+  path: "/policies/$policyId",
+  validateSearch: (s: Record<string, unknown>): { replay?: string } => (typeof s.replay === "string" ? { replay: s.replay } : {}),
+  component: PolicyEditorPage,
+});
 export const templatesRoute = createRoute({ getParentRoute: () => shellRoute, path: "/templates", component: TemplateGallery });
-export const activityRoute = createRoute({ getParentRoute: () => shellRoute, path: "/activity", component: () => <Placeholder title="Activity" /> });
+export const activityRoute = createRoute({ getParentRoute: () => shellRoute, path: "/activity", validateSearch: parseFilters, component: Activity });
 export const connectRoute = createRoute({ getParentRoute: () => shellRoute, path: "/connect", component: () => <Placeholder title="Connect" /> });
 export const settingsRoute = createRoute({ getParentRoute: () => shellRoute, path: "/settings", component: () => <Placeholder title="Settings" /> });
 
