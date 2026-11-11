@@ -7,3 +7,194 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+// ── Tenancy ────────────────────────────────────────────────────────────────
+// Every model below except Workspace carries workspaceId and is only reached
+// through PrismaService.scoped (see src/prisma/workspace-scope.ts).
+
+enum Role {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
+enum PolicyStatus {
+  DRAFT
+  LIVE
+  PAUSED
+}
+
+enum DecisionSource {
+  API
+  PLAYGROUND
+  DEMO
+}
+
+enum PolicyEventType {
+  CREATED
+  PUBLISHED
+  ROLLED_BACK
+  PAUSED
+  RESUMED
+  DELETED
+}
+
+model Workspace {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  shortId   String   @unique
+  isDemo    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  members  Member[]
+  invites  Invite[]
+  apiKeys  ApiKey[]
+  policies Policy[]
+
+  @@map("workspaces")
+}
+
+model Member {
+  id          String    @id @default(uuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  userId      String
+  role        Role
+  createdAt   DateTime  @default(now())
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+  @@map("members")
+}
+
+model Invite {
+  id          String    @id @default(uuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  email       String
+  role        Role
+  token       String    @unique
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([workspaceId])
+  @@map("invites")
+}
+
+model ApiKey {
+  id          String    @id @default(uuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name        String
+  prefix      String
+  hash        String    @unique
+  lastUsedAt  DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([workspaceId])
+  @@map("api_keys")
+}
+
+model Policy {
+  id            String       @id @default(uuid())
+  workspaceId   String
+  workspace     Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  shortId       String       @unique
+  key           String
+  name          String
+  description   String?
+  status        PolicyStatus @default(DRAFT)
+  draft         Json
+  liveVersionId String?      @unique
+  opaHash       String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  versions PolicyVersion[]
+  samples  SamplePayload[]
+
+  @@unique([workspaceId, key])
+  @@map("policies")
+}
+
+model PolicyVersion {
+  id            String   @id @default(uuid())
+  workspaceId   String
+  policyId      String
+  policy        Policy   @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  number        Int
+  ruleSet       Json
+  rego          String   @db.Text
+  note          String?
+  publishedById String
+  publishedAt   DateTime @default(now())
+
+  @@unique([policyId, number])
+  @@index([workspaceId])
+  @@map("policy_versions")
+}
+
+/// Change history. No FK to Policy so DELETED events outlive the policy.
+model PolicyEvent {
+  id          String          @id @default(uuid())
+  workspaceId String
+  policyId    String?
+  policyKey   String
+  type        PolicyEventType
+  actorId     String
+  fromVersion Int?
+  toVersion   Int?
+  createdAt   DateTime        @default(now())
+
+  @@index([workspaceId, createdAt])
+  @@map("policy_events")
+}
+
+model SamplePayload {
+  id          String   @id @default(uuid())
+  workspaceId String
+  policyId    String
+  policy      Policy   @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  name        String
+  input       Json
+  createdAt   DateTime @default(now())
+
+  @@index([workspaceId])
+  @@map("sample_payloads")
+}
+
+/// Decision log. No FK to Policy so history survives policy deletion.
+model Decision {
+  id            String         @id @default(uuid())
+  workspaceId   String
+  policyId      String
+  versionNumber Int?
+  source        DecisionSource
+  input         Json
+  result        Json
+  allowed       Boolean
+  matchedRule   String?
+  missingFields String[]
+  latencyMs     Int
+  createdAt     DateTime       @default(now())
+
+  @@index([workspaceId, createdAt])
+  @@index([workspaceId, policyId, createdAt])
+  @@map("decisions")
+}
+
+model UsageDaily {
+  workspaceId  String
+  policyId     String
+  date         DateTime @db.Date
+  total        Int      @default(0)
+  allowed      Int      @default(0)
+  denied       Int      @default(0)
+  p95LatencyMs Int      @default(0)
+
+  @@id([workspaceId, policyId, date])
+  @@map("usage_daily")
+}
