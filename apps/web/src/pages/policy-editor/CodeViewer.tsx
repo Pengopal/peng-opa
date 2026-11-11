@@ -1,6 +1,6 @@
 import Editor, { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
-import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
+import EditorWorker from "monaco-editor/editor/editor.worker.start?worker";
 
 // Use the bundled Monaco (no CDN) with its base worker; Rego is shown as plain text.
 self.MonacoEnvironment = { getWorker: () => new EditorWorker() };

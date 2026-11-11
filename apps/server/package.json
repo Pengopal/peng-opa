@@ -12,7 +12,8 @@
     "db:migrate": "prisma migrate dev && prisma generate",
     "postinstall": "prisma generate",
     "pretypecheck": "pnpm --filter @peng/shared build",
-    "prebuild": "pnpm --filter @peng/shared build"
+    "prebuild": "pnpm --filter @peng/shared build && prisma generate",
+    "db:deploy": "prisma migrate deploy"
   },
   "dependencies": {
     "@nestjs/common": "^12.4.2",
