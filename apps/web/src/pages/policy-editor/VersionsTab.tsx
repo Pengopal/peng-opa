@@ -23,7 +23,7 @@ import type { EditorContext } from "./PolicyEditor";
 import { VersionCompare } from "./VersionCompare";
 
 /** Every publish, newest first: view/compare, restore as draft, or roll the live version back. */
-export function VersionsTab({ policy, canEdit, reload }: EditorContext) {
+export function VersionsTab({ policy, canEdit, reload, draft }: EditorContext) {
   const qc = useQueryClient();
   const [confirm, setConfirm] = useState<number | null>(null);
   const [compare, setCompare] = useState<[number, number] | null>(null);
@@ -40,7 +40,11 @@ export function VersionsTab({ policy, canEdit, reload }: EditorContext) {
     onSuccess: (r, n) => after(`v${n} is live again as v${r.version}.`),
   });
   const restore = useMutation({
-    mutationFn: (n: number) => api(`/api/policies/${policy.id}/versions/${n}/restore-draft`, { method: "POST", body: {} }),
+    // Save pending edits first: saved afterwards they would overwrite the restored draft.
+    mutationFn: async (n: number) => {
+      await draft.flush();
+      return api(`/api/policies/${policy.id}/versions/${n}/restore-draft`, { method: "POST", body: {} });
+    },
     onSuccess: (_, n) => after(`The draft now matches v${n}. Publish it when you're ready.`),
   });
 

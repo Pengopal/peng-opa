@@ -54,7 +54,16 @@ function Editor({ policy, slots, reload }: { policy: PolicyDetail; slots: Editor
   const canEdit = can(current?.role, "EDITOR");
   const draft = useDraft(policy.id, policy.draft);
   const [tab, setTab] = useState("rules");
-  const ctx: EditorContext = { policy, draft, canEdit, reload };
+  // Save pending edits before re-reading, so the remount never sends a stale draft over newer server state.
+  const ctx: EditorContext = {
+    policy,
+    draft,
+    canEdit,
+    reload: async () => {
+      await draft.flush();
+      await reload();
+    },
+  };
   const errors = draft.issues.filter((i) => i.severity === "error").length;
 
   return (

@@ -68,4 +68,20 @@ describe("VersionsTab", () => {
     await userEvent.click(screen.getByRole("button", { name: "Roll back" }));
     await waitFor(() => expect(vi.mocked(api).mock.calls.some(([p]) => p === "/api/policies/p1/versions/1/rollback")).toBe(true));
   });
+
+  it("saves pending edits before restoring a version, so they can't overwrite the restored draft", async () => {
+    const order: string[] = [];
+    serveApi({
+      "/api/policies/p1/versions": [{ number: 1, note: null, publishedAt: "2026-11-01T00:00:00Z", publishedBy: "Ana" }],
+      "POST /api/policies/p1/versions/1/restore-draft": () => {
+        order.push("restore");
+        return { restored: 1 };
+      },
+    });
+    const c = ctx() as unknown as { draft: { flush: () => Promise<void> } };
+    c.draft.flush = vi.fn(async () => void order.push("flush"));
+    await renderPage(<VersionsTab {...(c as unknown as EditorContext)} />);
+    await userEvent.click(await screen.findByRole("button", { name: "Restore as draft" }));
+    await waitFor(() => expect(order).toEqual(["flush", "restore"]));
+  });
 });
