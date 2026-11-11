@@ -88,6 +88,14 @@ Content-Type: application/json
 
 A field that is missing is not an error: conditions on it simply don't match.
 
+## Security notes
+
+- **Invites:** the invite link (random, 7 days) is what grants access; the signed-in email must match the invited one.
+  Emails are not verified in v1, so treat invite links as secrets. Configure `SMTP_URL` and enable email
+  verification before opening sign-up widely.
+- **Public demo (`DEMO_PUBLIC=true`):** every visitor shares one read-only account (it can browse and use Try it,
+  nothing else). Keep it off unless you want a public demo.
+
 ## Tests
 
 ```bash
