@@ -6,10 +6,13 @@ import { AuthModule } from "./auth/auth.module.js";
 import { HealthController } from "./health/health.controller.js";
 import { WorkspacesController } from "./workspaces/workspaces.controller.js";
 import { WorkspacesService } from "./workspaces/workspaces.service.js";
+import { MembersController } from "./workspaces/members.controller.js";
+import { MembersService } from "./workspaces/members.service.js";
+import { Mailer } from "./workspaces/mailer.js";
 
 @Module({
   imports: [ConfigModule, PrismaModule, OpaGatewayModule, AuthModule],
-  controllers: [HealthController, WorkspacesController],
-  providers: [WorkspacesService],
+  controllers: [HealthController, WorkspacesController, MembersController],
+  providers: [WorkspacesService, MembersService, Mailer],
 })
 export class AppModule {}

@@ -9,9 +9,8 @@ export interface TestUser {
 }
 
 /** Sign up a fresh user through Better Auth; the returned agent carries the session cookie. */
-export async function signUp(app: INestApplication, name = "Test User"): Promise<TestUser> {
+export async function signUp(app: INestApplication, name = "Test User", email = `u-${randomBytes(4).toString("hex")}@example.test`): Promise<TestUser> {
   const agent = request.agent(app.getHttpServer());
-  const email = `u-${randomBytes(4).toString("hex")}@example.test`;
   const res = await agent.post("/api/auth/sign-up/email").send({ name, email, password: "correct-horse-battery" });
   if (res.status !== 200) throw new Error(`sign-up failed ${res.status}: ${JSON.stringify(res.body)}`);
   return { agent, email, userId: res.body.user.id };
