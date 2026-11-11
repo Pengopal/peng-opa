@@ -12,7 +12,7 @@ import { Home } from "@/pages/home/Home";
 import { Welcome } from "@/pages/onboarding/Welcome";
 import { PoliciesList } from "@/pages/policies/PoliciesList";
 import { TemplateGallery } from "@/pages/templates/TemplateGallery";
-import { PolicyEditor } from "@/pages/policy-editor/PolicyEditor";
+import { PolicyEditorPage } from "@/pages/policy-editor/PolicyEditorPage";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -54,7 +54,7 @@ export const policiesRoute = createRoute({
   validateSearch: (s: Record<string, unknown>): { new?: "blank" } => (s.new === "blank" ? { new: "blank" } : {}),
   component: PoliciesList,
 });
-export const policyRoute = createRoute({ getParentRoute: () => shellRoute, path: "/policies/$policyId", component: () => <PolicyEditor /> });
+export const policyRoute = createRoute({ getParentRoute: () => shellRoute, path: "/policies/$policyId", component: PolicyEditorPage });
 export const templatesRoute = createRoute({ getParentRoute: () => shellRoute, path: "/templates", component: TemplateGallery });
 export const activityRoute = createRoute({ getParentRoute: () => shellRoute, path: "/activity", component: () => <Placeholder title="Activity" /> });
 export const connectRoute = createRoute({ getParentRoute: () => shellRoute, path: "/connect", component: () => <Placeholder title="Connect" /> });
