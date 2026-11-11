@@ -110,7 +110,8 @@ function conditionLines(c: Condition): string[] {
     case "includes":
       return [`is_array(${x})`, `${lit(v)} in ${x}`];
     case "includes_any":
-      return [`is_array(${x})`, `some item in ${x}`, `item in ${setLit(v as string[])}`];
+      // Comprehension-local variable: several includes_any conditions can share one rule body.
+      return [`is_array(${x})`, `count({item | some item in ${x}; item in ${setLit(v as string[])}}) > 0`];
     case "is_empty":
       return [`is_array(${x})`, v === true ? `count(${x}) == 0` : `count(${x}) > 0`];
   }

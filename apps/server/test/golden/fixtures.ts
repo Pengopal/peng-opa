@@ -114,3 +114,33 @@ export const goldenFixtures: GoldenFixture[] = [
     ],
   },
 ];
+
+// Two "includes any of" conditions in one ALL rule (review finding: duplicate `some item` var).
+goldenFixtures.push({
+  name: "two_includes_any_all",
+  ruleSet: {
+    schemaVersion: 1,
+    fields: [
+      { path: "user.roles", label: "Roles", type: "list" },
+      { path: "user.groups", label: "Groups", type: "list" },
+    ],
+    outcomes: [],
+    rules: [
+      {
+        id: "r1",
+        label: "both",
+        match: "all",
+        conditions: [
+          { field: "user.roles", op: "includes_any", value: ["admin", "ops"] },
+          { field: "user.groups", op: "includes_any", value: ["eu"] },
+        ],
+        result: { allowed: true, reason: "ok", outcomes: {} },
+      },
+    ],
+    otherwise: { allowed: false, reason: "No rule matched", outcomes: {} },
+  },
+  cases: [
+    { input: { user: { roles: ["ops"], groups: ["eu", "us"] } }, expect: { allowed: true, rule: "r1" } },
+    { input: { user: { roles: ["ops"], groups: ["us"] } }, expect: { allowed: false, rule: null } },
+  ],
+});
