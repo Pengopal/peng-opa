@@ -1,0 +1,16 @@
+{
+  "name": "peng-opa",
+  "private": true,
+  "packageManager": "pnpm@10.18.2",
+  "scripts": {
+    "dev": "pnpm --filter @peng/shared build && pnpm --parallel --filter server --filter web dev",
+    "build": "pnpm --filter @peng/shared build && pnpm --filter server build && pnpm --filter web build",
+    "test": "pnpm -r test",
+    "test:e2e": "pnpm --filter server test:e2e",
+    "test:e2e:web": "pnpm --filter web test:e2e",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "postinstall": "node scripts/fetch-opa.mjs",
+    "start": "pnpm --filter server db:deploy && pnpm --filter server start"
+  }
+}

@@ -1,0 +1,133 @@
+import { Injectable, Logger, OnApplicationShutdown, OnModuleInit } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service.js";
+import type { AuditWriter, DecisionRecord } from "./audit-writer.js";
+import { LatencySample } from "./latency-sample.js";
+
+const FLUSH_EVERY_MS = 1_000;
+const FLUSH_AT = 200;
+const MAX_QUEUE = 10_000;
+
+/** Postgres jsonb rejects U+0000; replace it (in keys and values) so one request can't break a batch. */
+export function sanitizeJson(v: unknown): unknown {
+  if (typeof v === "string") return v.includes("\u0000") ? v.replace(/\u0000/g, "\uFFFD") : v;
+  if (Array.isArray(v)) return v.map(sanitizeJson);
+  if (v && typeof v === "object") return Object.fromEntries(Object.entries(v).map(([k, x]) => [sanitizeJson(k) as string, sanitizeJson(x)]));
+  return v;
+}
+
+const utcDay = (d: Date) => new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+
+/**
+ * Queues decisions in memory and writes them every second or every 200 records, updating
+ * UsageDaily in the same transaction. On shutdown the queue is written out. If the database
+ * fails, records are kept for the next attempt (up to 10,000; the oldest are dropped beyond that).
+ * Uses the unscoped client: one batch spans workspaces and every record carries its workspaceId.
+ */
+@Injectable()
+export class DbAuditWriter implements AuditWriter, OnModuleInit, OnApplicationShutdown {
+  private readonly logger = new Logger(DbAuditWriter.name);
+  private queue: DecisionRecord[] = [];
+  private timer?: NodeJS.Timeout;
+  private flushing?: Promise<void>;
+  /** p95 per (workspace, policy, UTC day) from a bounded sample, instead of sorting the day's rows on every flush. */
+  private readonly latencies = new Map<string, LatencySample>();
+
+  constructor(private readonly prisma: PrismaService) {}
+
+  onModuleInit() {
+    this.timer = setInterval(() => void this.flush(), FLUSH_EVERY_MS);
+    this.timer.unref();
+  }
+
+  async onApplicationShutdown() {
+    clearInterval(this.timer);
+    await this.flush();
+    if (this.queue.length) await this.flush(); // records queued while the last flush ran
+  }
+
+  enqueue(record: DecisionRecord): void {
+    this.queue.push({ ...record, input: sanitizeJson(record.input), result: sanitizeJson(record.result), matchedRule: sanitizeJson(record.matchedRule) as string | null });
+    if (this.queue.length > MAX_QUEUE) {
+      this.queue.splice(0, this.queue.length - MAX_QUEUE);
+      this.logger.warn(`Decision queue over ${MAX_QUEUE}; oldest records dropped`);
+    }
+    if (this.queue.length >= FLUSH_AT) void this.flush();
+  }
+
+  /** Write everything queued; concurrent callers wait for the flush in progress. */
+  async flush(): Promise<void> {
+    if (this.flushing) return this.flushing;
+    if (!this.queue.length) return;
+    const batch = this.queue;
+    this.queue = [];
+    this.flushing = this.write(batch)
+      .catch(async (e: Error) => {
+        // Find the record(s) that fail on their own; never let one record hold back the rest.
+        const failed: DecisionRecord[] = [];
+        for (const r of batch) {
+          await this.write([r]).catch((err: Error) => {
+            failed.push(r);
+            this.logger.warn(`Decision ${r.id} could not be written: ${err.message}`);
+          });
+        }
+        if (failed.length === batch.length) {
+          // Everything fails: the database itself is down. Keep them for the next attempt.
+          this.logger.error(`Writing ${batch.length} decisions failed; will retry: ${e.message}`);
+          this.queue = [...batch, ...this.queue].slice(-MAX_QUEUE);
+        }
+      })
+      .finally(() => (this.flushing = undefined));
+    return this.flushing;
+  }
+
+  /** Keep samples for today and yesterday only. */
+  private pruneOldDays() {
+    const cutoff = utcDay(new Date(Date.now() - 86_400_000)).toISOString();
+    for (const key of this.latencies.keys()) if (key.split("|")[2] < cutoff) this.latencies.delete(key);
+  }
+
+  private async write(batch: DecisionRecord[]) {
+    const usage = new Map<string, { workspaceId: string; policyId: string; date: Date; total: number; allowed: number }>();
+    for (const r of batch) {
+      const date = utcDay(r.createdAt);
+      const key = `${r.workspaceId}|${r.policyId}|${date.toISOString()}`;
+      const u = usage.get(key) ?? { workspaceId: r.workspaceId, policyId: r.policyId, date, total: 0, allowed: 0 };
+      u.total++;
+      let sample = this.latencies.get(key);
+      if (!sample) this.latencies.set(key, (sample = new LatencySample()));
+      sample.add(r.latencyMs);
+      if (r.allowed) u.allowed++;
+      usage.set(key, u);
+    }
+
+    this.pruneOldDays();
+    await this.prisma.unscoped.$transaction(async (tx) => {
+      await tx.decision.createMany({
+        data: batch.map((r) => ({
+          id: r.id,
+          workspaceId: r.workspaceId,
+          policyId: r.policyId,
+          versionNumber: r.versionNumber,
+          source: r.source,
+          input: r.input as object,
+          result: r.result as object,
+          allowed: r.allowed,
+          matchedRule: r.matchedRule,
+          missingFields: r.missingFields,
+          latencyMs: r.latencyMs,
+          createdAt: r.createdAt,
+        })),
+        skipDuplicates: true,
+      });
+      for (const u of usage.values()) {
+        const p95 = this.latencies.get(`${u.workspaceId}|${u.policyId}|${u.date.toISOString()}`)?.p95() ?? 0;
+        const id = { workspaceId: u.workspaceId, policyId: u.policyId, date: u.date };
+        await tx.usageDaily.upsert({
+          where: { workspaceId_policyId_date: id },
+          create: { ...id, total: u.total, allowed: u.allowed, denied: u.total - u.allowed, p95LatencyMs: p95 },
+          update: { total: { increment: u.total }, allowed: { increment: u.allowed }, denied: { increment: u.total - u.allowed }, p95LatencyMs: p95 },
+        });
+      }
+    });
+  }
+}

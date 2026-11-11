@@ -31,11 +31,11 @@ peng-opa is a multi-tenant SaaS for managing business and authorization rules, p
 |---|---|
 | Backend | NestJS (TypeScript), Prisma, PostgreSQL |
 | Auth | Better Auth (email/password + Google OAuth, sessions, invites) |
-| Policy engine | OPA 1.x server (official Docker image), internal network only, token auth on |
+| Policy engine | OPA 1.11.0 official single-file binary, started and stopped by NestJS as a child process on `127.0.0.1` only, token auth on. No Docker. |
 | Frontend | React + Vite + TanStack Router + TanStack Query + shadcn/ui + Tailwind; Monaco for the Rego view; Recharts for charts |
 | Monorepo | pnpm workspaces: `apps/server`, `apps/web`, `packages/shared` (RuleSet types + validation shared by both) |
-| Tests | Vitest, Supertest, Testcontainers (Postgres, OPA), Playwright |
-| Deploy | docker-compose: `app`, `postgres`, `opa` |
+| Tests | Vitest, Supertest, Playwright — against a local Postgres test database and a test-spawned OPA process |
+| Deploy | Plain Node process (`pnpm build && pnpm start`) + PostgreSQL; NestJS supervises OPA. No Docker required. |
 
 ## 4. Architecture
 
@@ -256,15 +256,18 @@ Errors: `{ "error": { "code", "message" } }`
 |---|---|---|
 | Shared validation | Vitest | RuleSet validation: each operator/type pair, bad paths, unreachable-rule warning |
 | Compiler unit | Vitest | Every operator, all/any, rule order, otherwise, string escaping, Rego snapshot tests |
-| Golden (engine) | Vitest + Testcontainers OPA | Every template and fixture compiled, pushed, evaluated against expected decisions |
-| API e2e | Supertest + Testcontainers Postgres/OPA | Sign-up → policy → publish → decide → Decision row; rollback; pause → 409; cross-workspace key → 404; revoked key → 401; invalid input → 422 |
+| Golden (engine) | Vitest + test-spawned OPA | Every template and fixture compiled, pushed, evaluated against expected decisions |
+| API e2e | Supertest + local Postgres test DB + spawned OPA | Sign-up → policy → publish → decide → Decision row; rollback; pause → 409; cross-workspace key → 404; revoked key → 401; invalid input → 422 |
 | UI e2e | Playwright | (1) template → test → publish via first-run flow, (2) edit rule → Try-it shows the new result, (3) demo create → reset |
-| CI | GitHub Actions | lint, typecheck, unit, golden, e2e, docker build |
+| CI | GitHub Actions | lint, typecheck, unit, golden, e2e (Postgres service container + fetched OPA binary) |
 
-## 12. Deployment
+## 12. Deployment (no Docker)
 
-- `docker-compose.yml` with `app` (Nest serves the built SPA at `/`), `postgres:16`, `openpolicyagent/opa:1.x` (no public port, `--authentication=token`).
-- Migrations run on app start; one `.env.example` with `DATABASE_URL`, `BETTER_AUTH_SECRET`, `APP_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `OPA_URL`, `OPA_TOKEN`, `RATE_LIMIT_RPS`, `DEMO_PUBLIC`, `SMTP_URL` (invites; if unset, invite links are shown for manual copy).
+- Two things run: **one Node process** (NestJS serves the API and the built React SPA at `/`) and **PostgreSQL**.
+- **OPA is supervised by NestJS.** `scripts/fetch-opa.mjs` downloads the pinned OPA 1.11.0 binary for the platform into `tools/opa/` and verifies its SHA-256 (runs on `pnpm install` via `postinstall`). On boot, the `OpaProcess` service spawns `opa run --server --addr=127.0.0.1:<OPA_PORT> --authentication=token --authorization=basic ops/opa/authz.rego` with `OPA_TOKEN` in its environment, waits for `/health`, restarts it (with backoff, max 5 tries/minute) if it exits, and kills it on shutdown. After a restart the sync loop (§10) re-pushes policies.
+- `OPA_URL` set → use that external OPA instead of spawning (for setups that run OPA separately).
+- Migrations run on app start; one `.env.example` with `DATABASE_URL`, `BETTER_AUTH_SECRET`, `APP_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `OPA_PORT` (default 8181), `OPA_URL` (optional), `OPA_TOKEN`, `RATE_LIMIT_RPS`, `DEMO_PUBLIC`, `SMTP_URL` (invites; if unset, invite links are shown for manual copy).
+- A Dockerfile is optional future packaging, not part of v1.
 
 ## 13. Template gallery (v1 set)
 

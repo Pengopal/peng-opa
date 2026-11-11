@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`compileRuleSet > compiles rules as an ordered else-chain with all/any helper rules and an otherwise default 1`] = `
+"package t_ab12cd.checkout_discount
+
+import rego.v1
+
+default decision := {"allowed":false,"reason":"No rule matched","outcomes":{},"rule":null}
+
+decision := {"allowed":true,"reason":"Gold loyalty","outcomes":{"discount":15},"rule":"r1"} if {
+  r_0
+} else := {"allowed":true,"reason":"Big order","outcomes":{"discount":5},"rule":"r2"} if {
+  r_1
+}
+
+# "Gold customers" (match all)
+r_0 if {
+  input["customer"]["tier"] == "gold"
+  is_number(input["order"]["total"])
+  input["order"]["total"] > 500
+}
+
+# "Big orders" (match any)
+r_1 if {
+  is_number(input["order"]["total"])
+  input["order"]["total"] >= 1000
+}
+"
+`;
