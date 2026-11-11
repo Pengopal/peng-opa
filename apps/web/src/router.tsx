@@ -7,7 +7,6 @@ import { SignIn } from "@/pages/auth/SignIn";
 import { SignUp } from "@/pages/auth/SignUp";
 import { AcceptInvite } from "@/pages/auth/AcceptInvite";
 import { CreateWorkspace } from "@/pages/onboarding/CreateWorkspace";
-import { Placeholder } from "@/pages/Placeholder";
 import { Home } from "@/pages/home/Home";
 import { Welcome } from "@/pages/onboarding/Welcome";
 import { PoliciesList } from "@/pages/policies/PoliciesList";
@@ -16,6 +15,7 @@ import { PolicyEditorPage } from "@/pages/policy-editor/PolicyEditorPage";
 import { Activity } from "@/pages/activity/Activity";
 import { parseFilters } from "@/pages/activity/filters";
 import { Connect } from "@/pages/connect/Connect";
+import { Settings } from "@/pages/settings/Settings";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -66,7 +66,7 @@ export const policyRoute = createRoute({
 export const templatesRoute = createRoute({ getParentRoute: () => shellRoute, path: "/templates", component: TemplateGallery });
 export const activityRoute = createRoute({ getParentRoute: () => shellRoute, path: "/activity", validateSearch: parseFilters, component: Activity });
 export const connectRoute = createRoute({ getParentRoute: () => shellRoute, path: "/connect", component: Connect });
-export const settingsRoute = createRoute({ getParentRoute: () => shellRoute, path: "/settings", component: () => <Placeholder title="Settings" /> });
+export const settingsRoute = createRoute({ getParentRoute: () => shellRoute, path: "/settings", component: Settings });
 
 const routeTree = rootRoute.addChildren([
   signInRoute,
