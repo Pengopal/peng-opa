@@ -30,10 +30,14 @@ import { TemplatesController } from "./templates/templates.controller.js";
 import { TemplatesService } from "./templates/templates.service.js";
 import { InsightsController } from "./insights/insights.controller.js";
 import { InsightsService } from "./insights/insights.service.js";
+import { DemoController } from "./demo/demo.controller.js";
+import { DemoService } from "./demo/demo.service.js";
+import { HistorySeeder } from "./demo/history-seeder.js";
+import { TrafficSimulator } from "./demo/traffic-simulator.service.js";
 
 @Module({
   imports: [ConfigModule, PrismaModule, OpaGatewayModule, AuthModule],
-  controllers: [HealthController, WorkspacesController, MembersController, ApiKeysController, PoliciesController, VersionsController, EventsController, DecideController, PlaygroundController, DecisionsController, TemplatesController, InsightsController],
-  providers: [WorkspacesService, MembersService, Mailer, ApiKeysService, ApiKeyGuard, PoliciesService, PolicyEventsService, PublishingService, DecideService, RateLimiter, PlaygroundService, TemplatesService, InsightsService, DbAuditWriter, { provide: AUDIT_WRITER, useExisting: DbAuditWriter }],
+  controllers: [HealthController, WorkspacesController, MembersController, ApiKeysController, PoliciesController, VersionsController, EventsController, DecideController, PlaygroundController, DecisionsController, TemplatesController, InsightsController, DemoController],
+  providers: [WorkspacesService, MembersService, Mailer, ApiKeysService, ApiKeyGuard, PoliciesService, PolicyEventsService, PublishingService, DecideService, RateLimiter, PlaygroundService, TemplatesService, InsightsService, DemoService, HistorySeeder, TrafficSimulator, DbAuditWriter, { provide: AUDIT_WRITER, useExisting: DbAuditWriter }],
 })
 export class AppModule {}
