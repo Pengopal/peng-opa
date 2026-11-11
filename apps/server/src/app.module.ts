@@ -12,10 +12,13 @@ import { Mailer } from "./workspaces/mailer.js";
 import { ApiKeysController } from "./workspaces/api-keys.controller.js";
 import { ApiKeysService } from "./workspaces/api-keys.service.js";
 import { ApiKeyGuard } from "./decisions/api-key.guard.js";
+import { PoliciesController } from "./policies/policies.controller.js";
+import { PoliciesService } from "./policies/policies.service.js";
+import { PolicyEventsService } from "./policies/policy-events.service.js";
 
 @Module({
   imports: [ConfigModule, PrismaModule, OpaGatewayModule, AuthModule],
-  controllers: [HealthController, WorkspacesController, MembersController, ApiKeysController],
-  providers: [WorkspacesService, MembersService, Mailer, ApiKeysService, ApiKeyGuard],
+  controllers: [HealthController, WorkspacesController, MembersController, ApiKeysController, PoliciesController],
+  providers: [WorkspacesService, MembersService, Mailer, ApiKeysService, ApiKeyGuard, PoliciesService, PolicyEventsService],
 })
 export class AppModule {}
