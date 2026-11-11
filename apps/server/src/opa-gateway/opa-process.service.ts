@@ -9,6 +9,11 @@ const binary = join(repoRoot, "tools", "opa", process.platform === "win32" ? "op
 const authzPolicy = join(repoRoot, "ops", "opa", "authz.rego");
 const MAX_RESTARTS_PER_MINUTE = 5;
 
+/** Wait before restart number `recent + 1` within a minute: 1s, 2s, 4s, 8s, 16s, then once a minute — never giving up. */
+export function restartDelay(recent: number): number {
+  return recent >= MAX_RESTARTS_PER_MINUTE ? 60_000 : 1_000 * 2 ** recent;
+}
+
 type OpaProcessConfig = Pick<AppConfig, "opaPort" | "opaToken" | "opaUrl">;
 
 /**
@@ -78,13 +83,10 @@ export class OpaProcess implements OnModuleInit, OnApplicationShutdown {
       if (this.stopping) return;
       const now = Date.now();
       this.restarts = this.restarts.filter((t) => now - t < 60_000);
-      if (this.restarts.length >= MAX_RESTARTS_PER_MINUTE) {
-        this.logger.error(`OPA exited (code ${code}) ${MAX_RESTARTS_PER_MINUTE} times in a minute; not restarting`);
-        return;
-      }
-      const delay = 1_000 * 2 ** this.restarts.length;
+      const delay = restartDelay(this.restarts.length);
+      if (delay >= 60_000) this.logger.error(`OPA keeps exiting (code ${code}); retrying once a minute`);
+      else this.logger.warn(`OPA exited (code ${code}); restarting in ${delay} ms`);
       this.restarts.push(now);
-      this.logger.warn(`OPA exited (code ${code}); restarting in ${delay} ms`);
       setTimeout(() => !this.stopping && this.spawn(), delay);
     });
     this.child = child;
