@@ -1,58 +1,172 @@
-# peng-opa
+<div align="center">
 
-Business rules and access policies, decided in milliseconds — a multi-tenant policy manager powered by the
-[Open Policy Agent](https://www.openpolicyagent.org) engine, by Pengopal.
+<img src="apps/web/public/brand/logo-light.svg" alt="Pengopal" width="280">
 
-Ops and compliance teams build rules as sentences ("When customer tier is gold and order total is at least 200 →
-allow, 15% discount"), test them in a Try-it panel, and publish. Their systems ask for decisions with one HTTPS call.
+**Business rules and access policies, decided in milliseconds — a multi-tenant policy manager built on Open Policy Agent.**
 
-- **No Docker.** One Node process serves the API and the web app, and starts the bundled OPA binary next to it.
-- **Multi-tenant.** Every workspace's data and OPA policies are isolated; API keys only see their own workspace.
-- **Demo mode.** One click creates "Acme Retail" with four live policies, two weeks of history and live traffic.
+<sub><b>Built with</b></sub><br>
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Node.js](https://img.shields.io/badge/Node.js-5fa04e?logo=nodedotjs&logoColor=white)](https://nodejs.org)
+[![NestJS](https://img.shields.io/badge/NestJS-e0234e?logo=nestjs&logoColor=white)](https://nestjs.com)
+[![React](https://img.shields.io/badge/React-087ea4?logo=react&logoColor=white)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-646cff?logo=vite&logoColor=white)](https://vite.dev)
+[![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-000000?logo=shadcnui&logoColor=white)](https://ui.shadcn.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06b6d4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Open Policy Agent](https://img.shields.io/badge/Open_Policy_Agent-566366?logo=openpolicyagent&logoColor=white)](https://www.openpolicyagent.org)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169e1?logo=postgresql&logoColor=white)](https://www.postgresql.org)
+[![Prisma](https://img.shields.io/badge/Prisma-2d3748?logo=prisma&logoColor=white)](https://www.prisma.io)
+[![Better Auth](https://img.shields.io/badge/Better_Auth-1a1a1a)](https://www.better-auth.com)
+[![pnpm](https://img.shields.io/badge/pnpm-f69220?logo=pnpm&logoColor=white)](https://pnpm.io)
+[![Vitest](https://img.shields.io/badge/Vitest-6e9f18?logo=vitest&logoColor=white)](https://vitest.dev)
+[![Playwright](https://img.shields.io/badge/Playwright-2ead33?logo=playwright&logoColor=white)](https://playwright.dev)
 
-Design: [`docs/superpowers/specs/2026-11-11-peng-opa-design.md`](docs/superpowers/specs/2026-11-11-peng-opa-design.md) ·
-Build plan: [`docs/superpowers/plans/2026-11-11-peng-opa.md`](docs/superpowers/plans/2026-11-11-peng-opa.md)
+</div>
 
-## Quick start
+![The peng-opa home dashboard](docs/images/home.png)
 
-Needs Node 22+, pnpm 10 and PostgreSQL 14+.
+## The problem
 
-```bash
-pnpm install                 # also downloads OPA 1.11.0 into tools/opa and checks its SHA-256
-cp .env.example .env         # then set DATABASE_URL (and TEST_DATABASE_URL for tests)
-createdb peng_opa            # or create it in pgAdmin
-pnpm --filter server db:deploy
-pnpm dev                     # API on :3000, web app on http://localhost:5180
+Every business runs on rules: who gets a discount, which refunds go through without a manager, who may open the admin
+console. They usually live as `if` statements scattered across services, and changing one means a ticket, a code
+change and a deploy.
+
+[Open Policy Agent](https://www.openpolicyagent.org) solves the engine side of this — fast, tested, auditable
+decisions — but it speaks Rego, and the people who own the rules are ops and compliance staff, not engineers.
+
+peng-opa puts a plain-language editor in front of OPA:
+
+- **Ops staff** build rules as sentences ("When customer tier is gold and order total is at least 200 → allow,
+  15% discount"), test them, and publish.
+- **Engineers** call one HTTPS endpoint and get a decision back. They never write Rego.
+
+```mermaid
+flowchart TB
+  subgraph App["peng-opa"]
+    A["Acme Retail workspace<br/>checkout-discount, refund-approval"]
+    B["Northwind workspace<br/>admin-console-access"]
+  end
+  A -- "compiled Rego, package t_a1b2.*" --> OPA["Open Policy Agent<br/>(one shared engine)"]
+  B -- "compiled Rego, package t_c3d4.*" --> OPA
+  App --> DB[("PostgreSQL<br/>rules, versions, decisions")]
 ```
 
-Open http://localhost:5180, create an account, and pick **Explore the demo workspace** to look around.
+Each workspace is a tenant. Its policies, history, members and API keys are invisible to every other workspace.
 
-### Production
+## Features
 
-```bash
-pnpm build
-pnpm start                   # runs migrations, then serves API + app on PORT (default 3000)
-```
+### Rules as sentences
 
-Set `APP_URL` to the address people use to reach it (it is used for sign-in and invite links).
+Each policy is a list of rules, checked top to bottom; the first one that matches decides. A rule is conditions
+("Order total **is at least** 200"), an Allow or Deny, a reason, and optional results such as a discount percentage.
+Field types (text, number, yes/no, date, list) decide which operators are offered.
 
-## Configuration (`.env`)
+![The policy editor with the Try it panel](docs/images/editor.png)
 
-| Variable | Purpose |
+### Try it, then publish
+
+The **Try it** panel runs any input against the draft or the live version and shows which rule matched and why.
+Saved samples make re-testing one click. **Publish** shows exactly what changed since the live version; every
+publish is a numbered version you can compare, restore as a draft, or roll back to.
+
+### Start from a template
+
+Nine ready-made policies across Commerce, Access, Finance and HR — checkout discount, refund approval, admin console
+access, loan pre-approval and more — each with sample inputs to try.
+
+![The template gallery](docs/images/templates.png)
+
+### See every decision
+
+**Home** shows decisions per day, the allow rate, live policies and response time. **Activity** is the full decision
+log, filterable by policy, outcome, source and date; any decision can be replayed in the Try it panel. A **Changes** tab
+records who published, paused or rolled back what.
+
+![The Activity log](docs/images/activity.png)
+
+### Connect your systems
+
+API keys are created per workspace, shown once, and revocable. **Connect** gives copy-ready samples in curl,
+JavaScript, Python and C#.
+
+![The Connect page](docs/images/connect.png)
+
+### Built for demos
+
+One click creates **Acme Retail**: four live policies, two weeks of decision history and simulated live traffic that
+switches itself off after ten minutes. **Reset** puts it back the way it started. With `DEMO_PUBLIC=true`, the sign-in
+page offers a shared, read-only demo for website visitors.
+
+### Teams
+
+- **Roles:** Owner (everything), Editor (policies, publish, test) and Viewer (read-only plus Try it).
+- **Invites:** sent by email when `SMTP_URL` is set; otherwise shown as a link to copy.
+- **Sign-in:** email and password, plus optional "Continue with Google".
+
+## How it keeps workspaces apart
+
+Every request is scoped to one workspace, and the scoping is enforced below the application code.
+
+| What someone tries | What happens |
 |---|---|
-| `DATABASE_URL` | PostgreSQL connection string |
-| `BETTER_AUTH_SECRET` | Long random string that signs sessions |
-| `APP_URL` | Public URL of the app (dev: `http://localhost:5180`) |
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Optional: "Continue with Google" |
-| `OPA_PORT` | Port of the bundled OPA (default 8181, bound to 127.0.0.1) |
-| `OPA_URL` | Optional: use an OPA you run yourself instead of the bundled one |
-| `OPA_TOKEN` | Shared secret between the app and OPA |
-| `RATE_LIMIT_RPS` | Decision requests per second per workspace (default 50) |
-| `DEMO_PUBLIC` | `true` shows "Try the live demo" on the sign-in page (shared read-only demo) |
-| `SMTP_URL` | Optional: send invite emails; without it, invite links are shown to copy |
-| `TEST_DATABASE_URL` | Database the tests create and drop schemas in |
+| Sends another workspace's id in `x-workspace-id` | 403 — membership is checked on every request |
+| Calls `/v1/decide` with a workspace id in the body | Ignored — the workspace comes only from the API key |
+| Uses an API key on another workspace's policy key | 404 `policy_not_found` |
+| A query in the API forgets its workspace filter | The Prisma extension adds it; a query with no workspace context throws |
+| Reaches OPA directly | OPA listens on 127.0.0.1 only and rejects calls without the app's token |
+| One workspace floods the decision API | Rate-limited per workspace (`429 rate_limited`); others are unaffected |
 
-## Decision API
+The isolation tests live in [`apps/server/test/workspace-scope.e2e.spec.ts`](apps/server/test/workspace-scope.e2e.spec.ts)
+and the decide, API-key and members suites next to it.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  Browser["Web app<br/>React + Vite"] -- "session cookie" --> API
+  Systems["Your systems"] -- "Bearer pk_live_…" --> API
+  subgraph Node["One Node process"]
+    API["NestJS API<br/>auth · policies · decisions"]
+    Compiler["Rego compiler"]
+    Gateway["OPA gateway<br/>push + sync every 60 s"]
+    API --> Compiler --> Gateway
+  end
+  Gateway -- "PUT /v1/policies" --> OPA["OPA 1.11<br/>127.0.0.1, token auth"]
+  API -- "Prisma" --> PG[("PostgreSQL")]
+```
+
+There is no Docker. The NestJS process serves the API and the built web app, and starts the bundled OPA binary as a
+supervised child process (restarted with backoff if it crashes). Rules are stored as structured JSON, compiled to Rego
+on publish, and pushed to OPA; a sync loop re-pushes anything OPA is missing after a restart. Decisions are written to
+an audit log asynchronously, so logging never slows a decision down. The full design is in the
+[design spec](docs/superpowers/specs/2026-11-11-peng-opa-design.md).
+
+## Try it in five minutes
+
+You need Node 22, pnpm 10 and PostgreSQL 14 or later.
+
+```bash
+pnpm install
+```
+
+```bash
+cp .env.example .env
+```
+
+Set `DATABASE_URL` in `.env` and create the database, then:
+
+```bash
+pnpm --filter server db:deploy
+```
+
+```bash
+pnpm dev
+```
+
+Open <http://localhost:5180>, create an account, and choose **Explore the demo workspace**. Full setup, configuration
+and production steps are in [docs/SETUP.md](docs/SETUP.md); a walkthrough for showing it to someone is in the
+[demo script](docs/demo-script.md).
+
+## Calling the decision API
 
 ```http
 POST /v1/decide/checkout-discount
@@ -73,43 +187,26 @@ Content-Type: application/json
 }
 ```
 
-`POST /v1/decide/<key>/batch` takes `{ "inputs": [ … ] }` (up to 100). Errors are
-`{ "error": { "code", "message" } }`:
+Batches, error codes and retry advice are in [Connect your app](docs/guides/connect-your-app.md).
 
-| Status | Code | When |
-|---|---|---|
-| 401 | `invalid_api_key` | Missing, unknown or revoked key |
-| 404 | `policy_not_found` | No policy with that key in the key's workspace |
-| 409 | `policy_not_live` | The policy is a draft or paused |
-| 413 | `payload_too_large` | Body over 64 KB |
-| 422 | `invalid_input` | A field has the wrong type (e.g. `"620"` for a number) |
-| 429 | `rate_limited` | Over the workspace's requests per second |
-| 503 | `engine_unavailable` | OPA is down or restarting — retry shortly |
+## Documentation
 
-A field that is missing is not an error: conditions on it simply don't match.
+- [Setting up locally](docs/SETUP.md): requirements, configuration, tests and running in production
+- Guides: [Writing policies](docs/guides/writing-policies.md) · [Connect your app](docs/guides/connect-your-app.md)
+- [Demo script](docs/demo-script.md): a ten-minute walkthrough of the demo workspace
+- [Known issues](docs/known-issues.md): limits of v1 and findings deferred from review
+- [Design spec](docs/superpowers/specs/2026-11-11-peng-opa-design.md) and
+  [build log](docs/superpowers/build-log-2026-11-11.md) (every decision made while building v1)
 
-## Security notes
+## Contributing
 
-- **Invites:** the invite link (random, 7 days) is what grants access; the signed-in email must match the invited one.
-  Emails are not verified in v1, so treat invite links as secrets. Configure `SMTP_URL` and enable email
-  verification before opening sign-up widely.
-- **Public demo (`DEMO_PUBLIC=true`):** every visitor shares one read-only account (it can browse and use Try it,
-  nothing else). Keep it off unless you want a public demo.
+Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request — it covers the
+repository layout, how to run each test suite, and the rules every change follows (tests first, workspace isolation,
+plain-language UI copy).
 
-## Tests
+- **Bugs and ideas:** open an issue with steps to reproduce, or the problem you want solved.
+- **Security problems:** do not open a public issue; email the Pengopal team instead.
 
-```bash
-pnpm test                    # unit tests (shared rules, compiler, web components)
-pnpm test:e2e                # API end-to-end against TEST_DATABASE_URL and a test-spawned OPA
-pnpm build && pnpm test:e2e:web   # browser journeys (Playwright) against the production build
-```
+## Licence
 
-## Layout
-
-| Path | What |
-|---|---|
-| `packages/shared` | Rule-set types, validation, input checking, sentences for rules |
-| `apps/server` | NestJS API: auth, workspaces, policies, Rego compiler, OPA gateway and sync, decisions, templates, demo |
-| `apps/web` | React app (Vite, TanStack Router/Query, shadcn/ui) in the Pengopal theme |
-| `ops/opa/authz.rego` | OPA's own access rule: only the app's token may call it |
-| `scripts/fetch-opa.mjs` | Downloads and verifies the OPA binary |
+Copyright © 2026 Pengopal Technologies. All rights reserved.
