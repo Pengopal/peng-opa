@@ -29,6 +29,7 @@ describe("TryItPanel", () => {
       policy: { id: "p1", key: "checkout-discount", status: "LIVE", liveVersion: { number: 1, publishedAt: "" } } as never,
       draft: { ruleSet: rs, issues: validateRuleSet(rs), flush } as never,
       canEdit: true,
+      reload: vi.fn(),
     };
     return { ctx, flush };
   };

@@ -41,14 +41,20 @@ export interface EditorSlots {
   settings?: (ctx: EditorContext) => ReactNode;
 }
 
-export type EditorContext = { policy: PolicyDetail; draft: ReturnType<typeof useDraft>; canEdit: boolean };
+export type EditorContext = {
+  policy: PolicyDetail;
+  draft: ReturnType<typeof useDraft>;
+  canEdit: boolean;
+  /** Re-read the policy and restart the editor from the stored draft (after restore or publish). */
+  reload(): Promise<void>;
+};
 
-function Editor({ policy, slots }: { policy: PolicyDetail; slots: EditorSlots }) {
+function Editor({ policy, slots, reload }: { policy: PolicyDetail; slots: EditorSlots; reload(): Promise<void> }) {
   const { current } = useWorkspace();
   const canEdit = can(current?.role, "EDITOR");
   const draft = useDraft(policy.id, policy.draft);
   const [tab, setTab] = useState("rules");
-  const ctx: EditorContext = { policy, draft, canEdit };
+  const ctx: EditorContext = { policy, draft, canEdit, reload };
   const errors = draft.issues.filter((i) => i.severity === "error").length;
 
   return (
@@ -102,8 +108,13 @@ function Editor({ policy, slots }: { policy: PolicyDetail; slots: EditorSlots })
 /** The policy editor page: loads the policy, then the editor keeps its own autosaved draft. */
 export function PolicyEditor({ slots = {} }: { slots?: EditorSlots }) {
   const { policyId } = useParams({ strict: false }) as { policyId: string };
-  const { data, error, isLoading } = useQuery({ queryKey: ["policy", policyId], queryFn: () => api<PolicyDetail>(`/api/policies/${policyId}`) });
+  const [epoch, setEpoch] = useState(0);
+  const { data, error, isLoading, refetch } = useQuery({ queryKey: ["policy", policyId], queryFn: () => api<PolicyDetail>(`/api/policies/${policyId}`) });
   if (isLoading) return <Skeleton className="h-96 w-full rounded-xl" />;
   if (error || !data) return <ErrorText error={error ?? new Error("Policy not found")} />;
-  return <Editor key={data.id} policy={data} slots={slots} />;
+  const reload = async () => {
+    await refetch();
+    setEpoch((e) => e + 1);
+  };
+  return <Editor key={`${data.id}:${epoch}`} policy={data} slots={slots} reload={reload} />;
 }
