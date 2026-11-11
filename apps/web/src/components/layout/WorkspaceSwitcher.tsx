@@ -18,15 +18,15 @@ export function WorkspaceSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-auto w-full justify-between px-3 py-2">
+        <Button variant="ghost" className="h-auto w-full justify-between border border-sidebar-border px-3 py-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
           <span className="flex min-w-0 flex-col items-start">
-            <span className="text-xs text-muted-foreground">Workspace</span>
+            <span className="text-xs text-sidebar-foreground/60">Workspace</span>
             <span className="flex max-w-full items-center gap-2 truncate font-semibold">
               <span className="truncate">{current?.name ?? "—"}</span>
-              {current?.isDemo && <Badge variant="secondary">Demo</Badge>}
+              {current?.isDemo && <Badge className="bg-sidebar-primary text-sidebar-primary-foreground">Demo</Badge>}
             </span>
           </span>
-          <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          <ChevronsUpDown className="size-4 shrink-0 text-sidebar-foreground/60" aria-hidden />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">

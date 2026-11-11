@@ -24,6 +24,8 @@ shapes — approved by the user — and the plan's named pieces are the authorit
 
 ## Values
 
+- **Brand:** Pengopal (pengopal-web `src/styles/tokens.css`): navy ink `#12224a` primary buttons with white text, gold `#f4b740` accent (active nav marker, Demo/OPA tags), soft canvas `#f5f6fa` behind white cards, borders `#dfe3ef`, focus `#5f6bff`. Light is the default theme; dark is opt-in from the account menu. Headings Lexend 600, body Inter. Logo via `Logo` (`onDark` in the navy sidebar).
+
 - Colours only through theme tokens in `src/index.css` (`primary`, `muted-foreground`, `success`, `danger`, `*-muted`, `chart-1` allowed, `chart-2` denied). No hex/oklch literals in components.
 - Spacing on Tailwind's 4px scale (`gap-2`, `gap-4`, `p-6` …). Radius via `rounded-md/lg/xl` (token based).
 - Type: `text-2xl font-semibold` page title (PageHeader only); `text-sm` body; `text-xs text-muted-foreground` hints.

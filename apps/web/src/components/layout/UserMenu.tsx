@@ -28,13 +28,13 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-auto w-full justify-start gap-3 px-3 py-2">
+        <Button variant="ghost" className="h-auto w-full justify-start gap-3 px-3 py-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
           <Avatar className="size-7">
-            <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+            <AvatarFallback className="bg-sidebar-primary text-xs font-semibold text-sidebar-primary-foreground">{initials}</AvatarFallback>
           </Avatar>
           <span className="flex min-w-0 flex-col items-start text-left">
             <span className="truncate text-sm font-medium">{name}</span>
-            <span className="truncate text-xs text-muted-foreground">{data?.user.email}</span>
+            <span className="truncate text-xs text-sidebar-foreground/60">{data?.user.email}</span>
           </span>
         </Button>
       </DropdownMenuTrigger>
@@ -44,7 +44,7 @@ export function UserMenu() {
           value={theme}
           onValueChange={(v) => {
             setTheme(v as ThemeChoice);
-            applyTheme(v as ThemeChoice);
+            applyTheme(v as ThemeChoice, true);
           }}
         >
           <DropdownMenuRadioItem value="light">

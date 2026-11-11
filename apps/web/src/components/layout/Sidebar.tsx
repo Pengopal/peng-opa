@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Activity, FileCheck2, Home, PlugZap, Settings } from "lucide-react";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { UserMenu } from "./UserMenu";
+import { Logo } from "@/components/Logo";
 
 export const NAV = [
   { to: "/", label: "Home", icon: Home, exact: true },
@@ -15,6 +16,9 @@ export const NAV = [
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex h-full flex-col gap-4 bg-sidebar p-3 text-sidebar-foreground">
+      <Link to="/" onClick={onNavigate} className="px-3 pt-2 pb-1" aria-label="peng-opa home">
+        <Logo onDark />
+      </Link>
       <WorkspaceSwitcher />
       <nav aria-label="Main" className="flex flex-1 flex-col gap-1">
         {NAV.map(({ to, label, icon: Icon, exact }) => (
@@ -23,7 +27,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             to={to}
             onClick={onNavigate}
             activeOptions={{ exact }}
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground"
+            className="relative flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground data-[status=active]:before:absolute data-[status=active]:before:inset-y-1.5 data-[status=active]:before:left-0 data-[status=active]:before:w-1 data-[status=active]:before:rounded-full data-[status=active]:before:bg-sidebar-primary"
           >
             <Icon className="size-4" aria-hidden />
             {label}
