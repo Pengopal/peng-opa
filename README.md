@@ -192,6 +192,7 @@ Batches, error codes and retry advice are in [Connect your app](docs/guides/conn
 ## Documentation
 
 - [Setting up locally](docs/SETUP.md): requirements, configuration, tests and running in production
+- [Deploying to Railway](docs/DEPLOY.md): the hosted setup behind opa.pengopal.com
 - Guides: [Writing policies](docs/guides/writing-policies.md) · [Connect your app](docs/guides/connect-your-app.md)
 - [Demo script](docs/demo-script.md): a ten-minute walkthrough of the demo workspace
 - [Known issues](docs/known-issues.md): limits of v1 and findings deferred from review

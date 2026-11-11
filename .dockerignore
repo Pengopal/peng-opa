@@ -1,0 +1,14 @@
+**/node_modules
+**/dist
+tools/
+.env
+.env.*
+!.env.example
+.git
+.superpowers
+.claude
+coverage
+playwright-report
+test-results
+apps/server/src/generated
+*.log
