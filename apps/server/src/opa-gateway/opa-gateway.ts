@@ -16,8 +16,8 @@ export interface OpaGateway {
   deletePolicy(policyId: string): Promise<void>;
   /** Ids of loaded policy modules starting with `prefix`. */
   listPolicyIds(prefix: string): Promise<string[]>;
-  /** Raw module source by id, or undefined when not loaded. */
-  getPolicy(policyId: string): Promise<string | undefined>;
+  /** Loaded modules (id + raw source) whose id starts with `prefix`. */
+  listPolicies(prefix: string): Promise<{ id: string; raw: string }[]>;
   /** Evaluate a decision; undefined when nothing is defined at that path. */
   evaluate(dataPath: string, input: unknown): Promise<OpaDecision | undefined>;
   health(): Promise<boolean>;

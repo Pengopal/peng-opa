@@ -27,17 +27,17 @@ export class HttpOpaGateway implements OpaGateway {
   }
 
   async listPolicyIds(prefix: string): Promise<string[]> {
-    const res = await this.call("GET", "/v1/policies");
-    await this.expectOk(res, "list policies");
-    const body = (await res.json()) as { result: { id: string }[] };
-    return body.result.map((p) => p.id).filter((id) => id.startsWith(prefix)).sort();
+    return (await this.listPolicies(prefix)).map((p) => p.id);
   }
 
-  async getPolicy(policyId: string): Promise<string | undefined> {
-    const res = await this.call("GET", `/v1/policies/${encodePath(policyId)}`);
-    if (res.status === 404) return undefined;
-    await this.expectOk(res, "get policy");
-    return ((await res.json()) as { result: { raw: string } }).result.raw;
+  async listPolicies(prefix: string): Promise<{ id: string; raw: string }[]> {
+    const res = await this.call("GET", "/v1/policies");
+    await this.expectOk(res, "list policies");
+    const body = (await res.json()) as { result: { id: string; raw: string }[] };
+    return body.result
+      .filter((p) => p.id.startsWith(prefix))
+      .map(({ id, raw }) => ({ id, raw }))
+      .sort((a, b) => a.id.localeCompare(b.id));
   }
 
   async evaluate(dataPath: string, input: unknown): Promise<OpaDecision | undefined> {
