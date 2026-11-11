@@ -23,10 +23,13 @@ import { DecideService } from "./decisions/decide.service.js";
 import { RateLimiter } from "./decisions/rate-limiter.js";
 import { AUDIT_WRITER } from "./decisions/audit-writer.js";
 import { DbAuditWriter } from "./decisions/db-audit-writer.service.js";
+import { PlaygroundController } from "./decisions/playground.controller.js";
+import { PlaygroundService } from "./decisions/playground.service.js";
+import { DecisionsController } from "./decisions/decisions.controller.js";
 
 @Module({
   imports: [ConfigModule, PrismaModule, OpaGatewayModule, AuthModule],
-  controllers: [HealthController, WorkspacesController, MembersController, ApiKeysController, PoliciesController, VersionsController, EventsController, DecideController],
-  providers: [WorkspacesService, MembersService, Mailer, ApiKeysService, ApiKeyGuard, PoliciesService, PolicyEventsService, PublishingService, DecideService, RateLimiter, DbAuditWriter, { provide: AUDIT_WRITER, useExisting: DbAuditWriter }],
+  controllers: [HealthController, WorkspacesController, MembersController, ApiKeysController, PoliciesController, VersionsController, EventsController, DecideController, PlaygroundController, DecisionsController],
+  providers: [WorkspacesService, MembersService, Mailer, ApiKeysService, ApiKeyGuard, PoliciesService, PolicyEventsService, PublishingService, DecideService, RateLimiter, PlaygroundService, DbAuditWriter, { provide: AUDIT_WRITER, useExisting: DbAuditWriter }],
 })
 export class AppModule {}
