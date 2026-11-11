@@ -15,6 +15,7 @@ import { TemplateGallery } from "@/pages/templates/TemplateGallery";
 import { PolicyEditorPage } from "@/pages/policy-editor/PolicyEditorPage";
 import { Activity } from "@/pages/activity/Activity";
 import { parseFilters } from "@/pages/activity/filters";
+import { Connect } from "@/pages/connect/Connect";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -64,7 +65,7 @@ export const policyRoute = createRoute({
 });
 export const templatesRoute = createRoute({ getParentRoute: () => shellRoute, path: "/templates", component: TemplateGallery });
 export const activityRoute = createRoute({ getParentRoute: () => shellRoute, path: "/activity", validateSearch: parseFilters, component: Activity });
-export const connectRoute = createRoute({ getParentRoute: () => shellRoute, path: "/connect", component: () => <Placeholder title="Connect" /> });
+export const connectRoute = createRoute({ getParentRoute: () => shellRoute, path: "/connect", component: Connect });
 export const settingsRoute = createRoute({ getParentRoute: () => shellRoute, path: "/settings", component: () => <Placeholder title="Settings" /> });
 
 const routeTree = rootRoute.addChildren([
