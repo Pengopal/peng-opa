@@ -89,6 +89,8 @@ pnpm start
 (default 3000). Set `APP_URL` to the public address, put a TLS-terminating proxy in front, and keep `.env` out of
 version control.
 
+To host it on Railway, follow [Deploying to Railway](DEPLOY.md).
+
 Before opening sign-up to the public, configure `SMTP_URL` and turn on email verification — see
 [Known issues](known-issues.md).
 
