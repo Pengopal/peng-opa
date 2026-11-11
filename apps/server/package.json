@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "lint": "tsc --noEmit",
     "db:migrate": "prisma migrate dev && prisma generate",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "pretypecheck": "pnpm --filter @peng/shared build",
+    "prebuild": "pnpm --filter @peng/shared build"
   },
   "dependencies": {
     "@nestjs/common": "^12.4.2",

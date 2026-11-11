@@ -18,10 +18,15 @@ import { PolicyEventsService } from "./policies/policy-events.service.js";
 import { PublishingService } from "./policies/publishing.service.js";
 import { VersionsController } from "./policies/versions.controller.js";
 import { EventsController } from "./policies/events.controller.js";
+import { DecideController } from "./decisions/decide.controller.js";
+import { DecideService } from "./decisions/decide.service.js";
+import { RateLimiter } from "./decisions/rate-limiter.js";
+import { AUDIT_WRITER } from "./decisions/audit-writer.js";
+import { MemoryAuditWriter } from "./decisions/memory-audit-writer.js";
 
 @Module({
   imports: [ConfigModule, PrismaModule, OpaGatewayModule, AuthModule],
-  controllers: [HealthController, WorkspacesController, MembersController, ApiKeysController, PoliciesController, VersionsController, EventsController],
-  providers: [WorkspacesService, MembersService, Mailer, ApiKeysService, ApiKeyGuard, PoliciesService, PolicyEventsService, PublishingService],
+  controllers: [HealthController, WorkspacesController, MembersController, ApiKeysController, PoliciesController, VersionsController, EventsController, DecideController],
+  providers: [WorkspacesService, MembersService, Mailer, ApiKeysService, ApiKeyGuard, PoliciesService, PolicyEventsService, PublishingService, DecideService, RateLimiter, { provide: AUDIT_WRITER, useClass: MemoryAuditWriter }],
 })
 export class AppModule {}
