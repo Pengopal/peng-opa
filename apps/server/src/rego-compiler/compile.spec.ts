@@ -1,6 +1,6 @@
 import { sampleRuleSet, type RuleSet } from "@peng/shared";
-import { compileRuleSet, RuleSetInvalidError } from "./compile";
-import { opaNames, draftNames } from "./naming";
+import { compileRuleSet, RuleSetInvalidError } from "./compile.js";
+import { opaNames, draftNames } from "./naming.js";
 
 describe("opaNames / draftNames", () => {
   it("derives package, policy id and data path from workspace and policy key", () => {

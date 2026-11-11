@@ -1,7 +1,7 @@
-import { HttpOpaGateway } from "../src/opa-gateway/http-opa-gateway";
-import { OpaCompileError, OpaUnavailableError } from "../src/opa-gateway/errors";
-import { OpaProcess } from "../src/opa-gateway/opa-process.service";
-import { freePort, startTestOpa, TestOpa } from "./support/stack";
+import { HttpOpaGateway } from "../src/opa-gateway/http-opa-gateway.js";
+import { OpaCompileError, OpaUnavailableError } from "../src/opa-gateway/errors.js";
+import { OpaProcess } from "../src/opa-gateway/opa-process.service.js";
+import { freePort, startTestOpa, TestOpa } from "./support/stack.js";
 
 const POLICY = `package t_gw.p
 import rego.v1

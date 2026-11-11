@@ -1,5 +1,5 @@
-import { FIELD_PATH_PATTERN, OPERATORS_BY_TYPE, OPERATOR_LABELS, OUTCOME_KEY_PATTERN } from "./operators";
-import type { Condition, Field, Issue, IssueCode, Outcome, Result, Rule, RuleSet } from "./types";
+import { FIELD_PATH_PATTERN, OPERATORS_BY_TYPE, OPERATOR_LABELS, OUTCOME_KEY_PATTERN } from "./operators.js";
+import type { Condition, Field, Issue, IssueCode, Outcome, Result, Rule, RuleSet } from "./types.js";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2}))?$/;
 

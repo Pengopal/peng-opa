@@ -1,4 +1,4 @@
-import type { Result, Rule, RuleChange, RuleSet } from "./types";
+import type { Result, Rule, RuleChange, RuleSet } from "./types.js";
 
 const content = (r: Rule) => JSON.stringify({ label: r.label, match: r.match, conditions: r.conditions, result: r.result });
 const sameResult = (a: Result, b: Result) => JSON.stringify(a) === JSON.stringify(b);

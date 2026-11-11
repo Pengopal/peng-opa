@@ -1,5 +1,5 @@
-import { OpaCompileError, OpaUnavailableError } from "./errors";
-import type { OpaDecision, OpaGateway } from "./opa-gateway";
+import { OpaCompileError, OpaUnavailableError } from "./errors.js";
+import type { OpaDecision, OpaGateway } from "./opa-gateway.js";
 
 const TIMEOUT_MS = 2_000;
 

@@ -8,3 +8,4 @@ coverage/
 apps/server/src/generated/
 playwright-report/
 test-results/
+tools/

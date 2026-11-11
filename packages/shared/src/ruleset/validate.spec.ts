@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { validateRuleSet } from "./validate";
-import { sampleRuleSet } from "./fixtures";
-import type { RuleSet } from "./types";
+import { validateRuleSet } from "./validate.js";
+import { sampleRuleSet } from "./fixtures.js";
+import type { RuleSet } from "./types.js";
 
 const codes = (rs: RuleSet) => validateRuleSet(rs).map((i) => `${i.severity}:${i.code}`);
 

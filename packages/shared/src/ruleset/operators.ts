@@ -1,4 +1,4 @@
-import type { FieldType, Operator } from "./types";
+import type { FieldType, Operator } from "./types.js";
 
 export const OPERATORS_BY_TYPE: Record<FieldType, Operator[]> = {
   text: ["is", "is_not", "one_of", "not_one_of", "contains", "starts_with", "ends_with"],

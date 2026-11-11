@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { diffRuleSets } from "./diff";
-import { sampleRuleSet } from "./fixtures";
+import { diffRuleSets } from "./diff.js";
+import { sampleRuleSet } from "./fixtures.js";
 
 describe("diffRuleSets", () => {
   it("no_changes", () => {

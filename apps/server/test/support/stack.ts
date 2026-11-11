@@ -5,8 +5,8 @@ import { join } from "node:path";
 import { randomBytes } from "node:crypto";
 import { Client } from "pg";
 
-const repoRoot = join(__dirname, "..", "..", "..", "..");
-const serverRoot = join(__dirname, "..", "..");
+const repoRoot = join(import.meta.dirname, "..", "..", "..", "..");
+const serverRoot = join(import.meta.dirname, "..", "..");
 export const opaBinary = join(repoRoot, "tools", "opa", process.platform === "win32" ? "opa.exe" : "opa");
 export const opaAuthzPolicy = join(repoRoot, "ops", "opa", "authz.rego");
 
@@ -71,7 +71,7 @@ export async function startTestOpa(): Promise<TestOpa> {
     await waitForOpa(url);
   };
   const kill = async () => {
-    if (!child || child.exitCode !== null) return;
+    if (!child || child.exitCode !== null || child.signalCode !== null) return;
     const exited = new Promise((r) => child!.once("exit", r));
     child.kill();
     await exited;

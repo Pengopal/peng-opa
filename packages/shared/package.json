@@ -2,24 +2,23 @@
   "name": "@peng/shared",
   "version": "0.0.0",
   "private": true,
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/esm/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/esm/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && node -e \"require('fs').writeFileSync('dist/cjs/package.json','{\\\"type\\\":\\\"commonjs\\\"}');require('fs').writeFileSync('dist/esm/package.json','{\\\"type\\\":\\\"module\\\"}')\"",
+    "build": "tsc -p tsconfig.json",
     "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.esm.json --noEmit",
-    "lint": "tsc -p tsconfig.esm.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
-    "typescript": "^7.0.2",
+    "typescript": "^6.0.3",
     "vitest": "^5.1.0"
-  }
+  },
+  "type": "module"
 }

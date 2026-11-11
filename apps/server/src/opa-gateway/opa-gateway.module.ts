@@ -1,8 +1,8 @@
 import { Global, Module } from "@nestjs/common";
-import { APP_CONFIG, AppConfig } from "../config/config";
-import { HttpOpaGateway } from "./http-opa-gateway";
-import { OPA_GATEWAY } from "./opa-gateway";
-import { OpaProcess } from "./opa-process.service";
+import { APP_CONFIG, AppConfig } from "../config/config.js";
+import { HttpOpaGateway } from "./http-opa-gateway.js";
+import { OPA_GATEWAY } from "./opa-gateway.js";
+import { OpaProcess } from "./opa-process.service.js";
 
 @Global()
 @Module({

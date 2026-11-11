@@ -1,7 +1,7 @@
-import { HttpOpaGateway } from "../../src/opa-gateway/http-opa-gateway";
-import { startTestOpa, TestOpa } from "../support/stack";
-import { goldenFixtures } from "./fixtures";
-import { runGolden } from "./run-golden";
+import { HttpOpaGateway } from "../../src/opa-gateway/http-opa-gateway.js";
+import { startTestOpa, TestOpa } from "../support/stack.js";
+import { goldenFixtures } from "./fixtures.js";
+import { runGolden } from "./run-golden.js";
 
 describe("golden: compiled rule sets evaluate correctly in real OPA", () => {
   let opa: TestOpa;

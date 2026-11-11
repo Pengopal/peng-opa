@@ -2,9 +2,9 @@ import { ChildProcess, spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { Inject, Injectable, Logger, OnApplicationShutdown, OnModuleInit } from "@nestjs/common";
-import { APP_CONFIG, AppConfig } from "../config/config";
+import { APP_CONFIG, AppConfig } from "../config/config.js";
 
-const repoRoot = join(__dirname, "..", "..", "..", "..");
+const repoRoot = join(import.meta.dirname, "..", "..", "..", "..");
 const binary = join(repoRoot, "tools", "opa", process.platform === "win32" ? "opa.exe" : "opa");
 const authzPolicy = join(repoRoot, "ops", "opa", "authz.rego");
 const MAX_RESTARTS_PER_MINUTE = 5;
@@ -56,7 +56,7 @@ export class OpaProcess implements OnModuleInit, OnApplicationShutdown {
   async onApplicationShutdown(): Promise<void> {
     this.stopping = true;
     const child = this.child;
-    if (!child || child.exitCode !== null) return;
+    if (!child || child.exitCode !== null || child.signalCode !== null) return;
     const exited = new Promise((r) => child.once("exit", r));
     child.kill();
     await exited;

@@ -1,5 +1,5 @@
-export * from "./types";
-export * from "./operators";
-export * from "./validate";
-export * from "./diff";
-export { sampleRuleSet } from "./fixtures";
+export * from "./types.js";
+export * from "./operators.js";
+export * from "./validate.js";
+export * from "./diff.js";
+export { sampleRuleSet } from "./fixtures.js";

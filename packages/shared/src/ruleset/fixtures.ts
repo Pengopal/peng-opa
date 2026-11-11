@@ -1,4 +1,4 @@
-import type { RuleSet } from "./types";
+import type { RuleSet } from "./types.js";
 
 /** A small valid rule set reused by tests across packages. */
 export function sampleRuleSet(): RuleSet {

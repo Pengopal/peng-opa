@@ -1,6 +1,6 @@
-import type { OpaGateway } from "../../src/opa-gateway/opa-gateway";
-import { compileRuleSet } from "../../src/rego-compiler/compile";
-import type { GoldenFixture } from "./fixtures";
+import type { OpaGateway } from "../../src/opa-gateway/opa-gateway.js";
+import { compileRuleSet } from "../../src/rego-compiler/compile.js";
+import type { GoldenFixture } from "./fixtures.js";
 
 const DAY_MS = 86_400_000;
 
