@@ -26,10 +26,12 @@ import { DbAuditWriter } from "./decisions/db-audit-writer.service.js";
 import { PlaygroundController } from "./decisions/playground.controller.js";
 import { PlaygroundService } from "./decisions/playground.service.js";
 import { DecisionsController } from "./decisions/decisions.controller.js";
+import { TemplatesController } from "./templates/templates.controller.js";
+import { TemplatesService } from "./templates/templates.service.js";
 
 @Module({
   imports: [ConfigModule, PrismaModule, OpaGatewayModule, AuthModule],
-  controllers: [HealthController, WorkspacesController, MembersController, ApiKeysController, PoliciesController, VersionsController, EventsController, DecideController, PlaygroundController, DecisionsController],
-  providers: [WorkspacesService, MembersService, Mailer, ApiKeysService, ApiKeyGuard, PoliciesService, PolicyEventsService, PublishingService, DecideService, RateLimiter, PlaygroundService, DbAuditWriter, { provide: AUDIT_WRITER, useExisting: DbAuditWriter }],
+  controllers: [HealthController, WorkspacesController, MembersController, ApiKeysController, PoliciesController, VersionsController, EventsController, DecideController, PlaygroundController, DecisionsController, TemplatesController],
+  providers: [WorkspacesService, MembersService, Mailer, ApiKeysService, ApiKeyGuard, PoliciesService, PolicyEventsService, PublishingService, DecideService, RateLimiter, PlaygroundService, TemplatesService, DbAuditWriter, { provide: AUDIT_WRITER, useExisting: DbAuditWriter }],
 })
 export class AppModule {}
