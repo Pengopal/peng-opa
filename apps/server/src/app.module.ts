@@ -15,10 +15,13 @@ import { ApiKeyGuard } from "./decisions/api-key.guard.js";
 import { PoliciesController } from "./policies/policies.controller.js";
 import { PoliciesService } from "./policies/policies.service.js";
 import { PolicyEventsService } from "./policies/policy-events.service.js";
+import { PublishingService } from "./policies/publishing.service.js";
+import { VersionsController } from "./policies/versions.controller.js";
+import { EventsController } from "./policies/events.controller.js";
 
 @Module({
   imports: [ConfigModule, PrismaModule, OpaGatewayModule, AuthModule],
-  controllers: [HealthController, WorkspacesController, MembersController, ApiKeysController, PoliciesController],
-  providers: [WorkspacesService, MembersService, Mailer, ApiKeysService, ApiKeyGuard, PoliciesService, PolicyEventsService],
+  controllers: [HealthController, WorkspacesController, MembersController, ApiKeysController, PoliciesController, VersionsController, EventsController],
+  providers: [WorkspacesService, MembersService, Mailer, ApiKeysService, ApiKeyGuard, PoliciesService, PolicyEventsService, PublishingService],
 })
 export class AppModule {}
