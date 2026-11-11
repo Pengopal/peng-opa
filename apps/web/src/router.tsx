@@ -10,6 +10,8 @@ import { CreateWorkspace } from "@/pages/onboarding/CreateWorkspace";
 import { Placeholder } from "@/pages/Placeholder";
 import { Home } from "@/pages/home/Home";
 import { Welcome } from "@/pages/onboarding/Welcome";
+import { PoliciesList } from "@/pages/policies/PoliciesList";
+import { TemplateGallery } from "@/pages/templates/TemplateGallery";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -49,9 +51,10 @@ export const policiesRoute = createRoute({
   getParentRoute: () => shellRoute,
   path: "/policies",
   validateSearch: (s: Record<string, unknown>) => ({ new: s.new === "blank" ? ("blank" as const) : undefined }),
-  component: () => <Placeholder title="Policies" />,
+  component: PoliciesList,
 });
-export const templatesRoute = createRoute({ getParentRoute: () => shellRoute, path: "/templates", component: () => <Placeholder title="Templates" /> });
+export const policyRoute = createRoute({ getParentRoute: () => shellRoute, path: "/policies/$policyId", component: () => <Placeholder title="Policy" /> });
+export const templatesRoute = createRoute({ getParentRoute: () => shellRoute, path: "/templates", component: TemplateGallery });
 export const activityRoute = createRoute({ getParentRoute: () => shellRoute, path: "/activity", component: () => <Placeholder title="Activity" /> });
 export const connectRoute = createRoute({ getParentRoute: () => shellRoute, path: "/connect", component: () => <Placeholder title="Connect" /> });
 export const settingsRoute = createRoute({ getParentRoute: () => shellRoute, path: "/settings", component: () => <Placeholder title="Settings" /> });
@@ -60,7 +63,7 @@ const routeTree = rootRoute.addChildren([
   signInRoute,
   signUpRoute,
   inviteRoute,
-  authedRoute.addChildren([onboardingRoute, shellRoute.addChildren([homeRoute, welcomeRoute, policiesRoute, templatesRoute, activityRoute, connectRoute, settingsRoute])]),
+  authedRoute.addChildren([onboardingRoute, shellRoute.addChildren([homeRoute, welcomeRoute, policiesRoute, policyRoute, templatesRoute, activityRoute, connectRoute, settingsRoute])]),
 ]);
 
 export const router = createRouter({ routeTree, defaultPreload: "intent" });
