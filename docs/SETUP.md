@@ -61,7 +61,9 @@ All settings are read from `.env` at the repository root.
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | No | Turns on "Continue with Google" |
 | `RATE_LIMIT_RPS` | No | Decision requests per second per workspace (default 50) |
 | `DEMO_PUBLIC` | No | `true` shows "Try the live demo" on the sign-in page (one shared, read-only account) |
-| `SMTP_URL` | No | Sends invite emails. Without it, invites are shown as links to copy |
+| `RESEND_API_KEY` | No | Sends invite emails through [Resend](https://resend.com). Without email set up, invites are shown as links to copy |
+| `MAIL_FROM` | With `RESEND_API_KEY` | Sender address on a domain verified in Resend, e.g. `peng-opa <no-reply@pengopal.com>` |
+| `SMTP_URL` | No | Sends invite emails through an SMTP server instead (used only when `RESEND_API_KEY` is not set) |
 | `TEST_DATABASE_URL` | Tests only | A database the API tests may create and drop schemas in |
 
 ## Running the tests
@@ -91,7 +93,7 @@ version control.
 
 To host it on Railway, follow [Deploying to Railway](DEPLOY.md).
 
-Before opening sign-up to the public, configure `SMTP_URL` and turn on email verification — see
+Before opening sign-up to the public, set up email (`RESEND_API_KEY`) and turn on email verification — see
 [Known issues](known-issues.md).
 
 ## Troubleshooting

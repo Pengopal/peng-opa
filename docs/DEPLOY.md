@@ -17,7 +17,8 @@ Docker is only used by Railway's build. Local development still runs without it.
 ## 1. Create the project
 
 1. In Railway, choose **New Project → Deploy from GitHub repo** and pick `Pengopal/peng-opa`, branch `main`.
-2. In the same project, choose **New → Database → PostgreSQL**.
+2. Create the database: either a [Neon](https://neon.tech) project (what opa.pengopal.com uses), or **New → Database →
+   PostgreSQL** in the same Railway project.
 
 ## 2. Set the variables
 
@@ -25,13 +26,13 @@ Open the peng-opa service, go to **Variables**, and add:
 
 | Variable | Value |
 |---|---|
-| `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` (a reference to the database you just added) |
+| `DATABASE_URL` | Neon: the **direct** connection string (host without `-pooler`, with `?sslmode=require`); migrations need a direct connection. Railway Postgres: `${{Postgres.DATABASE_URL}}` |
 | `APP_URL` | `https://opa.pengopal.com` |
 | `BETTER_AUTH_SECRET` | A new random string of 32+ characters (for example `openssl rand -base64 48`) |
 | `OPA_TOKEN` | Another new random string |
 | `RATE_LIMIT_RPS` | Optional, default 50 |
 | `DEMO_PUBLIC` | Optional: `true` for the shared read-only demo on the sign-in page |
-| `SMTP_URL` | Optional: to send invite emails |
+| `RESEND_API_KEY`, `MAIL_FROM` | Optional: send invite emails through Resend (see below) |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Optional: "Continue with Google" |
 
 Do not set `PORT` (Railway sets it) or `OPA_URL` (the bundled OPA is used). Never reuse the secrets from your local
@@ -63,11 +64,43 @@ Check the deployment is healthy: `https://<service>.up.railway.app/health` shoul
 
 ## 5. After the first deploy
 
-- **Google sign-in:** add `https://opa.pengopal.com/api/auth/callback/google` as an authorised redirect URI in the
-  Google Cloud console.
-- **Email verification:** before opening sign-up to the public, configure `SMTP_URL` — see
+- **Google sign-in and invite emails:** see the two sections below.
+- **Email verification:** before opening sign-up to the public, set up email and turn on verification — see
   [Known issues](known-issues.md).
-- **Backups:** turn on backups for the Railway Postgres database.
+- **Backups:** Neon keeps point-in-time history (check the retention on your plan); on Railway Postgres, turn on
+  backups.
+
+## Invite emails with Resend
+
+Railway blocks outbound SMTP on most plans, so peng-opa sends email through Resend's HTTPS API instead.
+
+1. Sign in at [resend.com](https://resend.com) and open **Domains → Add Domain**. Use `pengopal.com` (or a
+   subdomain such as `mail.pengopal.com`).
+2. Add the DNS records Resend shows (an MX and TXT record for SPF, and a TXT record for DKIM) at the DNS provider for
+   `pengopal.com`, then click **Verify**. Wait until the domain shows **Verified**.
+3. Open **API Keys → Create API Key**, with **Sending access** restricted to that domain. Copy the key (`re_…`); it
+   is shown once.
+4. In Railway, set `RESEND_API_KEY` to the key and `MAIL_FROM` to a sender on the verified domain, for example
+   `peng-opa <no-reply@pengopal.com>`. The app refuses to start with a key but no `MAIL_FROM`.
+5. After the redeploy, invite someone from **Settings → Members**. The dialog says the email was sent; if Resend
+   rejects it, the server log shows why and the invite link can still be copied.
+
+## Google sign-in
+
+1. In the [Google Cloud console](https://console.cloud.google.com), create or pick a project, then open **APIs &
+   Services → OAuth consent screen**. Choose **External**, fill in the app name (peng-opa), support email and the
+   authorised domain `pengopal.com`, and keep the default scopes (email, profile, openid). Publish it to
+   **In production** so anyone can sign in, not only test users.
+2. Open **Credentials → Create credentials → OAuth client ID**, type **Web application**:
+
+   | Field | Value |
+   |---|---|
+   | Authorised JavaScript origins | `https://opa.pengopal.com` |
+   | Authorised redirect URIs | `https://opa.pengopal.com/api/auth/callback/google` |
+
+   For local development, also add `http://localhost:5180` and `http://localhost:5180/api/auth/callback/google`.
+3. Copy the client ID and secret into Railway as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. After the redeploy,
+   the sign-in page shows **Continue with Google**.
 
 ## Keep it to one replica
 

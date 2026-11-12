@@ -7,7 +7,7 @@ the [build log](superpowers/build-log-2026-11-11.md).
 
 | Issue | Effect | Before going public |
 |---|---|---|
-| Email addresses are not verified | The secret invite link is what really grants access; someone holding a forwarded link could sign up as the invited address | Configure `SMTP_URL` and turn on email verification |
+| Email addresses are not verified | The secret invite link is what really grants access; someone holding a forwarded link could sign up as the invited address | Set up email (`RESEND_API_KEY`) and turn on email verification |
 | No cap on invite emails per workspace | A workspace owner could send many invite emails | Add a per-workspace limit if sign-up is open |
 | The bundled OPA inherits the server's environment | OPA can read the app's settings (including `DATABASE_URL`) through its runtime API; it only listens on 127.0.0.1 and requires the token | Start OPA with a reduced environment |
 
