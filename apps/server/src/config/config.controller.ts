@@ -11,7 +11,7 @@ export class ConfigController {
     return {
       googleEnabled: !!(this.config.googleClientId && this.config.googleClientSecret),
       demoPublic: this.config.demoPublic,
-      smtpEnabled: !!this.config.smtpUrl,
+      smtpEnabled: !!(this.config.resendApiKey || this.config.smtpUrl),
     };
   }
 }

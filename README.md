@@ -99,7 +99,8 @@ page offers a shared, read-only demo for website visitors.
 ### Teams
 
 - **Roles:** Owner (everything), Editor (policies, publish, test) and Viewer (read-only plus Try it).
-- **Invites:** sent by email when `SMTP_URL` is set; otherwise shown as a link to copy.
+- **Invites:** sent by email through [Resend](https://resend.com) (or any SMTP server) when configured; otherwise
+  shown as a link to copy.
 - **Sign-in:** email and password, plus optional "Continue with Google".
 
 ## How it keeps workspaces apart

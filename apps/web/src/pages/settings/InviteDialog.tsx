@@ -23,7 +23,7 @@ interface InviteResult {
   email: string;
 }
 
-/** Invite by email; without SMTP the link is shown to copy and send yourself. */
+/** Invite by email; without email set up the link is shown to copy and send yourself. */
 export function InviteDialog() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
