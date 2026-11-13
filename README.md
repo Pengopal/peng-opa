@@ -1,9 +1,6 @@
 <div align="center">
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/pengopa-logo-dark.svg">
-  <img src="apps/web/public/brand/pengopa-logo.svg" alt="PengOPA" width="300">
-</picture>
+<img src="docs/images/pengopa-logo-card.svg" alt="PengOPA" width="320">
 
 **Business rules and access policies, decided in milliseconds — a multi-tenant policy manager built on Open Policy Agent.**
 
