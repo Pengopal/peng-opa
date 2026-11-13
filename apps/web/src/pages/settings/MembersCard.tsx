@@ -110,7 +110,23 @@ export function MembersCard({ isOwner }: { isOwner: boolean }) {
           card={{
             title: (m) => (m.userId === session?.user.id ? `${m.name} (you)` : m.name),
             meta: (m) => m.email,
-            trailing: (m) => <span className="text-xs text-muted-foreground">{ROLE_LABELS[m.role].label}</span>,
+            trailing: (m) =>
+              isOwner ? (
+                <Select value={m.role} onValueChange={(role) => changeRole.mutate({ id: m.id, role: role as Role })}>
+                  <SelectTrigger aria-label={`Role of ${m.name}`} size="sm" className="w-24">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(Object.keys(ROLE_LABELS) as Role[]).map((r) => (
+                      <SelectItem key={r} value={r}>
+                        {ROLE_LABELS[r].label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <span className="text-xs text-muted-foreground">{ROLE_LABELS[m.role].label}</span>
+              ),
           }}
         />
         {isOwner && !!invites.data?.length && (

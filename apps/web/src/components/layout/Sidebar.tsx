@@ -16,7 +16,7 @@ function NavLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
       activeOptions={{ exact }}
       aria-label={collapsed ? label : undefined}
       className={cn(
-        "flex h-9 items-center gap-3 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-black/5 hover:text-foreground dark:hover:bg-white/5",
+        "flex h-9 items-center gap-3 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground",
         "data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground",
         collapsed && "justify-center px-0",
       )}

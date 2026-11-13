@@ -60,7 +60,7 @@ export function UserMenu({ compact = false }: { compact?: boolean }) {
         <Button
           variant="ghost"
           aria-label="Account"
-          className={cn("h-auto gap-3 px-2 py-1.5", compact ? "rounded-full p-1.5" : "w-full justify-start hover:bg-black/5 dark:hover:bg-white/5")}
+          className={cn("h-auto gap-3 px-2 py-1.5", compact ? "rounded-full p-1.5" : "w-full justify-start hover:bg-foreground/5")}
         >
           <Avatar className="size-7">
             <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">{initials}</AvatarFallback>

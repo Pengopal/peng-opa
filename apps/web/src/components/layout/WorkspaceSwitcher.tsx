@@ -31,7 +31,7 @@ export function WorkspaceSwitcher({ variant = "sidebar", collapsed = false }: { 
           aria-label={`Workspace: ${name}`}
           className={cn(
             "h-auto max-w-full min-w-0 justify-start gap-2.5 px-2 py-1.5",
-            variant === "sidebar" && "w-full hover:bg-black/5 dark:hover:bg-white/5",
+            variant === "sidebar" && "w-full hover:bg-foreground/5",
             collapsed && "w-auto justify-center px-1.5",
           )}
         >

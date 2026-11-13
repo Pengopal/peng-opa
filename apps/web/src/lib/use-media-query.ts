@@ -16,5 +16,3 @@ export function useMediaQuery(query: string, fallback = true): boolean {
 
 /** Tables and side panels from md (768px) up; cards and bottom sheets below. */
 export const useIsDesktop = () => useMediaQuery("(min-width: 768px)");
-/** The full sidebar shell from lg (1024px) up. */
-export const useIsWide = () => useMediaQuery("(min-width: 1024px)");
