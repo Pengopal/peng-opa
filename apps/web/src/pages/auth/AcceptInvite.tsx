@@ -27,7 +27,7 @@ export function AcceptInvite() {
           /* not remembered */
         }
         await qc.invalidateQueries({ queryKey: ["workspaces"] });
-        void navigate({ to: "/" });
+        void navigate({ to: "/home" });
       })
       .catch(setError);
   }, [session, token, navigate, qc]);
@@ -55,7 +55,7 @@ export function AcceptInvite() {
         <>
           <ErrorText error={error} />
           <Button asChild variant="outline">
-            <Link to="/">Go to my workspaces</Link>
+            <Link to="/home">Go to my workspaces</Link>
           </Button>
         </>
       ) : (

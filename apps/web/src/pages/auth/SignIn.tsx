@@ -16,7 +16,7 @@ export function SignIn() {
   const { data: config } = useConfig();
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
-  const next = redirect && redirect.startsWith("/") ? redirect : "/";
+  const next = redirect && redirect.startsWith("/") && redirect !== "/" ? redirect : "/home";
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -74,7 +74,7 @@ export function SignIn() {
             } catch {
               /* not remembered */
             }
-            window.location.assign("/");
+            window.location.assign("/home");
           }}
         >
           Try the live demo

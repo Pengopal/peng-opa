@@ -27,7 +27,7 @@ test("first run: template → test → publish → API key → real decision →
 
   // Decisions are written within about a second; the checklist then disappears.
   await expect(async () => {
-    await page.goto("/");
+    await page.goto("/home");
     await expect(page.getByText("Decisions today")).toBeVisible();
     await expect(page.getByText("Get set up")).toHaveCount(0);
   }).toPass({ timeout: 15_000 });

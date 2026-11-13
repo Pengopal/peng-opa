@@ -20,7 +20,7 @@ export function WelcomeCards() {
     onSuccess: async (ws) => {
       await qc.invalidateQueries({ queryKey: ["workspaces"] });
       switchTo(ws.id);
-      void navigate({ to: "/" });
+      void navigate({ to: "/home" });
     },
   });
 

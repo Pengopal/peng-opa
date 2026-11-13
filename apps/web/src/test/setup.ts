@@ -10,3 +10,15 @@ globalThis.ResizeObserver ??= ResizeObserverStub as unknown as typeof ResizeObse
 Element.prototype.scrollIntoView ??= function scrollIntoView() {};
 Element.prototype.hasPointerCapture ??= () => false;
 Element.prototype.releasePointerCapture ??= () => undefined;
+
+// Tests render at desktop size: width queries match, colour-scheme queries don't.
+window.matchMedia ??= ((query: string) => ({
+  matches: /min-width/.test(query),
+  media: query,
+  onchange: null,
+  addEventListener() {},
+  removeEventListener() {},
+  addListener() {},
+  removeListener() {},
+  dispatchEvent: () => false,
+})) as unknown as typeof window.matchMedia;
