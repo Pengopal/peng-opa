@@ -72,7 +72,7 @@ export function Connect() {
             {(Object.keys(code) as SampleLanguage[]).map((l) => (
               <TabsContent key={l} value={l} className="mt-3 w-full min-w-0">
                 <div className="relative">
-                  <pre className="overflow-x-auto rounded-lg bg-sidebar p-4 pr-24 text-xs leading-relaxed text-sidebar-foreground">{code[l]}</pre>
+                  <pre className="overflow-x-auto rounded-lg bg-code p-4 pr-24 text-xs leading-relaxed text-code-foreground">{code[l]}</pre>
                   <div className="absolute top-2 right-2">
                     <CopyButton text={code[l]} />
                   </div>
