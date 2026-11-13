@@ -14,7 +14,11 @@ const newRuleId = () => `r_${Math.random().toString(36).slice(2, 8)}`;
 /** Ordered rules (first match wins), then the fixed "Otherwise" card, then the fields/results summary. */
 export function RuleList({ ruleSet, issues, onChange, disabled }: { ruleSet: RuleSet; issues: Issue[]; onChange(rs: RuleSet): void; disabled?: boolean }) {
   const [drawer, setDrawer] = useState(false);
-  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
+  // A small delay + tolerance before a drag starts, so scrolling the rule list on a touchscreen doesn't get mistaken for a reorder.
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { delay: 200, tolerance: 6 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
   const addField = (f: Field) => onChange({ ...ruleSet, fields: [...ruleSet.fields, f] });
   const setRule = (i: number, r: Rule) => onChange({ ...ruleSet, rules: ruleSet.rules.map((x, j) => (j === i ? r : x)) });
 

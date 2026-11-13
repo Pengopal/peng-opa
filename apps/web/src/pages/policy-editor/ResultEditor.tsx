@@ -1,3 +1,4 @@
+import { CircleCheck, CircleX } from "lucide-react";
 import type { Result, RuleSet } from "@peng/shared";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,7 +24,7 @@ export function ResultEditor({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-end gap-3">
-        <div role="radiogroup" aria-label="Decision" className="inline-flex rounded-lg border p-0.5">
+        <div role="radiogroup" aria-label="Decision" className="inline-flex rounded-lg border bg-muted/40 p-0.5">
           {[true, false].map((allowed) => (
             <button
               key={String(allowed)}
@@ -33,11 +34,12 @@ export function ResultEditor({
               disabled={disabled}
               onClick={() => onChange({ ...result, allowed })}
               className={cn(
-                "rounded-md px-3 py-1.5 text-sm font-medium",
+                "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                 result.allowed === allowed ? (allowed ? "bg-success-muted text-success" : "bg-danger-muted text-danger") : "text-muted-foreground hover:bg-muted",
               )}
             >
-              {allowed ? "✅ Allow" : "⛔ Deny"}
+              {allowed ? <CircleCheck className="size-4" aria-hidden /> : <CircleX className="size-4" aria-hidden />}
+              {allowed ? "Allow" : "Deny"}
             </button>
           ))}
         </div>

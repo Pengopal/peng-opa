@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { FIELD_PATH_PATTERN, OUTCOME_KEY_PATTERN, type FieldType, type Outcome, type RuleSet } from "@peng/shared";
+import { ResponsiveSheet } from "@/components/ResponsiveSheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { FIELD_TYPE_LABELS, labelFromPath } from "./FieldPicker";
 
 /** Manage what the policy reads (fields) and what it returns besides allow/deny (results). */
@@ -22,13 +22,8 @@ export function FieldsDrawer({ open, onOpenChange, ruleSet, onChange, disabled }
     onChange({ ...ruleSet, outcomes: ruleSet.outcomes.map((o, j) => (j === i ? { ...o, ...patch } : o)) });
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full overflow-y-auto sm:max-w-lg">
-        <SheetHeader>
-          <SheetTitle>Fields and results</SheetTitle>
-          <SheetDescription>Fields are what your systems send. Results are extra values the policy returns.</SheetDescription>
-        </SheetHeader>
-        <div className="flex flex-col gap-6 px-4 pb-6">
+    <ResponsiveSheet open={open} onOpenChange={onOpenChange} title="Fields and results" description="Fields are what your systems send. Results are extra values the policy returns.">
+      <div className="flex flex-col gap-6">
           <section aria-labelledby="fields-h" className="flex flex-col gap-3">
             <h3 id="fields-h" className="font-medium">Fields</h3>
             {ruleSet.fields.map((f, i) => (
@@ -134,7 +129,6 @@ export function FieldsDrawer({ open, onOpenChange, ruleSet, onChange, disabled }
             )}
           </section>
         </div>
-      </SheetContent>
-    </Sheet>
+    </ResponsiveSheet>
   );
 }
