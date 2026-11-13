@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { ErrorText } from "@/components/ErrorText";
 import { signIn } from "@/lib/auth";
 import { useConfig } from "@/lib/config";
-import { api } from "@/lib/api";
+import { openPublicDemo } from "@/lib/demo";
 import { AuthCard } from "./AuthCard";
 
 export function SignIn() {
@@ -67,15 +67,7 @@ export function SignIn() {
       {config?.demoPublic && (
         <Button
           variant="secondary"
-          onClick={async () => {
-            const res = await api<{ workspaceId: string }>("/api/demo/public-login", { method: "POST", body: {} });
-            try {
-              localStorage.setItem("peng-opa.workspace", res.workspaceId);
-            } catch {
-              /* not remembered */
-            }
-            window.location.assign("/home");
-          }}
+          onClick={() => void openPublicDemo()}
         >
           Try the live demo
         </Button>
