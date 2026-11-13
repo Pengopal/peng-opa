@@ -53,7 +53,7 @@ test("edit and test: a draft change shows in Try it while live keeps the publish
 test("demo: explore the demo workspace, then reset it", async ({ page }) => {
   await signUpWithWorkspace(page);
   await page.getByRole("button", { name: "Explore the demo workspace" }).click();
-  await expect(page).toHaveURL(/\/$/, { timeout: 30_000 });
+  await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
   await expect(page.getByText("Acme Retail (Demo)").first()).toBeVisible();
   const today = page.getByText("Decisions today").locator("xpath=following-sibling::p[1]");
   await expect(today).not.toHaveText("0");

@@ -49,14 +49,16 @@ export function MembersCard({ isOwner }: { isOwner: boolean }) {
 
   const columns: DataColumn<MemberRow>[] = [
     {
-      header: "Name",
+      header: "Member",
       cell: (m) => (
         <span>
-          {m.name} {m.userId === session?.user.id && <span className="text-muted-foreground">(you)</span>}
+          <span className="block">
+            {m.name} {m.userId === session?.user.id && <span className="text-muted-foreground">(you)</span>}
+          </span>
+          <span className="block text-xs text-muted-foreground">{m.email}</span>
         </span>
       ),
     },
-    { header: "Email", cell: (m) => <span className="text-muted-foreground">{m.email}</span> },
     {
       header: "Role",
       className: "text-right",

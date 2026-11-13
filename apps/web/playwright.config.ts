@@ -14,7 +14,10 @@ export default defineConfig({
   workers: 1,
   reporter: [["list"]],
   use: { baseURL: `http://localhost:${PORT}`, trace: "retain-on-failure" },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"], viewport: { width: 1400, height: 900 } } }],
+  projects: [
+    { name: "chromium", testIgnore: /mobile\.spec\.ts/, use: { ...devices["Desktop Chrome"], viewport: { width: 1400, height: 900 } } },
+    { name: "mobile", testMatch: /mobile\.spec\.ts/, use: { ...devices["Desktop Chrome"], viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true } },
+  ],
   webServer: {
     command: "pnpm --filter server db:deploy && node ../server/dist/main.js",
     url: `http://localhost:${PORT}/health`,
