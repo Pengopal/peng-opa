@@ -17,7 +17,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex h-full flex-col gap-4 bg-sidebar p-3 text-sidebar-foreground">
       <Link to="/" onClick={onNavigate} className="px-3 pt-2 pb-1" aria-label="peng-opa home">
-        <Logo onDark />
+        <Logo />
       </Link>
       <WorkspaceSwitcher />
       <nav aria-label="Main" className="flex flex-1 flex-col gap-1">
