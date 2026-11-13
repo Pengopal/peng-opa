@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { FileCheck2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DataList, type DataColumn } from "@/components/DataList";
 import { EmptyState } from "@/components/EmptyState";
 import { ErrorText } from "@/components/ErrorText";
 import { PageHeader } from "@/components/PageHeader";
@@ -34,6 +34,33 @@ export function PoliciesList() {
     </Button>
   );
 
+  const open1 = (p: PolicySummary) => void navigate({ to: "/policies/$policyId", params: { policyId: p.id } });
+
+  const columns: DataColumn<PolicySummary>[] = [
+    {
+      header: "Policy",
+      cell: (p) => (
+        <span>
+          <Link to="/policies/$policyId" params={{ policyId: p.id }} className="font-medium hover:underline" onClick={(e) => e.stopPropagation()}>
+            {p.name}
+          </Link>
+          <span className="block font-mono text-xs text-muted-foreground">{p.key}</span>
+        </span>
+      ),
+    },
+    {
+      header: "Status",
+      cell: (p) => (
+        <span className="flex flex-wrap items-center gap-2">
+          <StatusChip status={p.status} />
+          {p.liveVersion && p.hasDraftChanges && <span className="text-xs text-muted-foreground">Draft changes</span>}
+        </span>
+      ),
+    },
+    { header: "Version", hideBelow: "lg", cell: (p) => <span className="text-sm text-muted-foreground">{versionLine(p)}</span> },
+    { header: "Decisions (7 days)", className: "text-right", cell: (p) => <span className="tabular-nums">{formatNumber(p.decisions7d)}</span> },
+  ];
+
   return (
     <>
       <PageHeader title="Policies" description="The rules your systems ask about. Test a draft, then publish it." actions={newButton} />
@@ -59,38 +86,18 @@ export function PoliciesList() {
           }
         />
       ) : (
-        <div className="rounded-xl border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Policy</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="hidden md:table-cell">Version</TableHead>
-                <TableHead className="text-right">Decisions (7 days)</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.map((p) => (
-                <TableRow key={p.id} className="cursor-pointer" onClick={() => void navigate({ to: "/policies/$policyId", params: { policyId: p.id } })}>
-                  <TableCell>
-                    <Link to="/policies/$policyId" params={{ policyId: p.id }} className="font-medium hover:underline" onClick={(e) => e.stopPropagation()}>
-                      {p.name}
-                    </Link>
-                    <span className="block font-mono text-xs text-muted-foreground">{p.key}</span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="flex flex-wrap items-center gap-2">
-                      <StatusChip status={p.status} />
-                      {p.liveVersion && p.hasDraftChanges && <span className="text-xs text-muted-foreground">Draft changes</span>}
-                    </span>
-                  </TableCell>
-                  <TableCell className="hidden text-sm text-muted-foreground md:table-cell">{versionLine(p)}</TableCell>
-                  <TableCell className="text-right tabular-nums">{formatNumber(p.decisions7d)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <DataList
+          label="Policies"
+          rows={data}
+          rowKey={(p) => p.id}
+          columns={columns}
+          onOpen={open1}
+          card={{
+            title: (p) => p.name,
+            meta: (p) => versionLine(p),
+            trailing: (p) => <StatusChip status={p.status} />,
+          }}
+        />
       )}
       <NewPolicyDialog
         open={open}

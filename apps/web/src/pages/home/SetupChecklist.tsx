@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { CheckCircle2, Circle } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Summary } from "./insights";
 
-/** Three steps to a working integration; hidden once all are done. */
+/** Three steps to a working integration, with a progress bar; hidden once all are done. */
 export function SetupChecklist({ summary }: { summary: Summary }) {
   const steps = [
     { label: "Test a policy", hint: "Run a sample in the Try-it panel.", done: summary.hasTested, to: "/policies" as const },
@@ -19,9 +19,14 @@ export function SetupChecklist({ summary }: { summary: Summary }) {
         <CardTitle>
           <h2>Get set up</h2>
         </CardTitle>
-        <CardDescription>
-          {doneCount} of {steps.length} done
-        </CardDescription>
+        <div className="mt-1 flex items-center gap-2.5">
+          <div role="progressbar" aria-valuenow={doneCount} aria-valuemin={0} aria-valuemax={steps.length} className="h-1.5 w-28 overflow-hidden rounded-full bg-muted">
+            <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${(doneCount / steps.length) * 100}%` }} />
+          </div>
+          <span className="text-sm text-muted-foreground">
+            {doneCount} of {steps.length} done
+          </span>
+        </div>
       </CardHeader>
       <CardContent>
         <ol className="grid gap-3 sm:grid-cols-3">

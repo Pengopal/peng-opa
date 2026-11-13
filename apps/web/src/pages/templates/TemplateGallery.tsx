@@ -54,20 +54,34 @@ export function TemplateGallery() {
   const { current } = useWorkspace();
   const { data, isLoading, error } = useQuery({ queryKey: ["templates"], queryFn: () => api<TemplateSummary[]>("/api/templates") });
   const canUse = can(current?.role, "EDITOR");
+  const present = CATEGORIES.filter((category) => data?.some((t) => t.category === category));
 
   return (
     <>
       <PageHeader title="Templates" description="Ready-made policies. Use one, then change any rule to fit your business." />
       <ErrorText error={error} />
       {isLoading && <Skeleton className="h-64 w-full rounded-xl" />}
+      {present.length > 1 && (
+        <nav aria-label="Jump to category" className="mb-6 -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0 sm:flex-wrap [scrollbar-width:none]">
+          {present.map((category) => (
+            <a
+              key={category}
+              href={`#${category}`}
+              className="shrink-0 rounded-full border bg-card px-3 py-1.5 text-sm font-medium whitespace-nowrap text-muted-foreground hover:text-foreground"
+            >
+              {category}
+            </a>
+          ))}
+        </nav>
+      )}
       <div className="flex flex-col gap-8">
         {CATEGORIES.map((category) => {
           const items = data?.filter((t) => t.category === category) ?? [];
           if (!items.length) return null;
           return (
-            <section key={category} aria-label={category}>
+            <section key={category} id={category} aria-label={category} className="scroll-mt-20">
               <h2 className="mb-3 text-lg font-semibold">{category}</h2>
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {items.map((t) => (
                   <TemplateCard key={t.id} t={t} canUse={canUse} />
                 ))}
