@@ -22,9 +22,9 @@ function renderList(onOpen = vi.fn()) {
   return onOpen;
 }
 
+const desktopMatchMedia = window.matchMedia;
 afterEach(() => {
-  // @ts-expect-error test cleanup of the stub
-  delete window.matchMedia;
+  window.matchMedia = desktopMatchMedia;
 });
 
 test("shows a table on desktop", () => {
