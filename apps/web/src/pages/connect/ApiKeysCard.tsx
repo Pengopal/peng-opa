@@ -85,7 +85,7 @@ export function ApiKeysCard() {
         <CardTitle>
           <h2>API keys</h2>
         </CardTitle>
-        <CardDescription>Each system that calls peng-opa gets its own key, so you can revoke one without touching the others.</CardDescription>
+        <CardDescription>Each system that calls PengOPA gets its own key, so you can revoke one without touching the others.</CardDescription>
         <CardAction>
           <Button onClick={() => setCreating(true)}>
             <Plus aria-hidden /> New key
@@ -119,7 +119,7 @@ export function ApiKeysCard() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{created ? "Copy your key now" : "New API key"}</DialogTitle>
-            <DialogDescription>{created ? "You won't see this key again. Store it as a secret in the system that will call peng-opa." : "Name it after the system that will use it."}</DialogDescription>
+            <DialogDescription>{created ? "You won't see this key again. Store it as a secret in the system that will call PengOPA." : "Name it after the system that will use it."}</DialogDescription>
           </DialogHeader>
           {created ? (
             <div className="flex flex-col gap-3">

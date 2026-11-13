@@ -81,7 +81,7 @@ export function WelcomeCards() {
 export function Welcome() {
   return (
     <>
-      <PageHeader title="Welcome to peng-opa" description="Rules for your business, decided in milliseconds. How would you like to start?" />
+      <PageHeader title="Welcome to PengOPA" description="Rules for your business, decided in milliseconds. How would you like to start?" />
       <WelcomeCards />
     </>
   );

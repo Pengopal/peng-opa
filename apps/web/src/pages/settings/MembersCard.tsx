@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CopyButton } from "@/components/CopyButton";
+import { DataList, type DataColumn } from "@/components/DataList";
 import { ErrorText } from "@/components/ErrorText";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/auth";
@@ -46,6 +47,39 @@ export function MembersCard({ isOwner }: { isOwner: boolean }) {
   });
   const revokeInvite = useMutation({ mutationFn: (id: string) => api(`/api/invites/${id}`, { method: "DELETE" }), onSuccess: refresh });
 
+  const columns: DataColumn<MemberRow>[] = [
+    {
+      header: "Name",
+      cell: (m) => (
+        <span>
+          {m.name} {m.userId === session?.user.id && <span className="text-muted-foreground">(you)</span>}
+        </span>
+      ),
+    },
+    { header: "Email", cell: (m) => <span className="text-muted-foreground">{m.email}</span> },
+    {
+      header: "Role",
+      className: "text-right",
+      cell: (m) =>
+        isOwner ? (
+          <Select value={m.role} onValueChange={(role) => changeRole.mutate({ id: m.id, role: role as Role })}>
+            <SelectTrigger aria-label={`Role of ${m.name}`} size="sm" className="w-28">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {(Object.keys(ROLE_LABELS) as Role[]).map((r) => (
+                <SelectItem key={r} value={r}>
+                  {ROLE_LABELS[r].label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <span className="text-sm text-muted-foreground">{ROLE_LABELS[m.role].label}</span>
+        ),
+    },
+  ];
+
   return (
     <Card>
       <CardHeader>
@@ -61,39 +95,22 @@ export function MembersCard({ isOwner }: { isOwner: boolean }) {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <ErrorText error={members.error} />
-        <ul className="divide-y">
-          {members.data?.map((m) => (
-            <li key={m.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-              <span className="min-w-0">
-                <span className="block truncate text-sm font-medium">
-                  {m.name} {m.userId === session?.user.id && <span className="text-muted-foreground">(you)</span>}
-                </span>
-                <span className="block truncate text-xs text-muted-foreground">{m.email}</span>
-              </span>
-              {isOwner ? (
-                <span className="flex items-center gap-2">
-                  <Select value={m.role} onValueChange={(role) => changeRole.mutate({ id: m.id, role: role as Role })}>
-                    <SelectTrigger aria-label={`Role of ${m.name}`} size="sm" className="w-28">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(Object.keys(ROLE_LABELS) as Role[]).map((r) => (
-                        <SelectItem key={r} value={r}>
-                          {ROLE_LABELS[r].label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button variant="ghost" size="sm" onClick={() => remove.mutate(m.id)}>
-                    Remove
-                  </Button>
-                </span>
-              ) : (
-                <span className="text-sm text-muted-foreground">{ROLE_LABELS[m.role].label}</span>
-              )}
-            </li>
-          ))}
-        </ul>
+        <DataList
+          label="Members"
+          rows={members.data ?? []}
+          rowKey={(m) => m.id}
+          columns={columns}
+          rowActions={isOwner ? (m) => (
+            <Button variant="ghost" size="sm" onClick={() => remove.mutate(m.id)}>
+              Remove
+            </Button>
+          ) : undefined}
+          card={{
+            title: (m) => (m.userId === session?.user.id ? `${m.name} (you)` : m.name),
+            meta: (m) => m.email,
+            trailing: (m) => <span className="text-xs text-muted-foreground">{ROLE_LABELS[m.role].label}</span>,
+          }}
+        />
         {isOwner && !!invites.data?.length && (
           <section aria-labelledby="pending-h">
             <h3 id="pending-h" className="mb-2 text-sm font-medium">
