@@ -85,21 +85,14 @@ export function ApiKeysCard() {
       title="API keys"
       description="Each system that calls PengOPA gets its own key, so you can revoke one without touching the others."
       action={
-        keys.data?.length !== 0 && (
-          <Button variant="outline" size="sm" onClick={() => setCreating(true)}>
-            <Plus aria-hidden /> New key
-          </Button>
-        )
+        <Button variant="outline" size="sm" onClick={() => setCreating(true)}>
+          <Plus aria-hidden /> New key
+        </Button>
       }
     >
         <ErrorText error={keys.error ?? revoke.error} />
         {keys.data?.length === 0 ? (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-dashed px-4 py-3">
-            <p className="text-sm text-muted-foreground">No keys yet. Create one to start calling your policies.</p>
-            <Button size="sm" onClick={() => setCreating(true)}>
-              <Plus aria-hidden /> Create key
-            </Button>
-          </div>
+          <p className="rounded-lg border border-dashed px-4 py-3 text-sm text-muted-foreground">No keys yet. Create one with New key to start calling your policies.</p>
         ) : (
           <DataList
             label="API keys"

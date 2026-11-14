@@ -3,12 +3,11 @@ import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { ErrorText } from "@/components/ErrorText";
 import { signIn } from "@/lib/auth";
 import { useConfig } from "@/lib/config";
 import { openPublicDemo } from "@/lib/demo";
-import { AuthCard } from "./AuthCard";
+import { AuthCard, OrDivider } from "./AuthCard";
 
 export function SignIn() {
   const { redirect } = useSearch({ strict: false }) as { redirect?: string };
@@ -36,12 +35,20 @@ export function SignIn() {
       footer={
         <>
           New here?{" "}
-          <Link to="/sign-up" search={{ redirect }} className="font-medium text-primary underline-offset-4 hover:underline">
+          <Link to="/sign-up" search={{ redirect }} className="font-medium text-foreground underline-offset-4 hover:underline">
             Create an account
           </Link>
         </>
       }
     >
+      {config?.googleEnabled && (
+        <>
+          <Button variant="outline" className="h-9" onClick={() => void signIn.social({ provider: "google", callbackURL: next })}>
+            Continue with Google
+          </Button>
+          <OrDivider />
+        </>
+      )}
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
@@ -52,23 +59,12 @@ export function SignIn() {
           <Input id="password" name="password" type="password" autoComplete="current-password" required />
         </div>
         {error && <ErrorText error={new Error(error)} />}
-        <Button type="submit" disabled={busy}>
+        <Button type="submit" className="h-9" disabled={busy}>
           {busy ? "Signing in…" : "Sign in"}
         </Button>
       </form>
-      {config?.googleEnabled && (
-        <>
-          <Separator />
-          <Button variant="outline" onClick={() => void signIn.social({ provider: "google", callbackURL: next })}>
-            Continue with Google
-          </Button>
-        </>
-      )}
       {config?.demoPublic && (
-        <Button
-          variant="secondary"
-          onClick={() => void openPublicDemo()}
-        >
+        <Button variant="ghost" className="text-muted-foreground" onClick={() => void openPublicDemo()}>
           Try the live demo
         </Button>
       )}
