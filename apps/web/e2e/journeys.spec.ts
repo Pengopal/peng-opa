@@ -55,7 +55,7 @@ test("demo: explore the demo workspace, then reset it", async ({ page }) => {
   await page.getByRole("button", { name: "Explore the demo workspace" }).click();
   await expect(page).toHaveURL(/\/home$/, { timeout: 30_000 });
   await expect(page.getByText("Acme Retail (Demo)").first()).toBeVisible();
-  const today = page.getByText("Decisions today").locator("xpath=following-sibling::p[1]");
+  const today = page.getByText("Decisions today").locator("xpath=following-sibling::dd[1]");
   await expect(today).not.toHaveText("0");
 
   await page.getByRole("link", { name: "Settings" }).click();

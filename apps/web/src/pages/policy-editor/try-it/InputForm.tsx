@@ -19,13 +19,13 @@ export function InputForm({ fields, values, onChange }: { fields: Field[]; value
         const choice = f.type === "yesno" ? ["true", "false"] : f.type === "text" ? f.options : undefined;
         return (
           <div key={f.path} className="grid gap-1.5">
-            <Label htmlFor={id} className="flex items-baseline justify-between gap-2">
+            <Label htmlFor={id} className="flex items-baseline justify-between gap-2 text-[13px]">
               <span>{f.label}</span>
               <code className="truncate text-[11px] font-normal text-muted-foreground">{f.path}</code>
             </Label>
             {choice?.length ? (
               <Select value={v || NONE} onValueChange={(x) => set(f.path, x === NONE ? "" : x)}>
-                <SelectTrigger id={id} aria-label={f.label} className="w-full">
+                <SelectTrigger id={id} aria-label={f.label} size="sm" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -42,6 +42,7 @@ export function InputForm({ fields, values, onChange }: { fields: Field[]; value
                 id={id}
                 type={f.type === "number" ? "number" : f.type === "date" ? "date" : "text"}
                 placeholder={f.type === "list" ? "a, b, c" : "Not sent"}
+                className="h-8"
                 value={v}
                 onChange={(e) => set(f.path, e.target.value)}
               />

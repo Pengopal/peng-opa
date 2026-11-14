@@ -1,12 +1,18 @@
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { sampleRuleSet, validateRuleSet } from "@peng/shared";
 import { api } from "@/lib/api";
 import { renderPage, serveApi } from "@/test/render";
 import { buildInput, flattenInput } from "./input";
 import { TryItPanel } from "./TryItPanel";
+import { PolicyEditor } from "../PolicyEditor";
+import { fakeWorkspace } from "@/test/render";
 
 vi.mock("@/lib/api", async (orig) => ({ ...(await orig<typeof import("@/lib/api")>()), api: vi.fn() }));
+vi.mock("@/lib/workspace", async (orig) => ({
+  ...(await orig<typeof import("@/lib/workspace")>()),
+  useWorkspace: () => ({ current: fakeWorkspace, list: [fakeWorkspace], isLoading: false, switchTo: vi.fn(), refresh: vi.fn() }),
+}));
 
 describe("buildInput / flattenInput", () => {
   it("turns field paths into nested input, typed by field, skipping blanks — and back", () => {
@@ -30,6 +36,8 @@ describe("TryItPanel", () => {
       draft: { ruleSet: rs, issues: validateRuleSet(rs), flush } as never,
       canEdit: true,
       reload: vi.fn(),
+      tryResult: null,
+      setTryResult: vi.fn(),
     };
     return { ctx, flush };
   };
@@ -46,7 +54,7 @@ describe("TryItPanel", () => {
     await userEvent.click(screen.getByRole("button", { name: /Run/ }));
 
     expect(await screen.findByText("Allowed")).toBeInTheDocument();
-    expect(screen.getByText("Gold customers")).toBeInTheDocument();
+    expect(screen.getByText("Rule 1 · Gold customers")).toBeInTheDocument();
     expect(screen.getByText(/Not sent: order\.total/)).toBeInTheDocument();
     expect(flush).toHaveBeenCalled();
     expect(vi.mocked(api).mock.calls.find(([p]) => p === "/api/policies/p1/try")?.[1]?.body).toEqual({ input: { customer: { tier: "gold" } }, target: "draft" });
@@ -61,5 +69,23 @@ describe("TryItPanel", () => {
     await renderPage(<TryItPanel {...ctx} />);
     expect(await screen.findByText(/Fix 1 issue before testing the draft/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Run/ })).toBeDisabled();
+  });
+
+  it("marks the matched rule in the list after a draft run", async () => {
+    const policy = { id: "p1", key: "checkout-discount", name: "Checkout discount", status: "DRAFT", liveVersion: null, shortId: "x", draft: sampleRuleSet(), issues: [] };
+    serveApi({
+      "/api/policies/p1/samples": [],
+      "PUT /api/policies/p1/draft": {},
+      "POST /api/policies/p1/try": { allowed: true, reason: "Gold loyalty", outcomes: { discount: 15 }, rule: "Gold customers", policy: { key: "k", version: null }, decisionId: "d", target: "draft", latencyMs: 4, missingFields: [], typeErrors: [] },
+      "/api/policies/*": policy,
+    });
+    await renderPage(<PolicyEditor slots={{ side: (ctx) => <TryItPanel {...ctx} /> }} />, "/p1");
+    const panel = (await screen.findAllByRole("region", { name: "Try it" }))[0];
+    await userEvent.click(within(panel).getByRole("button", { name: /Run/ }));
+    await within(panel).findByText("Allowed");
+    const row = screen.getByRole("article", { name: /Gold customers/ });
+    expect(row).toHaveAttribute("data-matched", "true");
+    expect(within(row).getByText("Matched")).toBeVisible();
+    expect(screen.getByRole("article", { name: /Big orders/ })).not.toHaveAttribute("data-matched", "true");
   });
 });
