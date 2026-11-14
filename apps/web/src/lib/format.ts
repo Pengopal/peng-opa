@@ -23,6 +23,6 @@ export const formatNumber = (n: number) => new Intl.NumberFormat().format(n);
 
 export const formatPercent = (ratio: number) => `${Math.round(ratio * 100)}%`;
 
-/** Short weekday + day for chart axes, e.g. "Mon 9". Dates are UTC days (YYYY-MM-DD). */
-export const formatDay = (isoDay: string) =>
-  new Date(`${isoDay}T00:00:00Z`).toLocaleDateString(undefined, { weekday: "short", day: "numeric", timeZone: "UTC" });
+/** Month + day for chart axes, e.g. "Nov 3". Dates are UTC days (YYYY-MM-DD). */
+export const formatShortDate = (isoDay: string) =>
+  new Date(`${isoDay}T00:00:00Z`).toLocaleDateString(undefined, { month: "short", day: "numeric", timeZone: "UTC" });

@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { fakeWorkspace, renderPage, serveApi } from "@/test/render";
 import { Home } from "./Home";
 import { Welcome } from "../onboarding/Welcome";
+import { dayDelta, type DayPoint } from "./insights";
 
 vi.mock("@/lib/api", async (orig) => ({ ...(await orig<typeof import("@/lib/api")>()), api: vi.fn() }));
 const switchTo = vi.fn();
@@ -44,5 +45,16 @@ describe("Welcome", () => {
     await renderPage(<Welcome />);
     await userEvent.click(screen.getByRole("button", { name: /Explore the demo/ }));
     await waitFor(() => expect(switchTo).toHaveBeenCalledWith("demo-1"));
+  });
+});
+
+describe("dayDelta", () => {
+  const d = (allowed: number, denied: number) => ({ date: "x", allowed, denied });
+  const total = (p: DayPoint) => p.allowed + p.denied;
+  it("compares today with yesterday", () => {
+    expect(dayDelta([d(50, 50), d(60, 90)], total)).toEqual({ today: 150, yesterday: 100, pct: 50 });
+  });
+  it("has no percentage when yesterday was zero", () => {
+    expect(dayDelta([d(0, 0), d(3, 1)], total).pct).toBeNull();
   });
 });
