@@ -58,3 +58,15 @@ describe("dayDelta", () => {
     expect(dayDelta([d(0, 0), d(3, 1)], total).pct).toBeNull();
   });
 });
+
+test("Decisions today shows yesterday's total, not a % change against a partial day", async () => {
+  const { render } = await import("@testing-library/react");
+  const { StatTiles } = await import("./StatTiles");
+  const days: DayPoint[] = [
+    { date: "2026-11-13", allowed: 200, denied: 40 },
+    { date: "2026-11-14", allowed: 20, denied: 4 },
+  ];
+  render(<StatTiles summary={{ decisionsToday: 24, allowRateToday: 0.83, livePolicies: 4, p95LatencyToday: 9 } as never} days={days} />);
+  expect(screen.getByText("240 yesterday")).toBeInTheDocument();
+  expect(screen.queryByText(/% vs yesterday/)).not.toBeInTheDocument();
+});

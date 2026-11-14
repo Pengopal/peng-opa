@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 /** Shared look of an inline sentence token: the word itself, dotted underline, quiet hover. */
 export const tokenClass =
-  "inline-flex h-7 max-w-full items-center rounded-md px-1.5 text-sm font-medium underline decoration-dotted decoration-muted-foreground/60 underline-offset-4 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:no-underline aria-expanded:bg-muted";
+  "relative inline-flex h-7 max-w-full items-center rounded-md pointer-coarse:after:absolute pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-2 pointer-coarse:after:content-[''] px-1.5 text-sm font-medium underline decoration-dotted decoration-muted-foreground/60 underline-offset-4 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:no-underline aria-expanded:bg-muted";
 
 /** A word in a rule sentence that opens a short list of choices. */
 export function TokenSelect<T extends string>({

@@ -22,12 +22,13 @@ const allowRate = (d: DayPoint) => (total(d) ? d.allowed / total(d) : 0);
 export function StatTiles({ summary, days }: { summary?: Summary; days?: DayPoint[] }) {
   if (!summary) return <Skeleton className="h-20 w-full" />;
 
-  const volume = days && dayDelta(days, total);
+  // Today is still running, so a % change against all of yesterday would read as a drop every morning: show yesterday's total instead.
+  const yesterday = days && days.length > 1 ? total(days[days.length - 2]) : null;
   const rate = days && days.length > 1 && total(days[days.length - 2]) > 0 && summary.allowRateToday !== null ? dayDelta(days, allowRate) : null;
 
   return (
     <dl className="grid grid-cols-2 gap-px border-y bg-border lg:grid-cols-4">
-      <Metric label="Decisions today" value={formatNumber(summary.decisionsToday)} note={volume?.pct != null ? signed(volume.pct, "%") : undefined} />
+      <Metric label="Decisions today" value={formatNumber(summary.decisionsToday)} note={yesterday !== null ? `${formatNumber(yesterday)} yesterday` : undefined} />
       <Metric
         label="Allow rate today"
         value={summary.allowRateToday === null ? "—" : formatPercent(summary.allowRateToday)}
