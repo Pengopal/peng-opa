@@ -22,7 +22,7 @@ describe("Mailer with Resend", () => {
     expect(JSON.parse(init.body)).toMatchObject({
       from: "peng-opa <no-reply@pengopal.com>",
       to: ["sam@acme.test"],
-      subject: "You're invited to Acme on peng-opa",
+      subject: "You're invited to Acme on PengOPA",
     });
     expect(JSON.parse(init.body).text).toContain("https://opa.pengopal.com/invite/abc");
   });

@@ -1,40 +1,90 @@
 import { Link } from "@tanstack/react-router";
-import { Activity, FileCheck2, Home, PlugZap, Settings } from "lucide-react";
-import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
-import { UserMenu } from "./UserMenu";
+import { PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { HOME_PATH, NAV, type NavItem } from "./nav";
+import { UserMenu } from "./UserMenu";
+import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 
-export const NAV = [
-  { to: "/", label: "Home", icon: Home, exact: true },
-  { to: "/policies", label: "Policies", icon: FileCheck2, exact: false },
-  { to: "/activity", label: "Activity", icon: Activity, exact: false },
-  { to: "/connect", label: "Connect", icon: PlugZap, exact: false },
-  { to: "/settings", label: "Settings", icon: Settings, exact: false },
-] as const;
-
-/** The five sections, workspace switcher on top, account at the bottom. */
-export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+function NavLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
+  const { to, label, icon: Icon, exact } = item;
+  const link = (
+    <Link
+      to={to}
+      activeOptions={{ exact }}
+      aria-label={collapsed ? label : undefined}
+      className={cn(
+        "flex h-9 items-center gap-3 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground",
+        "data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground",
+        collapsed && "justify-center px-0",
+      )}
+    >
+      <Icon className="size-4 shrink-0" aria-hidden />
+      {!collapsed && label}
+    </Link>
+  );
+  if (!collapsed) return link;
   return (
-    <div className="flex h-full flex-col gap-4 bg-sidebar p-3 text-sidebar-foreground">
-      <Link to="/" onClick={onNavigate} className="px-3 pt-2 pb-1" aria-label="peng-opa home">
-        <Logo onDark />
-      </Link>
-      <WorkspaceSwitcher />
-      <nav aria-label="Main" className="flex flex-1 flex-col gap-1">
-        {NAV.map(({ to, label, icon: Icon, exact }) => (
-          <Link
-            key={to}
-            to={to}
-            onClick={onNavigate}
-            activeOptions={{ exact }}
-            className="relative flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground data-[status=active]:before:absolute data-[status=active]:before:inset-y-1.5 data-[status=active]:before:left-0 data-[status=active]:before:w-1 data-[status=active]:before:rounded-full data-[status=active]:before:bg-sidebar-primary"
-          >
-            <Icon className="size-4" aria-hidden />
-            {label}
-          </Link>
+    <Tooltip>
+      <TooltipTrigger asChild>{link}</TooltipTrigger>
+      <TooltipContent side="right">{label}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+/** Desktop sidebar: logo, search, workspace, sections, settings and account. Collapses to an icon rail. */
+export function Sidebar({ collapsed, onToggle, onSearch }: { collapsed: boolean; onToggle(): void; onSearch(): void }) {
+  const main = NAV.filter((n) => n.group === "main");
+  const dev = NAV.filter((n) => n.group === "developers");
+  const footer = NAV.filter((n) => n.group === "footer");
+  return (
+    <div className="flex h-full flex-col gap-3 border-r bg-sidebar p-3 text-sidebar-foreground">
+      <div className={cn("flex items-center gap-1", collapsed ? "flex-col" : "justify-between pl-1.5")}>
+        <Link to={HOME_PATH} aria-label="PengOPA home" className="rounded-md py-1">
+          <Logo variant={collapsed ? "mark" : "full"} />
+        </Link>
+        <Button variant="ghost" size="icon-sm" onClick={onToggle} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} className="text-muted-foreground">
+          {collapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
+        </Button>
+      </div>
+      <WorkspaceSwitcher collapsed={collapsed} />
+      <button
+        type="button"
+        onClick={onSearch}
+        aria-label="Search"
+        className={cn(
+          "flex h-9 items-center gap-2 rounded-md border bg-background px-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
+          collapsed && "justify-center px-0",
+        )}
+      >
+        <Search className="size-4 shrink-0" aria-hidden />
+        {!collapsed && (
+          <>
+            <span className="flex-1 text-left">Search</span>
+            <kbd className="rounded border bg-muted px-1.5 font-mono text-[10px]">Ctrl K</kbd>
+          </>
+        )}
+      </button>
+      <nav aria-label="Main" className="flex flex-1 flex-col gap-0.5 overflow-y-auto">
+        {main.map((n) => (
+          <NavLink key={n.to} item={n} collapsed={collapsed} />
+        ))}
+        {collapsed ? <div className="my-2 border-t" /> : <p className="mt-4 mb-1 px-2.5 text-xs font-medium text-muted-foreground">Developers</p>}
+        {dev.map((n) => (
+          <NavLink key={n.to} item={n} collapsed={collapsed} />
         ))}
       </nav>
-      <UserMenu />
+      <div className="flex flex-col gap-0.5">
+        {footer.map((n) => (
+          <NavLink key={n.to} item={n} collapsed={collapsed} />
+        ))}
+        <div className="mt-1 border-t pt-2">
+          <UserMenu compact={collapsed} />
+        </div>
+        {!collapsed && <p className="px-2.5 pt-1 text-[11px] text-muted-foreground">by Pengopal</p>}
+      </div>
     </div>
   );
 }

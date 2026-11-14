@@ -10,7 +10,7 @@ export function readTheme(): ThemeChoice {
   }
 }
 
-/** Light by default (Pengopal brand); "dark" and "system" are opt-in. Stored per browser. */
+/** Light by default; "dark" and "system" are opt-in. Stored per browser. */
 export function applyTheme(choice: ThemeChoice, remember = false) {
   const dark = choice === "dark" || (choice === "system" && window.matchMedia?.("(prefers-color-scheme: dark)").matches);
   document.documentElement.classList.toggle("dark", !!dark);

@@ -23,7 +23,7 @@ export function DangerZone() {
       setOpen(false);
       qc.removeQueries({ predicate: (q) => q.queryKey[0] !== "workspaces" });
       await qc.invalidateQueries({ queryKey: ["workspaces"] });
-      void navigate({ to: "/" });
+      void navigate({ to: "/home" });
     },
   });
   if (!current) return null;

@@ -13,7 +13,8 @@ describe("DecisionChip", () => {
     const denied = screen.getByText("Denied").closest("[data-slot=decision-chip]")!;
     expect(allowed.className).toMatch(/text-success/);
     expect(denied.className).toMatch(/text-danger/);
-    expect(allowed.textContent).toContain("✅");
-    expect(denied.textContent).toContain("⛔");
+    // A shape cue besides colour: check-circle vs x-circle icons.
+    expect(allowed.querySelector("svg.lucide-circle-check")).not.toBeNull();
+    expect(denied.querySelector("svg.lucide-circle-x")).not.toBeNull();
   });
 });

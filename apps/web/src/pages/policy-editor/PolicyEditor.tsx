@@ -1,7 +1,9 @@
 import { useState, type ReactNode } from "react";
 import { Link, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Check, CircleAlert, Loader2 } from "lucide-react";
+import { ArrowLeft, Check, CircleAlert, FlaskConical, Loader2 } from "lucide-react";
+import { ResponsiveSheet } from "@/components/ResponsiveSheet";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ErrorText } from "@/components/ErrorText";
@@ -54,6 +56,7 @@ function Editor({ policy, slots, reload }: { policy: PolicyDetail; slots: Editor
   const canEdit = can(current?.role, "EDITOR");
   const draft = useDraft(policy.id, policy.draft);
   const [tab, setTab] = useState("rules");
+  const [tryItOpen, setTryItOpen] = useState(false);
   // Save pending edits before re-reading, so the remount never sends a stale draft over newer server state.
   const ctx: EditorContext = {
     policy,
@@ -98,10 +101,19 @@ function Editor({ policy, slots, reload }: { policy: PolicyDetail; slots: Editor
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
         <TabsContent value="rules" className="mt-4 w-full min-w-0">
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="grid gap-6 pb-20 xl:grid-cols-[minmax(0,1fr)_360px] xl:pb-0">
             <RuleList ruleSet={draft.ruleSet} issues={draft.issues} disabled={!canEdit} onChange={draft.setRuleSet} />
-            <aside className="xl:sticky xl:top-6 xl:self-start">{slots.side?.(ctx)}</aside>
+            <aside className="hidden xl:sticky xl:top-6 xl:block xl:self-start">{slots.side?.(ctx)}</aside>
           </div>
+          <Button
+            className="fixed inset-x-4 bottom-20 z-30 xl:hidden"
+            onClick={() => setTryItOpen(true)}
+          >
+            <FlaskConical aria-hidden /> Test
+          </Button>
+          <ResponsiveSheet open={tryItOpen} onOpenChange={setTryItOpen} title="Try it">
+            {slots.side?.(ctx)}
+          </ResponsiveSheet>
         </TabsContent>
         <TabsContent value="versions" className="mt-4 w-full min-w-0">
           {slots.versions?.(ctx)}

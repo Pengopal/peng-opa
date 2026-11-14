@@ -42,6 +42,12 @@ export function Connect() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
+          <div className="flex items-center gap-2 rounded-lg border bg-muted/40 p-2 pl-3">
+            <code className="min-w-0 flex-1 truncate font-mono text-xs sm:text-sm">
+              POST {baseUrl}/v1/decide/{policy?.key ?? "<policy-key>"}
+            </code>
+            <CopyButton text={`${baseUrl}/v1/decide/${policy?.key ?? "<policy-key>"}`} />
+          </div>
           {live.length > 0 ? (
             <div className="grid max-w-xs gap-1.5">
               <Label htmlFor="connect-policy">Policy</Label>
@@ -62,7 +68,7 @@ export function Connect() {
             <p className="text-sm text-muted-foreground">Publish a policy to call it. The samples below use a placeholder key.</p>
           )}
           <Tabs defaultValue="curl" className="w-full">
-            <TabsList>
+            <TabsList variant="line">
               {(Object.keys(code) as SampleLanguage[]).map((l) => (
                 <TabsTrigger key={l} value={l}>
                   {LANGUAGE_LABELS[l]}
@@ -72,7 +78,7 @@ export function Connect() {
             {(Object.keys(code) as SampleLanguage[]).map((l) => (
               <TabsContent key={l} value={l} className="mt-3 w-full min-w-0">
                 <div className="relative">
-                  <pre className="overflow-x-auto rounded-lg bg-sidebar p-4 pr-24 text-xs leading-relaxed text-sidebar-foreground">{code[l]}</pre>
+                  <pre className="overflow-x-auto rounded-lg bg-code p-4 pr-24 font-mono text-xs leading-relaxed text-code-foreground">{code[l]}</pre>
                   <div className="absolute top-2 right-2">
                     <CopyButton text={code[l]} />
                   </div>

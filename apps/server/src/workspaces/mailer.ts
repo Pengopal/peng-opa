@@ -43,7 +43,7 @@ export class Mailer {
     try {
       await this.send({
         to,
-        subject: `You're invited to ${workspaceName} on peng-opa`,
+        subject: `You're invited to ${workspaceName} on PengOPA`,
         text: `You've been invited to join ${workspaceName}.\n\nAccept the invite: ${inviteUrl}\n\nThis link expires in 7 days.`,
       });
     } catch (e) {

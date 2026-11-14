@@ -20,7 +20,7 @@ export function WelcomeCards() {
     onSuccess: async (ws) => {
       await qc.invalidateQueries({ queryKey: ["workspaces"] });
       switchTo(ws.id);
-      void navigate({ to: "/" });
+      void navigate({ to: "/home" });
     },
   });
 
@@ -81,7 +81,7 @@ export function WelcomeCards() {
 export function Welcome() {
   return (
     <>
-      <PageHeader title="Welcome to peng-opa" description="Rules for your business, decided in milliseconds. How would you like to start?" />
+      <PageHeader title="Welcome to PengOPA" description="Rules for your business, decided in milliseconds. How would you like to start?" />
       <WelcomeCards />
     </>
   );

@@ -11,22 +11,42 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useWorkspace } from "@/lib/workspace";
+import { cn } from "@/lib/utils";
+import { HOME_PATH } from "./nav";
 
-export function WorkspaceSwitcher() {
+function initialsOf(name: string) {
+  return name.split(/\s+/).map((p) => p[0]).join("").slice(0, 2).toUpperCase() || "?";
+}
+
+/** Current workspace with a menu to switch. `bar` is the compact phone top-bar form; `collapsed` shows only the initials tile. */
+export function WorkspaceSwitcher({ variant = "sidebar", collapsed = false }: { variant?: "sidebar" | "bar"; collapsed?: boolean }) {
   const { current, list, switchTo } = useWorkspace();
   const navigate = useNavigate();
+  const name = current?.name ?? "—";
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-auto w-full justify-between border border-sidebar-border px-3 py-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-          <span className="flex min-w-0 flex-col items-start">
-            <span className="text-xs text-sidebar-foreground/60">Workspace</span>
-            <span className="flex max-w-full items-center gap-2 truncate font-semibold">
-              <span className="truncate">{current?.name ?? "—"}</span>
-              {current?.isDemo && <Badge className="bg-sidebar-primary text-sidebar-primary-foreground">Demo</Badge>}
-            </span>
+        <Button
+          variant="ghost"
+          aria-label={`Workspace: ${name}`}
+          className={cn(
+            "h-auto max-w-full min-w-0 justify-start gap-2.5 px-2 py-1.5",
+            variant === "sidebar" && "w-full hover:bg-foreground/5",
+            collapsed && "w-auto justify-center px-1.5",
+          )}
+        >
+          <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary text-[11px] font-semibold text-primary-foreground">
+            {initialsOf(name)}
           </span>
-          <ChevronsUpDown className="size-4 shrink-0 text-sidebar-foreground/60" aria-hidden />
+          {!collapsed && (
+            <>
+              <span className="flex min-w-0 flex-1 items-center gap-2 text-left">
+                <span className="truncate text-sm font-semibold">{name}</span>
+                {current?.isDemo && <Badge className="bg-warning-muted text-warning">Demo</Badge>}
+              </span>
+              <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+            </>
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">
@@ -36,7 +56,7 @@ export function WorkspaceSwitcher() {
             key={w.id}
             onSelect={() => {
               switchTo(w.id);
-              void navigate({ to: "/" });
+              void navigate({ to: HOME_PATH });
             }}
           >
             <span className="flex-1 truncate">{w.name}</span>

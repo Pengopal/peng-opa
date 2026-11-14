@@ -32,35 +32,37 @@ export function ConditionRow({
   }
 
   return (
-    <div className="flex flex-col gap-1">
-      <div className="flex flex-wrap items-center gap-2">
-        <FieldPicker
-          fields={ruleSet.fields}
-          value={condition.field}
-          disabled={disabled}
-          onSelect={(path) => chooseField(ruleSet.fields.find((f) => f.path === path)!)}
-          onCreate={(f) => {
-            onCreateField(f);
-            chooseField(f);
-          }}
-        />
-        {field && (
-          <Select disabled={disabled} value={condition.op} onValueChange={(op) => onChange({ ...condition, op: op as Operator, value: defaultValue(field.type, op as Operator, field) })}>
-            <SelectTrigger aria-label="Operator" className="w-full sm:w-44">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {ops.map((op) => (
-                <SelectItem key={op} value={op}>
-                  {OPERATOR_LABELS[op]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-        {field && <ValueInput field={field} condition={condition} disabled={disabled} onChange={(value) => onChange({ ...condition, value })} />}
+    <div className="flex flex-col gap-1 rounded-lg border bg-muted/30 p-2.5 sm:border-0 sm:bg-transparent sm:p-0">
+      <div className="flex items-start gap-2 sm:flex-wrap sm:items-center">
+        <div className="grid flex-1 gap-2 sm:flex sm:flex-1 sm:flex-wrap sm:items-center">
+          <FieldPicker
+            fields={ruleSet.fields}
+            value={condition.field}
+            disabled={disabled}
+            onSelect={(path) => chooseField(ruleSet.fields.find((f) => f.path === path)!)}
+            onCreate={(f) => {
+              onCreateField(f);
+              chooseField(f);
+            }}
+          />
+          {field && (
+            <Select disabled={disabled} value={condition.op} onValueChange={(op) => onChange({ ...condition, op: op as Operator, value: defaultValue(field.type, op as Operator, field) })}>
+              <SelectTrigger aria-label="Operator" className="w-full sm:w-44">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {ops.map((op) => (
+                  <SelectItem key={op} value={op}>
+                    {OPERATOR_LABELS[op]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          {field && <ValueInput field={field} condition={condition} disabled={disabled} onChange={(value) => onChange({ ...condition, value })} />}
+        </div>
         {!disabled && (
-          <Button variant="ghost" size="icon" aria-label="Remove condition" onClick={onRemove}>
+          <Button variant="ghost" size="icon" aria-label="Remove condition" className="shrink-0" onClick={onRemove}>
             <X />
           </Button>
         )}

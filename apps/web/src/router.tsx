@@ -1,4 +1,4 @@
-import { createRootRoute, createRoute, createRouter, Outlet, redirect } from "@tanstack/react-router";
+import { createRootRoute, createRoute, createRouter, Outlet, redirect, type RouterHistory } from "@tanstack/react-router";
 import { authClient } from "@/lib/auth";
 import { WorkspaceProvider } from "@/lib/workspace";
 import { AppShell } from "@/components/layout/AppShell";
@@ -8,6 +8,7 @@ import { SignUp } from "@/pages/auth/SignUp";
 import { AcceptInvite } from "@/pages/auth/AcceptInvite";
 import { CreateWorkspace } from "@/pages/onboarding/CreateWorkspace";
 import { Home } from "@/pages/home/Home";
+import { Landing } from "@/pages/landing/Landing";
 import { Welcome } from "@/pages/onboarding/Welcome";
 import { PoliciesList } from "@/pages/policies/PoliciesList";
 import { TemplateGallery } from "@/pages/templates/TemplateGallery";
@@ -31,6 +32,17 @@ const signInRoute = createRoute({ getParentRoute: () => rootRoute, path: "/sign-
 const signUpRoute = createRoute({ getParentRoute: () => rootRoute, path: "/sign-up", validateSearch: authSearch, component: SignUp });
 const inviteRoute = createRoute({ getParentRoute: () => rootRoute, path: "/invite/$token", component: AcceptInvite });
 
+/** Public landing page; signed-in people go straight to their dashboard. */
+const landingRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  beforeLoad: async () => {
+    const { data } = await authClient.getSession();
+    if (data) throw redirect({ to: "/home" });
+  },
+  component: Landing,
+});
+
 /** Everything below needs a session; the workspace list is loaded once here. */
 const authedRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -49,7 +61,7 @@ const authedRoute = createRoute({
 const onboardingRoute = createRoute({ getParentRoute: () => authedRoute, path: "/onboarding", component: CreateWorkspace });
 const shellRoute = createRoute({ getParentRoute: () => authedRoute, id: "shell", component: AppShell });
 
-export const homeRoute = createRoute({ getParentRoute: () => shellRoute, path: "/", component: Home });
+export const homeRoute = createRoute({ getParentRoute: () => shellRoute, path: "/home", component: Home });
 export const welcomeRoute = createRoute({ getParentRoute: () => shellRoute, path: "/welcome", component: Welcome });
 export const policiesRoute = createRoute({
   getParentRoute: () => shellRoute,
@@ -69,13 +81,17 @@ export const connectRoute = createRoute({ getParentRoute: () => shellRoute, path
 export const settingsRoute = createRoute({ getParentRoute: () => shellRoute, path: "/settings", component: Settings });
 
 const routeTree = rootRoute.addChildren([
+  landingRoute,
   signInRoute,
   signUpRoute,
   inviteRoute,
   authedRoute.addChildren([onboardingRoute, shellRoute.addChildren([homeRoute, welcomeRoute, policiesRoute, policyRoute, templatesRoute, activityRoute, connectRoute, settingsRoute])]),
 ]);
 
-export const router = createRouter({ routeTree, defaultPreload: "intent" });
+/** The app router; tests pass a memory history. */
+export const createAppRouter = (history?: RouterHistory) => createRouter({ routeTree, history, defaultPreload: "intent" });
+
+export const router = createAppRouter();
 
 declare module "@tanstack/react-router" {
   interface Register {

@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CopyButton } from "@/components/CopyButton";
+import { DataList, type DataColumn } from "@/components/DataList";
 import { ErrorText } from "@/components/ErrorText";
 import { api } from "@/lib/api";
 import { formatRelative } from "@/lib/format";
@@ -64,13 +65,27 @@ export function ApiKeysCard() {
     create.mutate();
   }
 
+  const columns: DataColumn<ApiKeyRow>[] = [
+    {
+      header: "Name",
+      cell: (k) => (
+        <span className="flex min-w-0 items-center gap-2">
+          <KeyRound className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          {k.name}
+        </span>
+      ),
+    },
+    { header: "Key", cell: (k) => <code className="text-xs text-muted-foreground">{k.prefix}…</code> },
+    { header: "Last used", cell: (k) => <span className="text-muted-foreground">{k.lastUsedAt ? formatRelative(k.lastUsedAt) : "never used"}</span> },
+  ];
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>
           <h2>API keys</h2>
         </CardTitle>
-        <CardDescription>Each system that calls peng-opa gets its own key, so you can revoke one without touching the others.</CardDescription>
+        <CardDescription>Each system that calls PengOPA gets its own key, so you can revoke one without touching the others.</CardDescription>
         <CardAction>
           <Button onClick={() => setCreating(true)}>
             <Plus aria-hidden /> New key
@@ -79,32 +94,32 @@ export function ApiKeysCard() {
       </CardHeader>
       <CardContent>
         <ErrorText error={keys.error ?? revoke.error} />
-        {keys.data?.length === 0 && <p className="text-sm text-muted-foreground">No keys yet. Create one to start calling your policies.</p>}
-        <ul className="divide-y">
-          {keys.data?.map((k) => (
-            <li key={k.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-              <span className="flex min-w-0 items-center gap-3">
-                <KeyRound className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-                <span className="min-w-0">
-                  <span className="block truncate text-sm font-medium">{k.name}</span>
-                  <span className="block text-xs text-muted-foreground">
-                    <code>{k.prefix}…</code> · {k.lastUsedAt ? `last used ${formatRelative(k.lastUsedAt)}` : "never used"}
-                  </span>
-                </span>
-              </span>
+        {keys.data?.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No keys yet. Create one to start calling your policies.</p>
+        ) : (
+          <DataList
+            label="API keys"
+            rows={keys.data ?? []}
+            rowKey={(k) => k.id}
+            columns={columns}
+            rowActions={(k) => (
               <Button variant="ghost" size="sm" onClick={() => setRevoking(k)}>
                 Revoke
               </Button>
-            </li>
-          ))}
-        </ul>
+            )}
+            card={{
+              title: (k) => k.name,
+              meta: (k) => `${k.prefix}… · ${k.lastUsedAt ? `last used ${formatRelative(k.lastUsedAt)}` : "never used"}`,
+            }}
+          />
+        )}
       </CardContent>
 
       <Dialog open={creating} onOpenChange={(o) => !o && closeCreate()}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{created ? "Copy your key now" : "New API key"}</DialogTitle>
-            <DialogDescription>{created ? "You won't see this key again. Store it as a secret in the system that will call peng-opa." : "Name it after the system that will use it."}</DialogDescription>
+            <DialogDescription>{created ? "You won't see this key again. Store it as a secret in the system that will call PengOPA." : "Name it after the system that will use it."}</DialogDescription>
           </DialogHeader>
           {created ? (
             <div className="flex flex-col gap-3">
