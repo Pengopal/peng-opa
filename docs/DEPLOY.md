@@ -16,7 +16,7 @@ Docker is only used by Railway's build. Local development still runs without it.
 
 ## 1. Create the project
 
-1. In Railway, choose **New Project → Deploy from GitHub repo** and pick `Pengopal/peng-opa`, branch `main`.
+1. In Railway, choose **New Project → Deploy from GitHub repo** and pick `Pengopal/peng-opa`, branch `main`. (After the first deploy, switch to deploying from GitHub Actions: see section 3.)
 2. Create the database: either a [Neon](https://neon.tech) project (what opa.pengopal.com uses), or **New → Database →
    PostgreSQL** in the same Railway project.
 
@@ -40,8 +40,35 @@ Do not set `PORT` (Railway sets it) or `OPA_URL` (the bundled OPA is used). Neve
 
 ## 3. Deploy
 
-Railway builds and deploys on every push to `main`. The first build takes a few minutes. Each start runs
+GitHub Actions deploys every merge to `main`, but only after the `test` and `web-e2e` jobs pass (the `deploy` job in
+[`.github/workflows/ci.yml`](../.github/workflows/ci.yml)). The first build takes a few minutes. Each start runs
 `prisma migrate deploy` before the server comes up, so database changes ship with the code.
+
+### Deploy from GitHub Actions (one-time setup)
+
+1. **Railway: create a project token.** Open the project → **Settings → Tokens → Create token**, pick the
+   **production** environment, and copy the token.
+2. **Railway: note the service name.** It is the name on the peng-opa service card (for example `peng-opa`).
+3. **GitHub: add an environment.** In `Pengopal/peng-opa` open **Settings → Environments → New environment**, name it
+   `production`. Optionally add yourself under **Required reviewers** to approve each deploy, and limit
+   **Deployment branches** to `main`.
+4. **GitHub: add the secret and variables** to that `production` environment:
+
+   | Kind | Name | Value |
+   |---|---|---|
+   | Secret | `RAILWAY_TOKEN` | the project token from step 1 |
+   | Variable | `RAILWAY_SERVICE` | the service name from step 2 |
+   | Variable | `APP_URL` | `https://opa.pengopal.com` (optional: the job then waits for `/health` to report db and OPA ok) |
+
+5. **Railway: stop the second deploy.** Open the service → **Settings → Source** and disconnect the GitHub repo (or
+   turn off automatic deploys for `main`). Otherwise Railway also deploys each push straight away, before the tests
+   have run, and every merge deploys twice.
+
+To deploy by hand (for example after a failed run), re-run the `deploy` job from the Actions tab, or run
+`railway up --service <name>` from a checkout with the Railway CLI logged in.
+
+If the deploy job fails with "Add the RAILWAY_TOKEN secret", step 4 is missing. If it fails during the build, the
+Railway build log is printed in the job output.
 
 Check the deployment is healthy: `https://<service>.up.railway.app/health` should return
 `{"app":"ok","db":"ok","opa":"ok"}`.
