@@ -1,25 +1,32 @@
 import { useQueries } from "@tanstack/react-query";
-import { describeResult, describeRule, diffRuleSets, type RuleSet } from "@peng/shared";
-import { Badge } from "@/components/ui/badge";
+import { describeResult, describeRule, diffRuleSets, type RuleChange, type RuleSet } from "@peng/shared";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/lib/api";
+import { cn } from "@/lib/utils";
+import { ChangeMark } from "./ChangeMark";
 import { summarizeChanges } from "./PublishDialog";
 
-function Column({ title, rs, marks }: { title: string; rs: RuleSet; marks: Map<string, string> }) {
+function Column({ title, rs, marks }: { title: string; rs: RuleSet; marks: Map<string, RuleChange["kind"]> }) {
   return (
     <section aria-label={title} className="flex min-w-0 flex-col gap-2">
       <h3 className="text-sm font-medium">{title}</h3>
-      <ol className="flex flex-col gap-2 text-sm">
-        {rs.rules.map((r, i) => (
-          <li key={r.id} className="rounded-md border p-2.5">
-            <p className="mb-1 flex items-center gap-2 font-medium">
-              {i + 1}. {r.label} {marks.get(r.id) && <Badge variant="secondary">{marks.get(r.id)}</Badge>}
-            </p>
-            <p className="text-muted-foreground">{describeRule(r, rs)}</p>
-          </li>
-        ))}
-        <li className="rounded-md bg-muted/50 p-2.5 text-muted-foreground">Otherwise → {describeResult(rs.otherwise, rs)}</li>
+      <ol className="divide-y border-y text-sm">
+        {rs.rules.map((r, i) => {
+          const kind = marks.get(r.id);
+          return (
+            <li key={r.id} className={cn("px-2 py-2.5", kind && "bg-muted/60")}>
+              <p className="mb-0.5 flex items-center justify-between gap-2 font-medium">
+                <span className="min-w-0 truncate">
+                  {i + 1}. {r.label}
+                </span>
+                {kind && <ChangeMark kind={kind} />}
+              </p>
+              <p className="text-[13px] text-muted-foreground">{describeRule(r, rs)}</p>
+            </li>
+          );
+        })}
+        <li className="px-2 py-2.5 text-[13px] text-muted-foreground">Otherwise → {describeResult(rs.otherwise, rs)}</li>
       </ol>
     </section>
   );
@@ -31,7 +38,7 @@ export function VersionCompare({ policyId, from, to, onClose }: { policyId: stri
     queries: [from, to].map((n) => ({ queryKey: ["version", policyId, n], queryFn: () => api<{ ruleSet: RuleSet }>(`/api/policies/${policyId}/versions/${n}`) })),
   });
   const changes = a.data && b.data ? diffRuleSets(a.data.ruleSet, b.data.ruleSet) : [];
-  const marks = new Map(changes.map((c) => [c.ruleId, c.kind]));
+  const marks = new Map<string, RuleChange["kind"]>(changes.map((c) => [c.ruleId, c.kind]));
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>

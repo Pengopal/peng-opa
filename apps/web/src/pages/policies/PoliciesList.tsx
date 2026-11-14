@@ -10,7 +10,7 @@ import { ErrorText } from "@/components/ErrorText";
 import { PageHeader } from "@/components/PageHeader";
 import { StatusChip } from "@/components/StatusChip";
 import { api } from "@/lib/api";
-import { formatNumber, formatRelative } from "@/lib/format";
+import { formatDateTime, formatNumber, formatRelative } from "@/lib/format";
 import type { PolicySummary } from "@/lib/types";
 import { can, useWorkspace } from "@/lib/workspace";
 import { NewPolicyDialog } from "./NewPolicyDialog";
@@ -40,11 +40,11 @@ export function PoliciesList() {
     {
       header: "Policy",
       cell: (p) => (
-        <span>
-          <Link to="/policies/$policyId" params={{ policyId: p.id }} className="font-medium hover:underline" onClick={(e) => e.stopPropagation()}>
+        <span className="flex min-w-0 items-baseline gap-2">
+          <Link to="/policies/$policyId" params={{ policyId: p.id }} className="truncate font-medium hover:underline" onClick={(e) => e.stopPropagation()}>
             {p.name}
           </Link>
-          <span className="block font-mono text-xs text-muted-foreground">{p.key}</span>
+          <span className="truncate font-mono text-xs text-muted-foreground">{p.key}</span>
         </span>
       ),
     },
@@ -53,12 +53,22 @@ export function PoliciesList() {
       cell: (p) => (
         <span className="flex flex-wrap items-center gap-2">
           <StatusChip status={p.status} />
-          {p.liveVersion && p.hasDraftChanges && <span className="text-xs text-muted-foreground">Draft changes</span>}
+          {p.liveVersion && <span className="text-[13px] text-muted-foreground">v{p.liveVersion.number}</span>}
+          {p.liveVersion && p.hasDraftChanges && <span className="text-xs text-muted-foreground">· draft changes</span>}
         </span>
       ),
     },
-    { header: "Version", hideBelow: "lg", cell: (p) => <span className="text-sm text-muted-foreground">{versionLine(p)}</span> },
-    { header: "Decisions (7 days)", className: "text-right", cell: (p) => <span className="tabular-nums">{formatNumber(p.decisions7d)}</span> },
+    { header: "Decisions, 7 days", className: "text-right", cell: (p) => <span className="text-[13px]">{formatNumber(p.decisions7d)}</span> },
+    {
+      header: "Edited",
+      hideBelow: "lg",
+      className: "text-right",
+      cell: (p) => (
+        <time dateTime={p.updatedAt} title={formatDateTime(p.updatedAt)} className="text-[13px] text-muted-foreground">
+          {formatRelative(p.updatedAt)}
+        </time>
+      ),
+    },
   ];
 
   return (
@@ -66,7 +76,7 @@ export function PoliciesList() {
       <PageHeader title="Policies" description="The rules your systems ask about. Test a draft, then publish it." actions={newButton} />
       <ErrorText error={error} />
       {isLoading ? (
-        <Skeleton className="h-48 w-full rounded-xl" />
+        <Skeleton className="h-48 w-full" />
       ) : !data?.length ? (
         <EmptyState
           icon={<FileCheck2 className="size-8" aria-hidden />}
