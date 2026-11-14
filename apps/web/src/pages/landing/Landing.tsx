@@ -1,20 +1,6 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  BookOpenCheck,
-  FlaskConical,
-  History,
-  LayoutTemplate,
-  ListChecks,
-  MousePointerClick,
-  PlugZap,
-  ScrollText,
-  ShieldCheck,
-  Users,
-  Workflow,
-} from "lucide-react";
-import { CopyButton } from "@/components/CopyButton";
+import { ArrowRight } from "lucide-react";
 import { ErrorText } from "@/components/ErrorText";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -23,24 +9,61 @@ import { openPublicDemo } from "@/lib/demo";
 import { DecisionPreview } from "./DecisionPreview";
 import { LandingNav } from "./LandingNav";
 
-const STEPS = [
-  { icon: LayoutTemplate, title: "Pick a template", body: "Start from discounts, approvals or access rules, or a blank policy. Every rule reads like a sentence." },
-  { icon: FlaskConical, title: "Test with sample data", body: "Try any order or customer before going live and see exactly which rule decided." },
-  { icon: PlugZap, title: "Connect with one call", body: "Your app sends the facts to one endpoint and gets allow or deny, with a reason, in milliseconds." },
+const AUDIENCES = [
+  { who: "Ops", what: "writes and changes the rules, without code" },
+  { who: "Engineers", what: "call one endpoint from any system" },
+  { who: "Sales", what: "opens a live demo workspace in a click" },
 ];
 
-const FEATURES = [
-  { icon: MousePointerClick, title: "No-code rule editor", body: "Fields, conditions and outcomes in plain language. Drag rules to change which one wins." },
-  { icon: FlaskConical, title: "Test before you publish", body: "Run the draft or the live version side by side with saved samples." },
-  { icon: History, title: "Versions and rollback", body: "Every publish is a version. Compare any two and roll back in one click." },
-  { icon: ScrollText, title: "Activity log", body: "Every decision with its input, matched rule and timing. Replay any of them." },
-  { icon: Users, title: "Teams and workspaces", body: "Invite people as owners, editors or viewers. Keep each business unit separate." },
-  { icon: ShieldCheck, title: "Built on Open Policy Agent", body: "Rules compile to Rego and run on OPA, the open standard for policy decisions." },
+const STEPS: { who: string; title: string; body: string; detail: ReactNode }[] = [
+  {
+    who: "Ops",
+    title: "Write the rule as a sentence",
+    body: "Pick the field, the comparison and the value. Rules are checked in order and the first one that matches decides.",
+    detail: "When Order total is at least 200, allow with 15% discount",
+  },
+  {
+    who: "Ops",
+    title: "Test it, then publish",
+    body: "Run a sample order against the draft and see which rule matched. Publish when it’s right; every publish is a version you can compare and roll back.",
+    detail: "Published v2 · 1 rule changed",
+  },
+  {
+    who: "Engineers",
+    title: "Call one endpoint",
+    body: "Each system sends the facts with its own API key and gets back allowed or denied, the reason, and any results such as a discount.",
+    detail: "POST /v1/decide/checkout-discount",
+  },
+  {
+    who: "Sales",
+    title: "Show it working",
+    body: "The Acme Retail demo has four live policies, two weeks of decisions and live traffic, and resets in one click.",
+    detail: "Acme Retail (Demo)",
+  },
 ];
 
-const CURL = `curl -X POST https://your-pengopa/v1/decide/checkout-discount \\
-  -H "Authorization: Bearer pk_live_..." \\
-  -d '{"input": {"customer": {"tier": "gold"}, "order": {"total": 250}}}'`;
+/** The nine templates every new workspace can start from. */
+const TEMPLATES = [
+  { category: "Commerce", name: "Checkout discount", body: "Give loyal and first-time customers a discount at checkout." },
+  { category: "Commerce", name: "Free shipping eligibility", body: "Decide when an order ships for free." },
+  { category: "Commerce", name: "Refund approval", body: "Approve small refunds automatically and send the rest to a person." },
+  { category: "Access", name: "Admin console access", body: "Only admins and support staff with MFA may open the admin console." },
+  { category: "Access", name: "Feature access by plan", body: "Turn features on or off depending on the customer’s plan." },
+  { category: "Access", name: "Working-hours access", body: "Allow access during business hours, and any time for on-call staff." },
+  { category: "Finance", name: "Loan pre-approval", body: "Pre-approve loan applicants and pick their rate and limit." },
+  { category: "Finance", name: "Expense auto-approval", body: "Approve routine expenses without waiting for a manager." },
+  { category: "HR", name: "Leave request approval", body: "Approve sick leave and short, well-planned annual leave automatically." },
+];
+
+/** How workspaces are kept apart, from the README's isolation table, in plain words. */
+const ISOLATION = [
+  { attempt: "Someone sends another workspace’s id", result: "Refused. Membership is checked on every request." },
+  { attempt: "A system puts a workspace id in its decision request", result: "Ignored. The workspace comes only from the API key." },
+  { attempt: "An API key asks for another workspace’s policy", result: "Not found. Keys only see their own workspace." },
+  { attempt: "A query in the code forgets its workspace filter", result: "The filter is added below the application code; a query with no workspace fails." },
+  { attempt: "Someone tries to reach the policy engine directly", result: "It listens on the server only and rejects calls without the app’s token." },
+  { attempt: "One workspace floods the decision API", result: "It is rate-limited on its own; other workspaces are unaffected." },
+];
 
 function DemoButton({ size = "lg" }: { size?: "lg" | "default" }) {
   const { data: config } = useConfig();
@@ -64,20 +87,40 @@ function DemoButton({ size = "lg" }: { size?: "lg" | "default" }) {
           }
         }}
       >
-        {pending ? "Opening demo…" : "Try the live demo"}
+        {pending ? "Opening the demo…" : "Open the demo"}
       </Button>
       <ErrorText error={error} />
     </div>
   );
 }
 
-function SectionHeading({ eyebrow, title, body }: { eyebrow: string; title: string; body?: string }) {
+function Actions() {
   return (
-    <div className="mx-auto max-w-2xl text-center">
-      <p className="text-sm font-medium text-primary">{eyebrow}</p>
-      <h2 className="mt-2 text-2xl font-semibold tracking-tight text-balance sm:text-3xl">{title}</h2>
-      {body && <p className="mt-3 text-base text-pretty text-muted-foreground">{body}</p>}
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+      <Button asChild size="lg">
+        <Link to="/sign-up" search={{ redirect: undefined }}>
+          Sign up <ArrowRight aria-hidden />
+        </Link>
+      </Button>
+      <DemoButton />
     </div>
+  );
+}
+
+/** A section's heading and lead, left-aligned above a 1px rule. */
+function Section({ id, title, lead, children }: { id: string; title: string; lead: string; children: ReactNode }) {
+  return (
+    <section id={id} aria-labelledby={`${id}-heading`} className="scroll-mt-16 border-t">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-16">
+        <div>
+          <h2 id={`${id}-heading`} className="text-2xl font-semibold tracking-tight text-balance">
+            {title}
+          </h2>
+          <p className="mt-3 text-[15px] text-pretty text-muted-foreground">{lead}</p>
+        </div>
+        <div className="min-w-0">{children}</div>
+      </div>
+    </section>
   );
 }
 
@@ -88,117 +131,80 @@ export function Landing() {
       <LandingNav />
 
       <main>
-        {/* Hero */}
-        <section className="relative overflow-hidden">
-          <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(60%_60%_at_70%_0%,color-mix(in_oklch,var(--primary)_12%,transparent),transparent)]" />
-          <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 pt-12 pb-16 sm:px-6 sm:pt-20 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:pb-24">
+        <section aria-labelledby="hero-heading">
+          <div className="mx-auto grid max-w-6xl gap-12 px-4 pt-12 pb-16 sm:px-6 sm:pt-20 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-16 lg:pb-24">
             <div>
-              <p className="inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-xs font-medium text-muted-foreground">
-                <ShieldCheck className="size-3.5 text-primary" aria-hidden /> Policy management on Open Policy Agent
-              </p>
-              <h1 className="mt-5 text-4xl font-semibold tracking-tight text-balance sm:text-5xl lg:text-[3.4rem] lg:leading-[1.05]">
-                Business rules, decided in milliseconds
+              <h1 id="hero-heading" className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl lg:text-[3.25rem] lg:leading-[1.05]">
+                Write the rule once. Every system gets the same answer.
               </h1>
-              <p className="mt-5 max-w-xl text-lg text-pretty text-muted-foreground">
-                Write discounts, approvals and access rules in plain language. Test them, publish them, and let your apps ask PengOPA what to do.
+              <p className="mt-5 text-lg text-pretty text-muted-foreground">
+                Discounts, refunds, access and approvals, written as plain sentences, tested on the spot, and answered by one API with the reason attached.
               </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-start">
-                <Button asChild size="lg">
-                  <Link to="/sign-up" search={{ redirect: undefined }}>
-                    Get started <ArrowRight aria-hidden />
-                  </Link>
-                </Button>
-                <DemoButton />
+              <div className="mt-8">
+                <Actions />
               </div>
-              <p className="mt-4 text-sm text-muted-foreground">Free to try. No code needed to write rules.</p>
-            </div>
-            <DecisionPreview className="mx-auto w-full max-w-md lg:max-w-none" />
-          </div>
-        </section>
-
-        {/* How it works */}
-        <section id="how" className="scroll-mt-20 border-t bg-canvas py-16 sm:py-24">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <SectionHeading eyebrow="How it works" title="From idea to live rule in three steps" />
-            <ol className="mt-12 grid gap-4 md:grid-cols-3">
-              {STEPS.map(({ icon: Icon, title, body }, i) => (
-                <li key={title} className="rounded-xl border bg-card p-6">
-                  <div className="flex items-center gap-3">
-                    <span className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <Icon className="size-5" aria-hidden />
-                    </span>
-                    <span className="text-xs font-medium text-muted-foreground">Step {i + 1}</span>
+              <dl className="mt-12 border-t text-sm">
+                {AUDIENCES.map((a) => (
+                  <div key={a.who} className="grid grid-cols-[6.5rem_minmax(0,1fr)] border-b py-3">
+                    <dt className="font-medium">{a.who}</dt>
+                    <dd className="text-muted-foreground">{a.what}</dd>
                   </div>
-                  <h3 className="mt-4 text-base font-semibold">{title}</h3>
-                  <p className="mt-1.5 text-sm text-muted-foreground">{body}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        {/* Features */}
-        <section id="features" className="scroll-mt-20 py-16 sm:py-24">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <SectionHeading eyebrow="Features" title="Everything a rule needs, nothing it doesn't" body="Made for the people who own the rules, with the controls the people who ship the app expect." />
-            <ul className="mt-12 grid gap-px overflow-hidden rounded-xl border bg-border sm:grid-cols-2 lg:grid-cols-3">
-              {FEATURES.map(({ icon: Icon, title, body }) => (
-                <li key={title} className="bg-card p-6">
-                  <Icon className="size-5 text-primary" aria-hidden />
-                  <h3 className="mt-4 text-base font-semibold">{title}</h3>
-                  <p className="mt-1.5 text-sm text-muted-foreground">{body}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        {/* Audiences */}
-        <section id="developers" className="scroll-mt-20 border-t bg-canvas py-16 sm:py-24">
-          <div className="mx-auto grid max-w-6xl gap-4 px-4 sm:px-6 lg:grid-cols-2">
-            <div className="flex flex-col rounded-xl border bg-card p-6 sm:p-8">
-              <span className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <ListChecks className="size-5" aria-hidden />
-              </span>
-              <h2 className="mt-4 text-xl font-semibold tracking-tight">For operations teams</h2>
-              <p className="mt-2 text-sm text-muted-foreground">Change a discount threshold or an approval limit yourself, test it against real examples, and publish when you're sure. No ticket, no deploy.</p>
-              <ul className="mt-5 grid gap-2 text-sm">
-                {["Rules read like sentences", "See which rule decided, and why", "Undo any change with a rollback"].map((t) => (
-                  <li key={t} className="flex items-center gap-2">
-                    <BookOpenCheck className="size-4 text-success" aria-hidden /> {t}
-                  </li>
                 ))}
-              </ul>
+              </dl>
             </div>
-            <div className="flex min-w-0 flex-col rounded-xl border bg-card p-6 sm:p-8">
-              <span className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <Workflow className="size-5" aria-hidden />
-              </span>
-              <h2 className="mt-4 text-xl font-semibold tracking-tight">For developers</h2>
-              <p className="mt-2 text-sm text-muted-foreground">One HTTP call per decision, an API key per service, and a versioned answer with the matched rule and outcomes.</p>
-              <div className="relative mt-5 min-w-0">
-                <pre className="overflow-x-auto rounded-lg bg-code p-4 pr-24 font-mono text-xs leading-relaxed text-code-foreground">{CURL}</pre>
-                <div className="absolute top-2 right-2">
-                  <CopyButton text={CURL} />
-                </div>
-              </div>
-            </div>
+            <DecisionPreview />
           </div>
         </section>
 
-        {/* Final CTA */}
-        <section className="py-16 sm:py-24">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6">
-            <div className="flex flex-col items-center rounded-2xl bg-code px-6 py-12 text-center text-code-foreground sm:py-16">
-              <Logo variant="mark" className="text-code-foreground [&_svg]:size-10" />
-              <h2 className="mt-5 text-2xl font-semibold tracking-tight text-balance sm:text-3xl">Put your first rule live today</h2>
-              <p className="mt-3 max-w-md text-sm text-code-foreground/70">Start from a template and make your first decision in a few minutes.</p>
-              <Button asChild size="lg" className="mt-8">
-                <Link to="/sign-up" search={{ redirect: undefined }}>
-                  Get started <ArrowRight aria-hidden />
-                </Link>
-              </Button>
+        <Section id="how" title="How it works" lead="The people who own a rule change it themselves. The systems that need it ask for the answer.">
+          <ol className="divide-y border-y">
+            {STEPS.map((s, i) => (
+              <li key={s.title} className="grid gap-x-6 gap-y-1 py-5 sm:grid-cols-[2rem_minmax(0,1fr)_minmax(0,16rem)]">
+                <span className="font-mono text-xs text-muted-foreground tabular-nums sm:pt-1">{String(i + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3 className="font-medium">
+                    {s.title} <span className="ml-1 text-sm font-normal text-muted-foreground">· {s.who}</span>
+                  </h3>
+                  <p className="mt-1 text-sm text-pretty text-muted-foreground">{s.body}</p>
+                </div>
+                <p className="mt-2 font-mono text-xs leading-relaxed text-muted-foreground sm:mt-1">{s.detail}</p>
+              </li>
+            ))}
+          </ol>
+        </Section>
+
+        <Section id="templates" title="Start from a template" lead="Nine ready-made policies with sample inputs to test against. Each one opens as a draft you can change.">
+          <ul className="grid gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-2 lg:grid-cols-3">
+            {TEMPLATES.map((t) => (
+              <li key={t.name} className="bg-background p-4">
+                <p className="text-xs text-muted-foreground">{t.category}</p>
+                <h3 className="mt-1 font-medium">{t.name}</h3>
+                <p className="mt-1 text-sm text-pretty text-muted-foreground">{t.body}</p>
+              </li>
+            ))}
+          </ul>
+        </Section>
+
+        <Section id="security" title="Workspaces stay apart" lead="Every request is scoped to one workspace, and the scoping is enforced below the application code.">
+          <dl className="divide-y border-y text-sm">
+            {ISOLATION.map((row) => (
+              <div key={row.attempt} className="grid gap-x-8 gap-y-1 py-3.5 sm:grid-cols-2">
+                <dt className="font-medium">{row.attempt}</dt>
+                <dd className="text-muted-foreground">{row.result}</dd>
+              </div>
+            ))}
+          </dl>
+        </Section>
+
+        <section aria-labelledby="cta-heading" className="border-t">
+          <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h2 id="cta-heading" className="text-3xl font-semibold tracking-tight text-balance">
+                Put your first rule live today.
+              </h2>
+              <p className="mt-3 text-[15px] text-muted-foreground">Start from a template and make your first decision in a few minutes.</p>
             </div>
+            <Actions />
           </div>
         </section>
       </main>

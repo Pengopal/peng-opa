@@ -7,15 +7,15 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 
 export const SECTIONS = [
   { href: "#how", label: "How it works" },
-  { href: "#features", label: "Features" },
-  { href: "#developers", label: "Developers" },
+  { href: "#templates", label: "Templates" },
+  { href: "#security", label: "Security" },
 ] as const;
 
 /** Landing header: logo, section anchors, sign in and get started. Anchors move into a menu on phones. */
 export function LandingNav() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-30 border-b border-transparent bg-background/80 pt-[env(safe-area-inset-top)] backdrop-blur supports-[backdrop-filter]:bg-background/70">
+    <header className="sticky top-0 z-30 border-b bg-background/80 pt-[env(safe-area-inset-top)] backdrop-blur supports-[backdrop-filter]:bg-background/70">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4 sm:px-6">
         <a href="#top" aria-label="PengOPA home">
           <Logo />
@@ -35,7 +35,7 @@ export function LandingNav() {
           </Button>
           <Button asChild>
             <Link to="/sign-up" search={{ redirect: undefined }}>
-              Get started
+              Sign up
             </Link>
           </Button>
           <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open menu" onClick={() => setOpen(true)}>
