@@ -24,8 +24,8 @@ export function DecisionsChart({ days }: { days?: DayPoint[] }) {
   const total = days?.reduce((s, d) => s + d.allowed + d.denied, 0) ?? 0;
 
   return (
-    <section aria-labelledby="decisions-heading" className="min-w-0">
-      <div className="flex items-center justify-between gap-3 border-b pb-2">
+    <section aria-labelledby="decisions-heading" className="min-w-0 overflow-hidden rounded-lg border">
+      <div className="flex items-center justify-between gap-3 border-b bg-muted/40 px-4 py-1.5">
         <div className="flex min-w-0 items-baseline gap-2">
           <h2 id="decisions-heading" className="text-sm font-medium">
             Decisions, last 14 days
@@ -40,7 +40,7 @@ export function DecisionsChart({ days }: { days?: DayPoint[] }) {
           {asTable ? "Show chart" : "Show table"}
         </Button>
       </div>
-      <div className="pt-4">
+      <div className="p-4">
         {!days ? (
           <Skeleton className="h-64 w-full" />
         ) : asTable ? (

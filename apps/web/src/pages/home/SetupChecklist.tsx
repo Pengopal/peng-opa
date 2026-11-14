@@ -14,7 +14,7 @@ export function SetupChecklist({ summary }: { summary: Summary }) {
 
   return (
     <section aria-labelledby="setup-heading" className="rounded-lg border">
-      <div className="flex items-center justify-between gap-3 border-b px-4 py-2.5">
+      <div className="flex items-center justify-between gap-3 border-b bg-muted/40 px-4 py-2.5">
         <h2 id="setup-heading" className="text-sm font-medium">
           Get set up
         </h2>

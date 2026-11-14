@@ -17,7 +17,7 @@ function NavLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
       aria-label={collapsed ? label : undefined}
       className={cn(
         "flex h-8 items-center gap-2.5 rounded-md px-2 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground",
-        "data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground",
+        "data-[status=active]:bg-background data-[status=active]:text-foreground data-[status=active]:shadow-xs data-[status=active]:ring-1 data-[status=active]:ring-border/70",
         collapsed && "justify-center px-0",
       )}
     >
@@ -40,7 +40,7 @@ export function Sidebar({ collapsed, onToggle, onSearch }: { collapsed: boolean;
   const dev = NAV.filter((n) => n.group === "developers");
   const footer = NAV.filter((n) => n.group === "footer");
   return (
-    <div className="flex h-full flex-col gap-3 border-r bg-sidebar p-3 text-sidebar-foreground">
+    <div className="flex h-full flex-col gap-3 bg-sidebar p-3 text-sidebar-foreground">
       <div className={cn("flex items-center gap-1", collapsed ? "flex-col" : "justify-between pl-1.5")}>
         <Link to={HOME_PATH} aria-label="PengOPA home" className="rounded-md py-1">
           <Logo variant={collapsed ? "mark" : "full"} />

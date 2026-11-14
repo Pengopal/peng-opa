@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 
 export const SECTIONS = [
+  { href: "#product", label: "Product" },
   { href: "#how", label: "How it works" },
   { href: "#templates", label: "Templates" },
   { href: "#security", label: "Security" },

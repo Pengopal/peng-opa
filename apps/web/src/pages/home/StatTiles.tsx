@@ -4,7 +4,7 @@ import { dayDelta, type DayPoint, type Summary } from "./insights";
 
 function Metric({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
-    <div className="bg-background px-4 py-3 first:pl-0 max-lg:odd:pl-0">
+    <div className="bg-background px-4 py-3">
       <dt className="text-[13px] text-muted-foreground">{label}</dt>
       <dd className="mt-1 text-2xl font-semibold tracking-tight" data-numeric>
         {value}
@@ -27,7 +27,7 @@ export function StatTiles({ summary, days }: { summary?: Summary; days?: DayPoin
   const rate = days && days.length > 1 && total(days[days.length - 2]) > 0 && summary.allowRateToday !== null ? dayDelta(days, allowRate) : null;
 
   return (
-    <dl className="grid grid-cols-2 gap-px border-y bg-border lg:grid-cols-4">
+    <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border bg-border lg:grid-cols-4">
       <Metric label="Decisions today" value={formatNumber(summary.decisionsToday)} note={yesterday !== null ? `${formatNumber(yesterday)} yesterday` : undefined} />
       <Metric
         label="Allow rate today"

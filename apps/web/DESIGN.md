@@ -10,8 +10,8 @@ colors:
   muted: "#f4f4f5"
   muted-foreground: "#71717a"
   border: "#e4e4e7"
-  sidebar: "#fafafa"
-  sidebar-accent: "#f0f0f2"
+  sidebar: "#f4f4f5"
+  sidebar-accent: "#e9e9ec"
   success: "#15803d"
   success-muted: "#ecfdf3"
   danger: "#dc2626"
@@ -175,7 +175,7 @@ A neutral zinc ramp on white with a single indigo voice; green, red and amber ap
 - **Zinc Wash** (`muted`): hover fills, secondary buttons, raw JSON blocks, active token pickers.
 - **Zinc Slate** (`muted-foreground`): descriptions, breadcrumbs, column headers, rule numbers, "Not reached".
 - **Hairline** (`border`): every divider, table rule, input stroke and the few remaining framed panels.
-- **Sidebar Mist** (`sidebar`, `sidebar-accent`): the app sidebar ground and its active item fill; the only off-white surface in the shell.
+- **Sidebar Mist** (`sidebar`, `sidebar-accent`): the app frame. From lg the sidebar and the ground around the page share this grey, and each page sits in a white, bordered, 12px-radius panel inset 8px from it. `sidebar-accent` is the nav hover fill; the active item is a white pill with a hairline ring. The landing page uses the same grey for alternate bands (Product, Templates).
 - **Code Night** (`code`, `code-foreground`): the dark code-block surface used for Connect samples and the Rego view, in both themes.
 
 ### Semantic
@@ -227,7 +227,7 @@ The landing page uses the same column: each section is a `border-t` band with 64
 
 ## Elevation & Depth
 
-The system is flat at rest. In-page surfaces carry no shadow; depth is expressed by dividers and by the single off-white sidebar. Shadows appear only on things that float above the page.
+The system is flat at rest. In-page surfaces carry no shadow; depth is expressed by dividers, by the grey app frame around the white page panel, and by light panels (1px border, 8px radius, `muted/40` title strip) that group a page's main sections: Home's stats, chart and latest decisions, tables, Get set up and Try it. Shadows appear only on things that float above the page.
 
 ### Shadow Vocabulary
 - **Hairline lift** (`shadow-xs`): primary buttons only.
@@ -263,7 +263,7 @@ Quiet and precise.
 - **Inline variant:** rule names render borderless until hover or focus, so the rule reads as text.
 
 ### Navigation
-- **Sidebar:** Sidebar Mist ground, workspace switcher, search, then nav items; the active item takes the sidebar accent fill.
+- **Sidebar:** Sidebar Mist ground with no border, workspace switcher, search, then nav items; the active item is a white pill with a hairline ring.
 - **Breadcrumb:** 13px muted, slash separators, the current page in ink.
 - **Tabs:** section switches are underline tabs (a 1px ink line under the active tab); view switches are a small segmented control.
 

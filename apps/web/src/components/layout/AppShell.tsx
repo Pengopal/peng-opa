@@ -62,11 +62,11 @@ export function AppShell() {
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="flex min-h-svh">
+      <div className="flex min-h-svh lg:bg-sidebar">
         <aside className={cn("sticky top-0 hidden h-svh shrink-0 transition-[width] duration-200 lg:block", collapsed ? "w-[68px]" : "w-60")}>
           <Sidebar collapsed={collapsed} onToggle={toggle} onSearch={() => setSearch(true)} />
         </aside>
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col bg-background lg:my-2 lg:mr-2 lg:min-h-[calc(100svh-1rem)] lg:rounded-xl lg:border lg:shadow-xs">
           <MobileTopBar onSearch={() => setSearch(true)} />
           <EngineBanner />
           <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-5 pb-28 sm:px-6 lg:px-8 lg:pt-8 lg:pb-10">
