@@ -13,7 +13,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SettingsSection } from "@/components/SettingsSection";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -80,22 +80,19 @@ export function ApiKeysCard() {
   ];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <h2>API keys</h2>
-        </CardTitle>
-        <CardDescription>Each system that calls PengOPA gets its own key, so you can revoke one without touching the others.</CardDescription>
-        <CardAction>
-          <Button onClick={() => setCreating(true)}>
-            <Plus aria-hidden /> New key
-          </Button>
-        </CardAction>
-      </CardHeader>
-      <CardContent>
+    <SettingsSection
+      id="keys"
+      title="API keys"
+      description="Each system that calls PengOPA gets its own key, so you can revoke one without touching the others."
+      action={
+        <Button variant="outline" size="sm" onClick={() => setCreating(true)}>
+          <Plus aria-hidden /> New key
+        </Button>
+      }
+    >
         <ErrorText error={keys.error ?? revoke.error} />
         {keys.data?.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No keys yet. Create one to start calling your policies.</p>
+          <p className="rounded-lg border border-dashed px-4 py-3 text-sm text-muted-foreground">No keys yet. Create one with New key to start calling your policies.</p>
         ) : (
           <DataList
             label="API keys"
@@ -113,7 +110,6 @@ export function ApiKeysCard() {
             }}
           />
         )}
-      </CardContent>
 
       <Dialog open={creating} onOpenChange={(o) => !o && closeCreate()}>
         <DialogContent>
@@ -164,6 +160,6 @@ export function ApiKeysCard() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Card>
+    </SettingsSection>
   );
 }

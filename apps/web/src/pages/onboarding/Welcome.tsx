@@ -1,16 +1,31 @@
+import type { ReactNode } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FilePlus2, LayoutTemplate, Sparkles } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ErrorText } from "@/components/ErrorText";
 import { PageHeader } from "@/components/PageHeader";
 import { api } from "@/lib/api";
 import type { Workspace } from "@/lib/types";
 import { useWorkspace } from "@/lib/workspace";
 
-/** The three ways to start: a template (recommended), a blank policy, or the demo workspace. */
+function Choice({ icon, title, body, action, note }: { icon: ReactNode; title: ReactNode; body: string; action: ReactNode; note?: ReactNode }) {
+  return (
+    <li className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:gap-4">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-md border text-muted-foreground" aria-hidden>
+        {icon}
+      </span>
+      <div className="min-w-0 flex-1">
+        <h2 className="text-sm font-medium">{title}</h2>
+        <p className="text-[13px] text-muted-foreground">{body}</p>
+        {note}
+      </div>
+      <div className="shrink-0">{action}</div>
+    </li>
+  );
+}
+
+/** The three ways to start, as one divided list: a template (recommended), the demo workspace, or a blank policy. */
 export function WelcomeCards() {
   const { switchTo } = useWorkspace();
   const qc = useQueryClient();
@@ -25,56 +40,45 @@ export function WelcomeCards() {
   });
 
   return (
-    <div className="grid gap-4 md:grid-cols-3">
-      <Card className="border-primary/40">
-        <CardHeader>
-          <LayoutTemplate className="size-6 text-primary" aria-hidden />
-          <CardTitle className="flex items-center gap-2">
-            <h2>Start from a template</h2>
-            <Badge>Recommended</Badge>
-          </CardTitle>
-          <CardDescription>Pick a ready-made policy — discounts, refunds, access, approvals — and adjust it.</CardDescription>
-        </CardHeader>
-        <CardFooter className="mt-auto">
-          <Button asChild className="w-full">
+    <ul className="max-w-2xl divide-y border-y">
+      <Choice
+        icon={<LayoutTemplate className="size-4" />}
+        title={
+          <>
+            Start from a template <span className="ml-1 text-xs font-normal text-muted-foreground">Recommended</span>
+          </>
+        }
+        body="Pick a ready-made policy — discounts, refunds, access, approvals — and adjust it."
+        action={
+          <Button asChild size="sm">
             <Link to="/templates">Browse templates</Link>
           </Button>
-        </CardFooter>
-      </Card>
-      <Card>
-        <CardHeader>
-          <FilePlus2 className="size-6 text-muted-foreground" aria-hidden />
-          <CardTitle>
-            <h2>Start blank</h2>
-          </CardTitle>
-          <CardDescription>Write your own rules from scratch with the rule builder.</CardDescription>
-        </CardHeader>
-        <CardFooter className="mt-auto">
-          <Button asChild variant="outline" className="w-full">
+        }
+      />
+      <Choice
+        icon={<Sparkles className="size-4" />}
+        title="Open the demo"
+        body="A sample store with live policies and two weeks of decisions to look around in."
+        note={<ErrorText error={demo.error} />}
+        action={
+          <Button variant="outline" size="sm" disabled={demo.isPending} onClick={() => demo.mutate()}>
+            {demo.isPending ? "Setting up the demo…" : "Explore the demo workspace"}
+          </Button>
+        }
+      />
+      <Choice
+        icon={<FilePlus2 className="size-4" />}
+        title="Start blank"
+        body="Write your own rules from scratch with the rule builder."
+        action={
+          <Button asChild variant="outline" size="sm">
             <Link to="/policies" search={{ new: "blank" }}>
               New blank policy
             </Link>
           </Button>
-        </CardFooter>
-      </Card>
-      <Card>
-        <CardHeader>
-          <Sparkles className="size-6 text-muted-foreground" aria-hidden />
-          <CardTitle>
-            <h2>Explore the demo</h2>
-          </CardTitle>
-          <CardDescription>A sample store with live policies and two weeks of decisions to look around in.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ErrorText error={demo.error} />
-        </CardContent>
-        <CardFooter className="mt-auto">
-          <Button variant="outline" className="w-full" disabled={demo.isPending} onClick={() => demo.mutate()}>
-            {demo.isPending ? "Setting up the demo…" : "Explore the demo workspace"}
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
+        }
+      />
+    </ul>
   );
 }
 

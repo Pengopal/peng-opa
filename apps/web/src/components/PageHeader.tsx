@@ -1,51 +1,66 @@
-import type { ReactNode } from "react";
-import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Fragment, type ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
 
-/**
- * Top of every page: one h1, an optional line under it, actions on the right.
- * `secondaryActions` sit inline from sm up and move into a ⋯ menu on phones (pass DropdownMenuItem-friendly children only if
- * they render well both ways — buttons with `variant="ghost"` work in both).
- */
+export interface Crumb {
+  label: string;
+  to?: string;
+}
+
+/** Top of every page: optional breadcrumb, one h1 with an optional status, a line under it, actions on the right. */
 export function PageHeader({
   title,
   description,
+  breadcrumb,
+  status,
   actions,
-  secondaryActions,
-  eyebrow,
+  compact = false,
 }: {
   title: ReactNode;
   description?: ReactNode;
+  breadcrumb?: Crumb[];
+  status?: ReactNode;
   actions?: ReactNode;
-  secondaryActions?: ReactNode;
-  eyebrow?: ReactNode;
+  /** Tighter spacing for working screens where the content below should start high (the policy editor). */
+  compact?: boolean;
 }) {
   return (
-    <header className="mb-6 flex items-start justify-between gap-3">
-      <div className="min-w-0">
-        {eyebrow && <div className="mb-2">{eyebrow}</div>}
-        <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">{title}</h1>
-        {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
-      </div>
-      {(actions || secondaryActions) && (
-        <div className="flex shrink-0 items-center gap-2">
-          {secondaryActions && <div className="hidden items-center gap-2 sm:flex">{secondaryActions}</div>}
-          {secondaryActions && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" className="sm:hidden" aria-label="More actions">
-                  <MoreHorizontal />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="flex flex-col gap-1 p-1 [&_button]:w-full [&_button]:justify-start">
-                {secondaryActions}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-          {actions}
-        </div>
+    <header className={compact ? "mb-2 pb-3" : "mb-6 border-b pb-4"}>
+      {breadcrumb && (
+        <nav aria-label="Breadcrumb" className="mb-2">
+          <ol className="flex min-w-0 items-center gap-1.5 text-[13px] text-muted-foreground">
+            {breadcrumb.map((c, i) => (
+              <Fragment key={`${c.label}-${i}`}>
+                {i > 0 && (
+                  <li aria-hidden className="text-muted-foreground/60">
+                    /
+                  </li>
+                )}
+                <li className="min-w-0 truncate">
+                  {c.to ? (
+                    <Link to={c.to} className="transition-colors hover:text-foreground">
+                      {c.label}
+                    </Link>
+                  ) : (
+                    <span aria-current="page" className="text-foreground">
+                      {c.label}
+                    </span>
+                  )}
+                </li>
+              </Fragment>
+            ))}
+          </ol>
+        </nav>
       )}
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <h1 className="text-xl font-semibold tracking-tight text-balance">{title}</h1>
+            {status}
+          </div>
+          {description && <div className="mt-1 text-sm text-muted-foreground">{description}</div>}
+        </div>
+        {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
+      </div>
     </header>
   );
 }

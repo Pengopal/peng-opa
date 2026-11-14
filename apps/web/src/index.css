@@ -63,98 +63,98 @@
 }
 
 :root {
-    /* PengOPA: warm neutrals, one indigo accent. Allowed/denied keep their own green/red. */
+    /* PengOPA: white ground, cool neutrals; indigo only for primary action, focus and selection. */
     --background: #ffffff;
-    --canvas: #f7f7f8;
-    --foreground: #16161a;
+    --canvas: #ffffff;
+    --foreground: #0a0a0b;
     --card: #ffffff;
-    --card-foreground: #16161a;
+    --card-foreground: #0a0a0b;
     --popover: #ffffff;
-    --popover-foreground: #16161a;
+    --popover-foreground: #0a0a0b;
     --primary: #4f46e5;
     --primary-foreground: #ffffff;
-    --secondary: #f0f0f3;
-    --secondary-foreground: #16161a;
-    --muted: #f0f0f3;
-    --muted-foreground: #62626c;
-    --accent: #f0f0f3;
-    --accent-foreground: #16161a;
-    --destructive: #b42318;
-    --border: #e6e6ea;
-    --input: #d9d9df;
+    --secondary: #f4f4f5;
+    --secondary-foreground: #0a0a0b;
+    --muted: #f4f4f5;
+    --muted-foreground: #71717a;
+    --accent: #f4f4f5;
+    --accent-foreground: #0a0a0b;
+    --destructive: #dc2626;
+    --border: #e4e4e7;
+    --input: #e4e4e7;
     --ring: #4f46e5;
-    --radius: 0.75rem;
-    --code: #16161a;
+    --radius: 0.5rem;
+    --code: #0a0a0b;
     --code-foreground: #ededf0;
-    --sidebar: #f2f2f4;
-    --sidebar-foreground: #16161a;
+    --sidebar: #fafafa;
+    --sidebar-foreground: #0a0a0b;
     --sidebar-primary: #4f46e5;
     --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: color-mix(in oklch, #4f46e5 10%, transparent);
-    --sidebar-accent-foreground: #4f46e5;
-    --sidebar-border: #e6e6ea;
+    --sidebar-accent: #f0f0f2;
+    --sidebar-accent-foreground: #0a0a0b;
+    --sidebar-border: #e4e4e7;
     --sidebar-ring: #4f46e5;
-    --success: #067647;
+    --success: #15803d;
     --success-foreground: #ffffff;
-    --success-muted: #e7f6ee;
-    --danger: #b42318;
+    --success-muted: #ecfdf3;
+    --danger: #dc2626;
     --danger-foreground: #ffffff;
-    --danger-muted: #fdeceb;
-    --warning: #b54708;
+    --danger-muted: #fef2f2;
+    --warning: #b45309;
     --warning-foreground: #ffffff;
-    --warning-muted: #fef4e6;
+    --warning-muted: #fffbeb;
     /* Allowed/denied chart pair, validated (dataviz): deutan/protan ΔE 18.2 light */
     --chart-1: oklch(0.50 0.12 160);
     --chart-2: oklch(0.76 0.14 55);
     --chart-3: #4f46e5;
-    --chart-4: #62626c;
+    --chart-4: #71717a;
     --chart-5: #b54708;
 }
 
 .dark {
-    --background: #0c0c0e;
-    --canvas: #0c0c0e;
-    --foreground: #ededf0;
-    --card: #141417;
-    --card-foreground: #ededf0;
-    --popover: #141417;
-    --popover-foreground: #ededf0;
+    --background: #0a0a0b;
+    --canvas: #0a0a0b;
+    --foreground: #fafafa;
+    --card: #0f0f11;
+    --card-foreground: #fafafa;
+    --popover: #111113;
+    --popover-foreground: #fafafa;
     --primary: #818cf8;
     --primary-foreground: #0c0c0e;
-    --secondary: #1c1c21;
-    --secondary-foreground: #ededf0;
-    --muted: #1c1c21;
-    --muted-foreground: #9a9aa4;
-    --accent: #1c1c21;
-    --accent-foreground: #ededf0;
-    --destructive: #ff9a8f;
-    --border: #26262c;
-    --input: #33333b;
+    --secondary: #18181b;
+    --secondary-foreground: #fafafa;
+    --muted: #18181b;
+    --muted-foreground: #a1a1aa;
+    --accent: #18181b;
+    --accent-foreground: #fafafa;
+    --destructive: #f87171;
+    --border: #27272a;
+    --input: #27272a;
     --ring: #818cf8;
     --code: #0a0a0c;
     --code-foreground: #ededf0;
-    --sidebar: #101013;
-    --sidebar-foreground: #ededf0;
+    --sidebar: #0f0f11;
+    --sidebar-foreground: #fafafa;
     --sidebar-primary: #818cf8;
     --sidebar-primary-foreground: #0c0c0e;
-    --sidebar-accent: color-mix(in oklch, #818cf8 14%, transparent);
-    --sidebar-accent-foreground: #a5b4fc;
-    --sidebar-border: #26262c;
+    --sidebar-accent: #1c1c1f;
+    --sidebar-accent-foreground: #fafafa;
+    --sidebar-border: #27272a;
     --sidebar-ring: #818cf8;
-    --success: #4ac08a;
+    --success: #4ade80;
     --success-foreground: #0c0c0e;
-    --success-muted: #12382c;
-    --danger: #ff9a8f;
+    --success-muted: #0f2a1a;
+    --danger: #f87171;
     --danger-foreground: #0c0c0e;
-    --danger-muted: #3d1d22;
-    --warning: #fdb022;
+    --danger-muted: #2a1214;
+    --warning: #fbbf24;
     --warning-foreground: #0c0c0e;
-    --warning-muted: #3a2a0c;
+    --warning-muted: #2a1f08;
     /* dark pair validated on the dark surface: protan ΔE 9.7 */
     --chart-1: oklch(0.50 0.11 160);
     --chart-2: oklch(0.67 0.16 50);
     --chart-3: #818cf8;
-    --chart-4: #9a9aa4;
+    --chart-4: #a1a1aa;
     --chart-5: #fdb022;
 }
 
@@ -167,6 +167,12 @@
     }
   html {
     -webkit-tap-highlight-color: transparent;
+    }
+  ::selection {
+    background: color-mix(in oklch, var(--primary) 22%, transparent);
+    }
+  table, [data-numeric] {
+    font-variant-numeric: tabular-nums;
     }
   button:not(:disabled), [role="button"]:not(:disabled) {
     cursor: pointer;

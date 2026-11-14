@@ -1,7 +1,7 @@
 import type { Condition, Field, FieldType, Operator } from "@peng/shared";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { TokenSelect } from "./TokenSelect";
 
 const LIST_OPS: Operator[] = ["one_of", "not_one_of", "includes_any"];
 const DAY_OPS: Operator[] = ["within_last_days", "more_than_days_ago"];
@@ -32,7 +32,7 @@ function ListValue({ field, value, onChange, disabled }: { field: Field; value: 
               aria-pressed={on}
               disabled={disabled}
               onClick={() => onChange(on ? value.filter((x) => x !== o) : [...value, o])}
-              className={cn("rounded-full border px-2.5 py-1 text-xs", on ? "border-primary bg-primary text-primary-foreground" : "hover:bg-muted")}
+              className={cn("rounded-md border px-2 py-0.5 text-[13px] transition-colors", on ? "border-foreground bg-foreground text-background" : "text-muted-foreground hover:bg-muted")}
             >
               {o}
             </button>
@@ -48,7 +48,7 @@ function ListValue({ field, value, onChange, disabled }: { field: Field; value: 
       disabled={disabled}
       defaultValue={value.join(", ")}
       onBlur={(e) => onChange(e.target.value.split(",").map((s) => s.trim()).filter(Boolean))}
-      className="sm:w-56"
+      className="h-8 w-48"
     />
   );
 }
@@ -63,9 +63,9 @@ export function ValueInput({ field, condition, onChange, disabled }: { field: Fi
     const [min, max] = Array.isArray(value) ? (value as number[]) : [0, 0];
     return (
       <span className="flex items-center gap-2">
-        <Input type="number" aria-label="Minimum" className="w-24" disabled={disabled} value={min} onChange={(e) => onChange([e.target.valueAsNumber, max])} />
+        <Input type="number" aria-label="Minimum" className="h-8 w-20" disabled={disabled} value={min} onChange={(e) => onChange([e.target.valueAsNumber, max])} />
         <span className="text-sm text-muted-foreground">and</span>
-        <Input type="number" aria-label="Maximum" className="w-24" disabled={disabled} value={max} onChange={(e) => onChange([min, e.target.valueAsNumber])} />
+        <Input type="number" aria-label="Maximum" className="h-8 w-20" disabled={disabled} value={max} onChange={(e) => onChange([min, e.target.valueAsNumber])} />
       </span>
     );
   }
@@ -73,7 +73,7 @@ export function ValueInput({ field, condition, onChange, disabled }: { field: Fi
   if (DAY_OPS.includes(op)) {
     return (
       <span className="flex items-center gap-2">
-        <Input type="number" min={1} step={1} aria-label="Value" className="w-24" disabled={disabled} value={Number(value) || ""} onChange={(e) => onChange(e.target.valueAsNumber)} />
+        <Input type="number" min={1} step={1} aria-label="Value" className="h-8 w-20" disabled={disabled} value={Number(value) || ""} onChange={(e) => onChange(e.target.valueAsNumber)} />
         <span className="text-sm text-muted-foreground">days</span>
       </span>
     );
@@ -82,42 +82,27 @@ export function ValueInput({ field, condition, onChange, disabled }: { field: Fi
   if (op === "is_empty" || field.type === "yesno") {
     const labels = op === "is_empty" ? ["empty", "not empty"] : ["yes", "no"];
     return (
-      <Select disabled={disabled} value={value === false ? "false" : "true"} onValueChange={(v) => onChange(v === "true")}>
-        <SelectTrigger aria-label="Value" className="w-full sm:w-36">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="true">{labels[0]}</SelectItem>
-          <SelectItem value="false">{labels[1]}</SelectItem>
-        </SelectContent>
-      </Select>
+      <TokenSelect
+        ariaLabel="Value"
+        disabled={disabled}
+        value={value === false ? "false" : "true"}
+        options={[{ value: "true", label: labels[0] }, { value: "false", label: labels[1] }]}
+        onChange={(v) => onChange(v === "true")}
+      />
     );
   }
 
   if (field.type === "number") {
-    return <Input type="number" aria-label="Value" className="w-full sm:w-32" disabled={disabled} value={typeof value === "number" && !Number.isNaN(value) ? value : ""} onChange={(e) => onChange(e.target.value === "" ? "" : e.target.valueAsNumber)} />;
+    return <Input type="number" aria-label="Value" className="h-8 w-24" disabled={disabled} value={typeof value === "number" && !Number.isNaN(value) ? value : ""} onChange={(e) => onChange(e.target.value === "" ? "" : e.target.valueAsNumber)} />;
   }
 
   if (field.type === "date") {
-    return <Input type="date" aria-label="Value" className="w-full sm:w-44" disabled={disabled} value={String(value ?? "").slice(0, 10)} onChange={(e) => onChange(e.target.value)} />;
+    return <Input type="date" aria-label="Value" className="h-8 w-40" disabled={disabled} value={String(value ?? "").slice(0, 10)} onChange={(e) => onChange(e.target.value)} />;
   }
 
   if (field.options?.length && (op === "is" || op === "is_not" || op === "includes")) {
-    return (
-      <Select disabled={disabled} value={String(value ?? "")} onValueChange={onChange}>
-        <SelectTrigger aria-label="Value" className="w-full sm:w-40">
-          <SelectValue placeholder="Choose" />
-        </SelectTrigger>
-        <SelectContent>
-          {field.options.map((o) => (
-            <SelectItem key={o} value={o}>
-              {o}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    );
+    return <TokenSelect ariaLabel="Value" disabled={disabled} value={String(value ?? "")} options={field.options.map((o) => ({ value: o, label: o }))} onChange={onChange} />;
   }
 
-  return <Input aria-label="Value" className="w-full sm:w-48" disabled={disabled} value={String(value ?? "")} onChange={(e) => onChange(e.target.value)} />;
+  return <Input aria-label="Value" className="h-8 w-44" disabled={disabled} value={String(value ?? "")} onChange={(e) => onChange(e.target.value)} />;
 }

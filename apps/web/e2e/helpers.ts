@@ -33,5 +33,5 @@ export async function tryIt(page: Page, sample: string, target: "Draft" | RegExp
 export async function publish(page: Page, version: number) {
   await page.getByRole("button", { name: "Publish", exact: true }).click();
   await page.getByRole("button", { name: `Publish v${version}` }).click();
-  await expect(page.getByText(`Live v${version}`).first()).toBeVisible();
+  await expect(page.getByText(`Published v${version}.`)).toBeVisible();
 }

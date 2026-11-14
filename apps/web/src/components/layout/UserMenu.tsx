@@ -63,7 +63,7 @@ export function UserMenu({ compact = false }: { compact?: boolean }) {
           className={cn("h-auto gap-3 px-2 py-1.5", compact ? "rounded-full p-1.5" : "w-full justify-start hover:bg-foreground/5")}
         >
           <Avatar className="size-7">
-            <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">{initials}</AvatarFallback>
+            <AvatarFallback className="bg-muted text-xs font-semibold text-foreground">{initials}</AvatarFallback>
           </Avatar>
           {!compact && (
             <span className="flex min-w-0 flex-col items-start text-left">

@@ -1,45 +1,40 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DecisionChip } from "@/components/DecisionChip";
-import { formatRelative } from "@/lib/format";
+import { formatDateTime, formatRelative } from "@/lib/format";
 import type { RecentDecision } from "./insights";
 
 export function RecentDecisions({ items }: { items?: RecentDecision[] }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <h2>Latest decisions</h2>
-        </CardTitle>
-        <CardAction>
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/activity">View all</Link>
-          </Button>
-        </CardAction>
-      </CardHeader>
-      <CardContent>
-        {!items ? (
-          <Skeleton className="h-40 w-full" />
-        ) : items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No decisions yet. They appear here as soon as you test or call a policy.</p>
-        ) : (
-          <ul className="divide-y">
-            {items.map((d) => (
-              <li key={d.id} className="flex items-center justify-between gap-3 py-2.5">
-                <span className="min-w-0">
-                  <span className="block truncate text-sm font-medium">{d.policyName}</span>
-                  <span className="block truncate text-xs text-muted-foreground">
-                    {d.matchedRule ?? "No rule matched"} · {formatRelative(d.createdAt)}
-                  </span>
+    <section aria-labelledby="latest-heading" className="min-w-0">
+      <div className="flex items-center justify-between gap-3 border-b pb-2">
+        <h2 id="latest-heading" className="text-sm font-medium">
+          Latest decisions
+        </h2>
+        <Button asChild variant="ghost" size="sm">
+          <Link to="/activity">View all</Link>
+        </Button>
+      </div>
+      {!items ? (
+        <Skeleton className="mt-3 h-40 w-full" />
+      ) : items.length === 0 ? (
+        <p className="pt-3 text-sm text-muted-foreground">No decisions yet. They appear here as soon as you test or call a policy.</p>
+      ) : (
+        <ul className="divide-y">
+          {items.map((d) => (
+            <li key={d.id} className="flex items-center justify-between gap-3 py-2.5">
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-medium">{d.policyName}</span>
+                <span className="block truncate text-xs text-muted-foreground">
+                  {d.matchedRule ?? "No rule matched"} · <time dateTime={d.createdAt} title={formatDateTime(d.createdAt)}>{formatRelative(d.createdAt)}</time>
                 </span>
-                <DecisionChip allowed={d.allowed} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </CardContent>
-    </Card>
+              </span>
+              <DecisionChip allowed={d.allowed} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }

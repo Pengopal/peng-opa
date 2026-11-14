@@ -14,12 +14,12 @@ export function BottomTabBar({ onMore, moreOpen }: { onMore(): void; moreOpen: b
     >
       <div className="mx-auto flex max-w-md">
         {NAV.filter((n) => n.mobileTab).map(({ to, label, icon: Icon, exact }) => (
-          <Link key={to} to={to} activeOptions={{ exact }} className={cn(tab, "data-[status=active]:text-primary")}>
+          <Link key={to} to={to} activeOptions={{ exact }} className={cn(tab, "data-[status=active]:text-foreground data-[status=active]:font-semibold")}>
             <Icon className="size-5" aria-hidden />
             {label}
           </Link>
         ))}
-        <button type="button" onClick={onMore} aria-expanded={moreOpen} className={cn(tab, moreOpen && "text-primary")}>
+        <button type="button" onClick={onMore} aria-expanded={moreOpen} className={cn(tab, moreOpen && "text-foreground")}>
           <MoreHorizontal className="size-5" aria-hidden />
           More
         </button>

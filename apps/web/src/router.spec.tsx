@@ -23,7 +23,7 @@ test("signed-out visitor sees the landing page at /", async () => {
       <RouterProvider router={router} />
     </QueryClientProvider>,
   );
-  expect(await screen.findByRole("heading", { level: 1, name: "Business rules, decided in milliseconds" })).toBeInTheDocument();
+  expect(await screen.findByRole("heading", { level: 1, name: "Write the rule once. Every system gets the same answer." })).toBeInTheDocument();
 });
 
 test("signed-in user at / goes to /home", async () => {

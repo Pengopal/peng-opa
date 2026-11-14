@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ErrorText } from "@/components/ErrorText";
 import { api } from "@/lib/api";
 import type { PublishPreview } from "@/lib/types";
+import { ChangeMark } from "./ChangeMark";
 import type { EditorContext } from "./PolicyEditor";
 
 const ORDER: RuleChange["kind"][] = ["changed", "added", "removed", "moved"];
@@ -71,7 +72,7 @@ export function PublishDialog({ policy, draft, reload }: EditorContext) {
           ) : (
             <div className="flex flex-col gap-4">
               {errors.length > 0 && (
-                <div className="rounded-lg bg-danger-muted p-3 text-sm text-danger">
+                <div className="rounded-md bg-danger-muted px-3 py-2.5 text-sm text-danger">
                   <p className="font-medium">Fix these first:</p>
                   <ul className="mt-1 list-disc pl-5">
                     {errors.map((i) => (
@@ -81,9 +82,9 @@ export function PublishDialog({ policy, draft, reload }: EditorContext) {
                 </div>
               )}
               {warnings.length > 0 && (
-                <ul className="list-disc pl-5 text-sm text-muted-foreground">
+                <ul className="list-disc pl-5 text-sm text-warning">
                   {warnings.map((i) => (
-                    <li key={i.path + i.code}>⚠ {i.message}</li>
+                    <li key={i.path + i.code}>{i.message}</li>
                   ))}
                 </ul>
               )}
@@ -91,10 +92,11 @@ export function PublishDialog({ policy, draft, reload }: EditorContext) {
                 <div className="text-sm">
                   <p className="font-medium">{summarizeChanges(preview.data.changes)}</p>
                   {preview.data.changes.length > 0 && (
-                    <ul className="mt-1 text-muted-foreground">
+                    <ul className="mt-2 divide-y border-y">
                       {preview.data.changes.map((c) => (
-                        <li key={c.ruleId + c.kind}>
-                          {c.label} — {c.kind}
+                        <li key={c.ruleId + c.kind} className="flex items-center justify-between gap-3 py-1.5">
+                          <span className="min-w-0 truncate">{c.label}</span>
+                          <ChangeMark kind={c.kind} />
                         </li>
                       ))}
                     </ul>

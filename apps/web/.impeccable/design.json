@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-14T00:00:00Z",
+  "title": "Design System: PengOPA",
+  "extensions": {
+    "themes": {
+      "default": "light",
+      "optIn": ["dark", "system"],
+      "mechanism": "A .dark class on <html>, chosen from the account menu and stored per browser (src/lib/theme.ts)."
+    },
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Decision Indigo", "cssVar": "--primary", "dark": "#818cf8", "tonalRamp": ["#1e1b4b", "#312e81", "#3730a3", "#4338ca", "#4f46e5", "#818cf8", "#c7d2fe", "#eef2ff"] },
+      "primary-foreground": { "role": "primary", "displayName": "On Indigo", "cssVar": "--primary-foreground", "dark": "#0c0c0e" },
+      "matched-tint": { "role": "primary", "displayName": "Matched Tint", "canonical": "color-mix(in oklch, var(--primary) 6%, var(--background))", "note": "Rendered as bg-primary/[0.06]; hex is the light-theme composite.", "dark": "#111219" },
+      "background": { "role": "neutral", "displayName": "Paper White", "cssVar": "--background", "dark": "#0a0a0b" },
+      "foreground": { "role": "neutral", "displayName": "Ink", "cssVar": "--foreground", "dark": "#fafafa", "tonalRamp": ["#09090b", "#18181b", "#27272a", "#52525b", "#71717a", "#a1a1aa", "#e4e4e7", "#fafafa"] },
+      "muted": { "role": "neutral", "displayName": "Zinc Wash", "cssVar": "--muted", "dark": "#18181b" },
+      "muted-foreground": { "role": "neutral", "displayName": "Zinc Slate", "cssVar": "--muted-foreground", "dark": "#a1a1aa" },
+      "border": { "role": "neutral", "displayName": "Hairline", "cssVar": "--border", "dark": "#27272a" },
+      "sidebar": { "role": "neutral", "displayName": "Sidebar Mist", "cssVar": "--sidebar", "dark": "#0f0f11" },
+      "sidebar-accent": { "role": "neutral", "displayName": "Sidebar Active", "cssVar": "--sidebar-accent", "dark": "#1c1c1f" },
+      "success": { "role": "semantic", "displayName": "Allow Green", "cssVar": "--success", "dark": "#4ade80", "tonalRamp": ["#052e16", "#14532d", "#166534", "#15803d", "#16a34a", "#4ade80", "#bbf7d0", "#f0fdf4"] },
+      "success-muted": { "role": "semantic", "displayName": "Allow Wash", "cssVar": "--success-muted", "dark": "#0f2a1a" },
+      "danger": { "role": "semantic", "displayName": "Deny Red", "cssVar": "--danger", "dark": "#f87171", "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#dc2626", "#ef4444", "#f87171", "#fecaca", "#fef2f2"] },
+      "danger-muted": { "role": "semantic", "displayName": "Deny Wash", "cssVar": "--danger-muted", "dark": "#2a1214" },
+      "warning": { "role": "semantic", "displayName": "Paused Amber", "cssVar": "--warning", "dark": "#fbbf24", "tonalRamp": ["#451a03", "#78350f", "#92400e", "#b45309", "#d97706", "#fbbf24", "#fde68a", "#fffbeb"] },
+      "warning-muted": { "role": "semantic", "displayName": "Paused Wash", "cssVar": "--warning-muted", "dark": "#2a1f08" },
+      "code": { "role": "neutral", "displayName": "Code Night", "cssVar": "--code", "dark": "#0a0a0c" },
+      "code-foreground": { "role": "neutral", "displayName": "Code Ink", "cssVar": "--code-foreground", "dark": "#ededf0" },
+      "chart-allowed": { "role": "data", "displayName": "Chart Allowed", "cssVar": "--chart-1", "dark": "oklch(0.50 0.11 160)" },
+      "chart-denied": { "role": "data", "displayName": "Chart Denied", "cssVar": "--chart-2", "dark": "oklch(0.67 0.16 50)" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Landing hero headline only; 2.25rem phones, 3rem sm, 3.25rem lg." },
+      "headline": { "displayName": "Headline", "purpose": "Landing section headings (1.5rem) and closing call to action (1.875rem)." },
+      "title": { "displayName": "Title", "purpose": "The one h1 per app page, via PageHeader." },
+      "subtitle": { "displayName": "Subtitle", "purpose": "In-page section headings, rule names, button labels." },
+      "lead": { "displayName": "Lead", "purpose": "The line under a landing heading." },
+      "body": { "displayName": "Body", "purpose": "App text, table cells, rule sentences; inputs go to 16px below md." },
+      "label": { "displayName": "Label", "purpose": "Breadcrumbs, decision and status chip words, section descriptions." },
+      "caption": { "displayName": "Caption", "purpose": "Column headers, hints, Matched / Not reached labels, metadata." },
+      "mono": { "displayName": "Mono", "purpose": "Keys, values, JSON, endpoint paths and code only." }
+    },
+    "shadows": [
+      { "name": "hairline-lift", "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)", "purpose": "Primary button only (shadow-xs)." },
+      { "name": "floating-menu", "value": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1), 0 0 0 1px color-mix(in oklch, var(--foreground) 10%, transparent)", "purpose": "Popovers, selects, dropdown menus, token pickers." },
+      { "name": "sheet", "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)", "purpose": "Sheets, dialogs, and a rule while dragged." }
+    ],
+    "motion": [
+      { "name": "state", "value": "150ms to 200ms ease-out", "purpose": "Colour, background and width transitions (rule tint, sidebar collapse). No bounce." },
+      { "name": "skipped-dim", "value": "opacity 0.6 to 1, 600ms ease-out", "purpose": "Rules passed over by a Try it run; skipped under prefers-reduced-motion." },
+      { "name": "landing", "value": "none", "purpose": "Landing has hover colour only; nothing autoplays." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px", "purpose": "DataList switches from divided list to table." },
+      { "name": "lg", "value": "1024px", "purpose": "Sidebar appears; bottom tab bar hides; settings go two-column." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one primary action per view.",
+      "html": "<button class=\"ds-btn-primary\">Publish</button>",
+      "css": ".ds-btn-primary { height: 32px; padding: 0 12px; border: 1px solid transparent; border-radius: 6px; background: var(--primary, #4f46e5); color: var(--primary-foreground, #fff); font: 500 14px/1 'Geist Variable', system-ui, sans-serif; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); cursor: pointer; transition: background 150ms ease-out, transform 150ms ease-out; } .ds-btn-primary:hover { background: color-mix(in oklch, var(--primary, #4f46e5) 90%, transparent); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:focus-visible { outline: none; border-color: var(--ring, #4f46e5); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring, #4f46e5) 50%, transparent); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary actions in headers and rows.",
+      "html": "<button class=\"ds-btn-ghost\">Add condition</button>",
+      "css": ".ds-btn-ghost { height: 32px; padding: 0 12px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--foreground, #0a0a0b); font: 500 14px/1 'Geist Variable', system-ui, sans-serif; cursor: pointer; transition: background 150ms ease-out; } .ds-btn-ghost:hover { background: var(--muted, #f4f4f5); } .ds-btn-ghost:focus-visible { outline: none; border-color: var(--ring, #4f46e5); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring, #4f46e5) 50%, transparent); }"
+    },
+    {
+      "name": "Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Hairline field, indigo focus ring.",
+      "html": "<input class=\"ds-input\" placeholder=\"Order total\" />",
+      "css": ".ds-input { height: 32px; width: 240px; padding: 4px 10px; border: 1px solid var(--input, #e4e4e7); border-radius: 6px; background: transparent; color: var(--foreground, #0a0a0b); font: 400 14px/1.4 'Geist Variable', system-ui, sans-serif; transition: border-color 150ms ease-out, box-shadow 150ms ease-out; } .ds-input::placeholder { color: var(--muted-foreground, #71717a); } .ds-input:focus-visible { outline: none; border-color: var(--ring, #4f46e5); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring, #4f46e5) 50%, transparent); }"
+    },
+    {
+      "name": "Decision Chip",
+      "kind": "chip",
+      "refersTo": "decision-allowed",
+      "description": "The only way an outcome is shown: a coloured dot plus the word.",
+      "html": "<span class=\"ds-decision ds-allow\"><span class=\"ds-dot\"></span>Allowed</span> <span class=\"ds-decision ds-deny\"><span class=\"ds-dot\"></span>Denied</span>",
+      "css": ".ds-decision { display: inline-flex; align-items: center; gap: 6px; margin-right: 16px; font: 500 13px/1.4 'Geist Variable', system-ui, sans-serif; white-space: nowrap; } .ds-dot { width: 6px; height: 6px; border-radius: 9999px; background: currentColor; } .ds-allow { color: var(--success, #15803d); } .ds-deny { color: var(--danger, #dc2626); }"
+    },
+    {
+      "name": "Status Chip",
+      "kind": "chip",
+      "description": "Policy status: dot in the status colour, word in ink.",
+      "html": "<span class=\"ds-status\"><span class=\"ds-status-dot\" style=\"background:var(--success,#15803d)\"></span>Live</span> <span class=\"ds-status\"><span class=\"ds-status-dot\" style=\"background:var(--warning,#b45309)\"></span>Paused</span>",
+      "css": ".ds-status { display: inline-flex; align-items: center; gap: 6px; margin-right: 16px; color: var(--foreground, #0a0a0b); font: 500 13px/1.4 'Geist Variable', system-ui, sans-serif; } .ds-status-dot { width: 6px; height: 6px; border-radius: 9999px; }"
+    },
+    {
+      "name": "Rule Rows",
+      "kind": "custom",
+      "refersTo": "rule-row-matched",
+      "description": "Rules as divided sentences; the matched one tinted with a Matched label, later ones dimmed as Not reached.",
+      "html": "<ol class=\"ds-rules\"><li class=\"ds-rule ds-rule-matched\"><span class=\"ds-rule-n\">1</span><span>When <span class=\"ds-token\">Customer tier</span> is <span class=\"ds-token\">gold</span>, allow with <span class=\"ds-token\">15</span>% discount</span><span class=\"ds-rule-tag\">Matched</span></li><li class=\"ds-rule ds-rule-skipped\"><span class=\"ds-rule-n\">2</span><span class=\"ds-rule-text\">When <span class=\"ds-token\">First order</span> is <span class=\"ds-token\">yes</span>, allow with <span class=\"ds-token\">10</span>% discount</span><span class=\"ds-rule-tag\">Not reached</span></li></ol>",
+      "css": ".ds-rules { list-style: none; margin: 0; padding: 0; max-width: 560px; border-top: 1px solid var(--border, #e4e4e7); border-bottom: 1px solid var(--border, #e4e4e7); font: 400 14px/1.6 'Geist Variable', system-ui, sans-serif; color: var(--foreground, #0a0a0b); } .ds-rule { display: grid; grid-template-columns: 24px minmax(0,1fr) auto; gap: 8px; padding: 10px 16px; transition: background 200ms ease-out; } .ds-rule + .ds-rule { border-top: 1px solid var(--border, #e4e4e7); } .ds-rule-n { font: 400 12px/1.8 'Geist Mono Variable', ui-monospace, monospace; color: var(--muted-foreground, #71717a); } .ds-rule-tag { font-size: 12px; color: var(--muted-foreground, #71717a); } .ds-rule-matched { background: color-mix(in oklch, var(--primary, #4f46e5) 6%, transparent); } .ds-rule-matched .ds-rule-tag { color: var(--primary, #4f46e5); font-weight: 500; } .ds-rule-skipped { color: var(--muted-foreground, #71717a); } .ds-rule-skipped .ds-rule-text { opacity: 0.7; } .ds-token { font-weight: 500; text-decoration: underline dotted color-mix(in oklch, var(--muted-foreground, #71717a) 60%, transparent); text-underline-offset: 4px; }"
+    },
+    {
+      "name": "Sentence Token",
+      "kind": "custom",
+      "refersTo": "sentence-token",
+      "description": "A variable word in a rule sentence that opens a picker.",
+      "html": "<p class=\"ds-sentence\">When <button class=\"ds-token-btn\">Customer tier</button> is <button class=\"ds-token-btn\">gold</button></p>",
+      "css": ".ds-sentence { font: 400 14px/1.6 'Geist Variable', system-ui, sans-serif; color: var(--foreground, #0a0a0b); } .ds-token-btn { display: inline-flex; align-items: center; height: 28px; padding: 0 6px; border: 0; border-radius: 6px; background: transparent; color: inherit; font: 500 14px/1 'Geist Variable', system-ui, sans-serif; text-decoration: underline dotted color-mix(in oklch, var(--muted-foreground, #71717a) 60%, transparent); text-underline-offset: 4px; cursor: pointer; transition: background 150ms ease-out; } .ds-token-btn:hover { background: var(--muted, #f4f4f5); } .ds-token-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px color-mix(in oklch, var(--ring, #4f46e5) 50%, transparent); }"
+    },
+    {
+      "name": "Sidebar Navigation",
+      "kind": "nav",
+      "refersTo": "sidebar",
+      "description": "240px off-white sidebar; active item takes the sidebar accent fill.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item\">Home</a><a class=\"ds-nav-item ds-active\" aria-current=\"page\">Policies</a><a class=\"ds-nav-item\">Activity</a><a class=\"ds-nav-item\">Connect</a></nav>",
+      "css": ".ds-nav { display: flex; flex-direction: column; gap: 2px; width: 240px; padding: 8px; background: var(--sidebar, #fafafa); border-right: 1px solid var(--sidebar-border, #e4e4e7); font: 500 14px/1 'Geist Variable', system-ui, sans-serif; } .ds-nav-item { display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 6px; color: var(--muted-foreground, #71717a); cursor: pointer; transition: background 150ms ease-out, color 150ms ease-out; } .ds-nav-item:hover { background: var(--sidebar-accent, #f0f0f2); color: var(--foreground, #0a0a0b); } .ds-active { background: var(--sidebar-accent, #f0f0f2); color: var(--foreground, #0a0a0b); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Self-Explaining Decision",
+    "overview": "PengOPA is the category-standard SaaS look executed at the precision of Linear, Vercel and Clerk: a white ground, near-black ink, a cool zinc grey scale and one indigo accent. The world has no theme or motif; its character comes from what it refuses. Sections are not boxed as bordered cards on a grey canvas. Structure is drawn with 1px dividers and spacing, and the one place the accent carries meaning beyond action is the matched rule, where a decision shows the path it took.\n\nThe signature grammar is shared by the app and the landing page: rules are written as sentences with inline dotted-underline tokens, a run marks the rule that matched with a faint indigo tint and the word \"Matched\", and the rules it never reached are dimmed. Allow and Deny are never filled pills; they are a coloured dot followed by the word. Density is working-tool density (13 to 14px UI type, 32px rows and controls) without the grey, gridded look of enterprise software.\n\nLight is the default theme. Dark is opt-in from the account menu (light, dark or system), stored per browser and applied with a `.dark` class on the root.",
+    "keyCharacteristics": [
+      "White ground, near-black ink, cool zinc neutrals, one indigo accent",
+      "Structure from 1px dividers and spacing, not nested cards",
+      "Allow/Deny as a coloured dot plus a word",
+      "Matched rule: 6% primary tint plus a \"Matched\" label; skipped rules dimmed \"Not reached\"",
+      "Geist for everything, Geist Mono only for keys, values and code",
+      "32px controls and table rows; 6 to 8px radius",
+      "Light by default, dark opt-in"
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "Indigo means action, focus, selection or \"this rule matched\". It never means allow, deny or status.", "section": "colors" },
+      { "name": "The Meaning-Only Rule", "body": "Green, red and amber are reserved for decision outcome and policy status. They are never used as decorative category colours.", "section": "colors" },
+      { "name": "The Data-Only Mono Rule", "body": "Geist Mono is for keys, values, paths and code. Headings, labels, buttons and prose are always Geist.", "section": "typography" },
+      { "name": "The Tabular Rule", "body": "Tables and anything marked `data-numeric` use tabular figures so numbers align in columns.", "section": "typography" },
+      { "name": "The Divider Rule", "body": "Sections are separated by a 1px rule and space. If a block would need a border on all four sides to read as a group, the layout is wrong first.", "section": "layout" },
+      { "name": "The Float-Only Rule", "body": "A shadow means the element is above the page (menu, sheet, dialog, drag). Nothing sitting in the page flow gets one.", "section": "elevation" },
+      { "name": "The No-Bar Rule", "body": "No coloured side stripe wider than 1px on any row, card or callout. Emphasis is a tint plus a word.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do show every outcome with DecisionChip: a 6px coloured dot plus the word Allowed or Denied.",
+      "Do mark the matched rule with the 6% primary tint and a \"Matched\" label, and dim the rules it skipped as \"Not reached\".",
+      "Do build structure from 1px dividers and spacing; group with a divider and a heading.",
+      "Do keep one primary (indigo) button per view.",
+      "Do use Geist Mono only for keys, values, paths and code.",
+      "Do design and check light first; dark is opt-in and must hold the same rules.",
+      "Do keep tables and controls at 32px, growing to 44px on touch."
+    ],
+    "donts": [
+      "Don't render Allow or Deny as filled pills or badges.",
+      "Don't use a coloured side bar wider than 1px to mark a matched, selected or warning row.",
+      "Don't nest cards inside cards or box every section on a grey canvas.",
+      "Don't add eyebrows or kicker labels above headings, sparklines, or icons in tinted tiles.",
+      "Don't use indigo to mean allow, deny or status.",
+      "Don't put shadows on in-page surfaces.",
+      "Don't use mono for headings, buttons or prose."
+    ]
+  }
+}

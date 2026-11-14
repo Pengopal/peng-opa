@@ -27,12 +27,12 @@ export function DecisionDetailSheet({ decisionId, onClose }: { decisionId: strin
       title={data?.policyName ?? "Decision"}
       description={data ? `${SOURCE_LABEL[data.source]} · ${formatDateTime(data.createdAt)}` : " "}
     >
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col divide-y">
         <ErrorText error={error} />
         {isLoading && <Skeleton className="h-64 w-full" />}
         {data && (
           <>
-            <div className="flex flex-col gap-2 rounded-lg border p-4">
+            <div className="flex flex-col gap-2 pb-5">
               <DecisionChip allowed={data.allowed} className="w-fit text-sm" />
               <p className="text-sm">{data.result.reason}</p>
               <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
@@ -45,24 +45,26 @@ export function DecisionDetailSheet({ decisionId, onClose }: { decisionId: strin
                 {Object.entries(data.result.outcomes).map(([k, v]) => (
                   <div key={k} className="contents">
                     <dt className="text-muted-foreground">{k}</dt>
-                    <dd>{String(v)}</dd>
+                    <dd className="font-mono text-[13px]">{String(v)}</dd>
                   </div>
                 ))}
               </dl>
               {data.missingFields.length > 0 && <p className="text-xs text-muted-foreground">Not sent: {data.missingFields.join(", ")}</p>}
             </div>
-            <section aria-labelledby="input-h">
+            <section aria-labelledby="input-h" className="py-5">
               <h3 id="input-h" className="mb-2 text-sm font-medium">
                 Input
               </h3>
-              <pre className="max-h-72 overflow-auto rounded-md bg-muted p-3 text-xs">{JSON.stringify(data.input, null, 2)}</pre>
+              <pre className="max-h-72 overflow-auto rounded-md bg-code p-3 font-mono text-xs text-code-foreground">{JSON.stringify(data.input, null, 2)}</pre>
             </section>
             {data.policyKey && (
+              <div className="pt-5">
               <Button asChild>
                 <Link to="/policies/$policyId" params={{ policyId: data.policyId }} search={{ replay: data.id }}>
                   <Play aria-hidden /> Replay in playground
                 </Link>
               </Button>
+              </div>
             )}
           </>
         )}

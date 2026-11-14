@@ -34,7 +34,7 @@ export function DataList<T>({
 
   if (!desktop) {
     return (
-      <ul aria-label={label} className="divide-y overflow-hidden rounded-xl border bg-card">
+      <ul aria-label={label} className="-mx-4 divide-y border-b sm:mx-0">
         {rows.map((r) => {
           const body = (
             <>
@@ -48,7 +48,7 @@ export function DataList<T>({
           return (
             <li key={rowKey(r)} className="flex items-center">
               {onOpen ? (
-                <button type="button" onClick={() => onOpen(r)} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 px-4 py-3 text-left active:bg-muted">
+                <button type="button" onClick={() => onOpen(r)} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 px-4 py-3 text-left transition-colors active:bg-muted">
                   {body}
                   <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
                 </button>
@@ -64,12 +64,12 @@ export function DataList<T>({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border bg-card">
+    <div className="border-b">
       <Table aria-label={label}>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
             {columns.map((c) => (
-              <TableHead key={c.header} className={cn(c.hideBelow === "lg" && "hidden lg:table-cell", c.className)}>
+              <TableHead key={c.header} className={cn("h-8 text-xs font-medium text-muted-foreground", c.hideBelow === "lg" && "hidden lg:table-cell", c.className)}>
                 {c.header}
               </TableHead>
             ))}
@@ -80,7 +80,7 @@ export function DataList<T>({
           {rows.map((r) => (
             <TableRow key={rowKey(r)} className={cn(onOpen && "cursor-pointer")} onClick={onOpen ? () => onOpen(r) : undefined}>
               {columns.map((c, i) => (
-                <TableCell key={c.header} className={cn(c.hideBelow === "lg" && "hidden lg:table-cell", c.className)}>
+                <TableCell key={c.header} className={cn("py-2", c.hideBelow === "lg" && "hidden lg:table-cell", c.className)}>
                   {i === 0 && onOpen ? (
                     <button type="button" className="text-left font-medium hover:underline" onClick={(e) => (e.stopPropagation(), onOpen(r))}>
                       {c.cell(r)}

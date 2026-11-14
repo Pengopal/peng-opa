@@ -7,6 +7,8 @@ import { api } from "@/lib/api";
 import { ConditionRow } from "./ConditionRow";
 import { FieldPicker } from "./FieldPicker";
 import { useDraft } from "./useDraft";
+import { matchedRuleId } from "./matched-rule";
+import type { TryResult } from "@/lib/types";
 
 vi.mock("@/lib/api", async (orig) => ({ ...(await orig<typeof import("@/lib/api")>()), api: vi.fn() }));
 
@@ -63,4 +65,14 @@ describe("useDraft", () => {
     expect(vi.mocked(api).mock.calls[0][1]?.body).toMatchObject({ ruleSet: { rules: [{ conditions: [{}, { value: 800 }] }, {}] } });
     expect(result.current.saveState).toBe("saved");
   });
+});
+
+describe("matchedRuleId", () => {
+  const base = sampleRuleSet();
+  const rs = { ...base, rules: [{ ...base.rules[0], id: "a", label: "Gold" }, { ...base.rules[1], id: "b", label: "Gold" }] };
+  const r = (over: Partial<TryResult>) =>
+    ({ allowed: true, reason: "", outcomes: {}, rule: "Gold", policy: { key: "k", version: 1 }, decisionId: "d", target: "draft", latencyMs: 1, missingFields: [], typeErrors: [], ...over }) as TryResult;
+  it("marks the first rule with that name", () => expect(matchedRuleId(rs, r({}))).toBe("a"));
+  it("marks nothing for a live result", () => expect(matchedRuleId(rs, r({ target: "live" }))).toBeNull());
+  it("marks nothing when no rule matched", () => expect(matchedRuleId(rs, r({ rule: null }))).toBeNull());
 });

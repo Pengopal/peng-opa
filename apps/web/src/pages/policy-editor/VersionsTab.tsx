@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -16,6 +15,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/EmptyState";
 import { ErrorText } from "@/components/ErrorText";
+import { StatusChip } from "@/components/StatusChip";
 import { api } from "@/lib/api";
 import { formatDateTime, formatRelative } from "@/lib/format";
 import type { VersionSummary } from "@/lib/types";
@@ -48,24 +48,33 @@ export function VersionsTab({ policy, canEdit, reload, draft }: EditorContext) {
     onSuccess: (_, n) => after(`The draft now matches v${n}. Publish it when you're ready.`),
   });
 
-  if (isLoading) return <Skeleton className="h-48 w-full rounded-xl" />;
+  if (isLoading) return <Skeleton className="h-48 w-full" />;
   if (!data?.length) return <EmptyState title="Not published yet" body="Every time you publish, a version is saved here so you can compare and roll back." />;
 
   return (
     <div className="flex flex-col gap-3">
       <ErrorText error={error ?? rollback.error ?? restore.error} />
-      <ol className="divide-y rounded-xl border">
+      <ol className="divide-y border-y">
         {data.map((v, i) => (
-          <li key={v.number} className="flex flex-wrap items-center justify-between gap-3 p-4">
-            <div className="min-w-0">
-              <p className="flex items-center gap-2 font-medium">
-                v{v.number} {v.number === live && <Badge>Live</Badge>}
-              </p>
-              <p className="text-sm text-muted-foreground" title={formatDateTime(v.publishedAt)}>
-                {v.note ?? "No note"} · {v.publishedBy ?? "Someone"} · {formatRelative(v.publishedAt)}
-              </p>
+          <li key={v.number} className="flex flex-wrap items-center justify-between gap-3 px-2 py-3">
+            <div className="flex min-w-0 items-baseline gap-3">
+              <span className="w-8 shrink-0 font-mono text-[13px] font-medium" data-numeric>
+                v{v.number}
+              </span>
+              <div className="min-w-0">
+                <p className="flex flex-wrap items-center gap-x-2 text-sm">
+                  <span className="truncate">{v.note ?? <span className="text-muted-foreground">No note</span>}</span>
+                  {v.number === live && <StatusChip status="LIVE" />}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {v.publishedBy ?? "Someone"} ·{" "}
+                  <time dateTime={v.publishedAt} title={formatDateTime(v.publishedAt)}>
+                    {formatRelative(v.publishedAt)}
+                  </time>
+                </p>
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1">
               {i < data.length - 1 && (
                 <Button variant="ghost" size="sm" onClick={() => setCompare([data[i + 1].number, v.number])}>
                   Compare with v{data[i + 1].number}
@@ -85,7 +94,6 @@ export function VersionsTab({ policy, canEdit, reload, draft }: EditorContext) {
           </li>
         ))}
       </ol>
-
       {compare && <VersionCompare policyId={policy.id} from={compare[0]} to={compare[1]} onClose={() => setCompare(null)} />}
 
       <AlertDialog open={confirm !== null} onOpenChange={(o) => !o && setConfirm(null)}>

@@ -3,7 +3,6 @@ import { useSearch } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ErrorText } from "@/components/ErrorText";
 import { api } from "@/lib/api";
 import type { DecisionDetail, TryResult } from "@/lib/types";
@@ -15,7 +14,7 @@ import { ResultCard } from "./ResultCard";
 import { SamplesMenu } from "./SamplesMenu";
 
 /** Try the draft (or the live version) with an input built from the policy's fields. */
-export function TryItPanel({ policy, draft, canEdit, initialInput }: EditorContext & { initialInput?: unknown }) {
+export function TryItPanel({ policy, draft, canEdit, initialInput, setTryResult, bare = false }: EditorContext & { initialInput?: unknown; bare?: boolean }) {
   const fields = draft.ruleSet.fields;
   const [values, setValues] = useState<FormValues>(() => (initialInput ? flattenInput(fields, initialInput) : {}));
   const [target, setTarget] = useState<"draft" | "live">("draft");
@@ -37,20 +36,21 @@ export function TryItPanel({ policy, draft, canEdit, initialInput }: EditorConte
       if (target === "draft") await draft.flush();
       return api<TryResult>(`/api/policies/${policy.id}/try`, { method: "POST", body: { input, target } });
     },
+    onSuccess: (r) => setTryResult?.(r),
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <h2>Try it</h2>
-        </CardTitle>
-        <CardAction>
-          <SamplesMenu policyId={policy.id} current={input} canSave={canEdit} onLoad={(i) => setValues(flattenInput(fields, i))} />
-        </CardAction>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        <div role="radiogroup" aria-label="Test against" className="inline-flex w-fit rounded-lg border p-0.5 text-sm">
+    <section aria-labelledby={bare ? undefined : "try-it-heading"} aria-label={bare ? "Try it" : undefined} className={bare ? undefined : "rounded-lg border"}>
+      <div className={cn("flex items-center gap-2", bare ? "justify-end pb-3" : "justify-between border-b px-4 py-2")}>
+        {!bare && (
+          <h2 id="try-it-heading" className="text-sm font-medium">
+            Try it
+          </h2>
+        )}
+        <SamplesMenu policyId={policy.id} current={input} canSave={canEdit} onLoad={(i) => setValues(flattenInput(fields, i))} />
+      </div>
+      <div className={cn("flex flex-col gap-4", !bare && "p-4")}>
+        <div role="radiogroup" aria-label="Test against" className="inline-flex h-8 w-fit items-center rounded-md border bg-muted/50 p-0.5 text-[13px]">
           {(["draft", "live"] as const).map((t) => (
             <button
               key={t}
@@ -59,7 +59,7 @@ export function TryItPanel({ policy, draft, canEdit, initialInput }: EditorConte
               aria-checked={target === t}
               disabled={t === "live" && !policy.liveVersion}
               onClick={() => setTarget(t)}
-              className={cn("rounded-md px-3 py-1", target === t ? "bg-muted font-medium" : "text-muted-foreground hover:bg-muted/50", "disabled:opacity-50")}
+              className={cn("h-full rounded-[5px] px-2.5 font-medium transition-colors", target === t ? "bg-background text-foreground shadow-xs" : "text-muted-foreground hover:text-foreground", "disabled:opacity-50")}
             >
               {t === "draft" ? "Draft" : policy.liveVersion ? `Live v${policy.liveVersion.number}` : "Live (not published)"}
             </button>
@@ -72,8 +72,8 @@ export function TryItPanel({ policy, draft, canEdit, initialInput }: EditorConte
           <Play aria-hidden /> {run.isPending ? "Running…" : "Run"}
         </Button>
         <ErrorText error={run.error} />
-        {run.data && <ResultCard result={run.data} />}
-      </CardContent>
-    </Card>
+        {run.data && <ResultCard result={run.data} rules={draft.ruleSet.rules} outcomes={draft.ruleSet.outcomes} />}
+      </div>
+    </section>
   );
 }

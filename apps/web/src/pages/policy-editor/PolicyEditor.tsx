@@ -1,16 +1,18 @@
 import { useState, type ReactNode } from "react";
-import { Link, useParams } from "@tanstack/react-router";
+import { useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Check, CircleAlert, FlaskConical, Loader2 } from "lucide-react";
+import { Check, CircleAlert, FlaskConical, Loader2 } from "lucide-react";
 import { ResponsiveSheet } from "@/components/ResponsiveSheet";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ErrorText } from "@/components/ErrorText";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusChip } from "@/components/StatusChip";
 import { api } from "@/lib/api";
-import type { PolicyDetail } from "@/lib/types";
+import type { PolicyDetail, TryResult } from "@/lib/types";
 import { can, useWorkspace } from "@/lib/workspace";
+import { matchedRuleId } from "./matched-rule";
 import { RuleList } from "./RuleList";
 import { useDraft, type SaveState } from "./useDraft";
 
@@ -35,7 +37,8 @@ const SAVE_LABEL: Record<SaveState, ReactNode> = {
 
 export interface EditorSlots {
   /** Right column next to the rules (Try-it panel). */
-  side?: (ctx: EditorContext) => ReactNode;
+  /** The Try it panel; `bare` drops its own frame and heading when it sits inside the phone sheet. */
+  side?: (ctx: EditorContext, bare?: boolean) => ReactNode;
   /** Buttons at the top right (Rego view, Publish). */
   actions?: (ctx: EditorContext) => ReactNode;
   /** Other tabs (Versions, Settings). */
@@ -49,6 +52,9 @@ export type EditorContext = {
   canEdit: boolean;
   /** Re-read the policy and restart the editor from the stored draft (after restore or publish). */
   reload(): Promise<void>;
+  /** The last Try-it result, until the draft changes. */
+  tryResult: TryResult | null;
+  setTryResult(r: TryResult | null): void;
 };
 
 function Editor({ policy, slots, reload }: { policy: PolicyDetail; slots: EditorSlots; reload(): Promise<void> }) {
@@ -57,6 +63,10 @@ function Editor({ policy, slots, reload }: { policy: PolicyDetail; slots: Editor
   const draft = useDraft(policy.id, policy.draft);
   const [tab, setTab] = useState("rules");
   const [tryItOpen, setTryItOpen] = useState(false);
+  const [run, setRun] = useState<{ result: TryResult | null; id: number; ruleSet?: unknown }>({ result: null, id: 0 });
+  const setTryResult = (result: TryResult | null) => setRun((r) => ({ result, id: r.id + 1, ruleSet: draft.ruleSet }));
+  // An edit makes the last result stale: the marker would point at a rule that may no longer match.
+  const tryResult = run.ruleSet === draft.ruleSet ? run.result : null;
   // Save pending edits before re-reading, so the remount never sends a stale draft over newer server state.
   const ctx: EditorContext = {
     policy,
@@ -66,53 +76,54 @@ function Editor({ policy, slots, reload }: { policy: PolicyDetail; slots: Editor
       await draft.flush();
       await reload();
     },
+    tryResult,
+    setTryResult,
   };
   const errors = draft.issues.filter((i) => i.severity === "error").length;
 
   return (
-    <div className="flex flex-col gap-4">
-      <Link to="/policies" className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="size-4" aria-hidden /> Policies
-      </Link>
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-semibold tracking-tight">{policy.name}</h1>
-            <StatusChip status={policy.status} />
-            {policy.liveVersion && <span className="text-sm text-muted-foreground">Live v{policy.liveVersion.number}</span>}
-          </div>
-          <p className="mt-1 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <code>{policy.key}</code>
+    <div className="flex flex-col">
+      <PageHeader
+        breadcrumb={[{ label: "Policies", to: "/policies" }, { label: policy.name }]}
+        title={policy.name}
+        compact
+        status={
+          <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-muted-foreground">
+            <span className="flex items-center gap-2">
+              <StatusChip status={policy.status} />
+              {policy.liveVersion && <span>v{policy.liveVersion.number}</span>}
+            </span>
+            <code className="font-mono">{policy.key}</code>
             {canEdit && (
               <span role="status" className="inline-flex items-center gap-1">
                 {SAVE_LABEL[draft.saveState]}
               </span>
             )}
             {errors > 0 && <span className="text-danger">{errors} issue{errors > 1 ? "s" : ""} to fix</span>}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">{slots.actions?.(ctx)}</div>
-      </header>
+          </span>
+        }
+        actions={slots.actions?.(ctx)}
+      />
 
       <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <TabsList>
+        <TabsList variant="line">
           <TabsTrigger value="rules">Rules</TabsTrigger>
           <TabsTrigger value="versions">Versions</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
-        <TabsContent value="rules" className="mt-4 w-full min-w-0">
-          <div className="grid gap-6 pb-20 xl:grid-cols-[minmax(0,1fr)_360px] xl:pb-0">
-            <RuleList ruleSet={draft.ruleSet} issues={draft.issues} disabled={!canEdit} onChange={draft.setRuleSet} />
+        <TabsContent value="rules" className="mt-3 w-full min-w-0">
+          <div className="grid gap-8 pb-20 xl:grid-cols-[minmax(0,1fr)_360px] xl:pb-0">
+            <RuleList ruleSet={draft.ruleSet} issues={draft.issues} disabled={!canEdit} onChange={draft.setRuleSet} matchedRuleId={matchedRuleId(draft.ruleSet, tryResult)} runId={run.id} />
             <aside className="hidden xl:sticky xl:top-6 xl:block xl:self-start">{slots.side?.(ctx)}</aside>
           </div>
           <Button
             className="fixed inset-x-4 bottom-20 z-30 xl:hidden"
             onClick={() => setTryItOpen(true)}
           >
-            <FlaskConical aria-hidden /> Test
+            <FlaskConical aria-hidden /> Try it
           </Button>
           <ResponsiveSheet open={tryItOpen} onOpenChange={setTryItOpen} title="Try it">
-            {slots.side?.(ctx)}
+            {slots.side?.(ctx, true)}
           </ResponsiveSheet>
         </TabsContent>
         <TabsContent value="versions" className="mt-4 w-full min-w-0">

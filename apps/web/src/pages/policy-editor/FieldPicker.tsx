@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 import { FIELD_PATH_PATTERN, type Field, type FieldType } from "@peng/shared";
-import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { tokenClass } from "./TokenSelect";
 
 export const FIELD_TYPE_LABELS: Record<FieldType, string> = { text: "text", number: "number", yesno: "yes/no", date: "date", list: "list" };
 
@@ -37,12 +37,11 @@ export function FieldPicker({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" aria-expanded={open} aria-label="Field" disabled={disabled} className="w-full justify-between font-normal sm:w-48">
+        <button type="button" role="combobox" aria-expanded={open} aria-label="Field" disabled={disabled} className={tokenClass}>
           <span className={cn("truncate", !current && "text-muted-foreground")}>{current?.label ?? (value || "Choose a field")}</span>
-          <ChevronsUpDown className="size-4 opacity-50" aria-hidden />
-        </Button>
+        </button>
       </PopoverTrigger>
-      <PopoverContent className="w-72 p-0" align="start">
+      <PopoverContent className="w-72 max-w-[calc(100vw-2rem)] p-0" align="start" collisionPadding={16}>
         <Command shouldFilter>
           <CommandInput placeholder="Search or type a new field (e.g. customer.region)" value={query} onValueChange={setQuery} />
           <CommandList>

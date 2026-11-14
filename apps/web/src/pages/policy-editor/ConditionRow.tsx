@@ -1,11 +1,12 @@
+import type { ReactNode } from "react";
 import { X } from "lucide-react";
 import { OPERATOR_LABELS, OPERATORS_BY_TYPE, type Condition, type Field, type Operator, type RuleSet } from "@peng/shared";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FieldPicker } from "./FieldPicker";
+import { TokenSelect } from "./TokenSelect";
 import { defaultValue, ValueInput } from "./ValueInput";
 
-/** One condition: [field] [operator in words] [value that fits the type]. */
+/** One condition as a sentence: [lead] [field] [operator in words] [value that fits the type]. */
 export function ConditionRow({
   ruleSet,
   condition,
@@ -14,6 +15,7 @@ export function ConditionRow({
   onCreateField,
   disabled,
   error,
+  lead,
 }: {
   ruleSet: RuleSet;
   condition: Condition;
@@ -22,6 +24,8 @@ export function ConditionRow({
   onCreateField(f: Field): void;
   disabled?: boolean;
   error?: string;
+  /** "When", or the and/or token that joins it to the condition above. */
+  lead?: ReactNode;
 }) {
   const field = ruleSet.fields.find((f) => f.path === condition.field);
   const ops = field ? OPERATORS_BY_TYPE[field.type] : [];
@@ -32,42 +36,43 @@ export function ConditionRow({
   }
 
   return (
-    <div className="flex flex-col gap-1 rounded-lg border bg-muted/30 p-2.5 sm:border-0 sm:bg-transparent sm:p-0">
-      <div className="flex items-start gap-2 sm:flex-wrap sm:items-center">
-        <div className="grid flex-1 gap-2 sm:flex sm:flex-1 sm:flex-wrap sm:items-center">
-          <FieldPicker
-            fields={ruleSet.fields}
-            value={condition.field}
+    <div className="group/cond">
+      <div className="flex flex-wrap items-center gap-x-1 gap-y-1">
+        {lead && <span className="inline-flex w-12 shrink-0 text-sm text-muted-foreground">{lead}</span>}
+        <FieldPicker
+          fields={ruleSet.fields}
+          value={condition.field}
+          disabled={disabled}
+          onSelect={(path) => chooseField(ruleSet.fields.find((f) => f.path === path)!)}
+          onCreate={(f) => {
+            onCreateField(f);
+            chooseField(f);
+          }}
+        />
+        {field && (
+          <TokenSelect<Operator>
+            ariaLabel="Operator"
             disabled={disabled}
-            onSelect={(path) => chooseField(ruleSet.fields.find((f) => f.path === path)!)}
-            onCreate={(f) => {
-              onCreateField(f);
-              chooseField(f);
-            }}
+            value={condition.op}
+            options={ops.map((op) => ({ value: op, label: OPERATOR_LABELS[op] }))}
+            onChange={(op) => onChange({ ...condition, op, value: defaultValue(field.type, op, field) })}
+            className="font-normal text-muted-foreground"
           />
-          {field && (
-            <Select disabled={disabled} value={condition.op} onValueChange={(op) => onChange({ ...condition, op: op as Operator, value: defaultValue(field.type, op as Operator, field) })}>
-              <SelectTrigger aria-label="Operator" className="w-full sm:w-44">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {ops.map((op) => (
-                  <SelectItem key={op} value={op}>
-                    {OPERATOR_LABELS[op]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-          {field && <ValueInput field={field} condition={condition} disabled={disabled} onChange={(value) => onChange({ ...condition, value })} />}
-        </div>
+        )}
+        {field && <ValueInput field={field} condition={condition} disabled={disabled} onChange={(value) => onChange({ ...condition, value })} />}
         {!disabled && (
-          <Button variant="ghost" size="icon" aria-label="Remove condition" className="shrink-0" onClick={onRemove}>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Remove condition"
+            className="ml-auto text-muted-foreground opacity-0 group-focus-within/cond:opacity-100 group-hover/cond:opacity-100 [@media(hover:none)]:opacity-100"
+            onClick={onRemove}
+          >
             <X />
           </Button>
         )}
       </div>
-      {error && <p className="text-xs text-danger">{error}</p>}
+      {error && <p className="mt-1 text-xs text-danger sm:pl-13">{error}</p>}
     </div>
   );
 }
