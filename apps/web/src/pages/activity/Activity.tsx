@@ -144,7 +144,7 @@ function Decisions({ filters, setFilters }: { filters: DecisionFilters; setFilte
     },
     { header: "Policy", cell: (d) => <span className="font-medium">{d.policyName}</span> },
     { header: "Decision", cell: (d) => <DecisionChip allowed={d.allowed} /> },
-    { header: "Matched rule", hideBelow: "lg", cell: (d) => <span className="text-muted-foreground">{d.matchedRule ?? "—"}</span> },
+    { header: "Matched rule", hideBelow: "lg", cell: (d) => <span className="text-muted-foreground">{d.matchedRule ?? "No rule matched"}</span> },
     { header: "Source", cell: (d) => <span className="text-muted-foreground">{SOURCE_LABEL[d.source]}</span> },
   ];
 

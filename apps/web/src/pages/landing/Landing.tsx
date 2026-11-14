@@ -6,6 +6,7 @@ import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useConfig } from "@/lib/config";
 import { openPublicDemo } from "@/lib/demo";
+import { cn } from "@/lib/utils";
 import { DecisionPreview } from "./DecisionPreview";
 import { LandingNav } from "./LandingNav";
 
@@ -15,7 +16,7 @@ const AUDIENCES = [
   { who: "Sales", what: "opens a live demo workspace in a click" },
 ];
 
-const STEPS: { who: string; title: string; body: string; detail: ReactNode }[] = [
+const STEPS: { who: string; title: string; body: string; detail: ReactNode; code?: boolean }[] = [
   {
     who: "Ops",
     title: "Write the rule as a sentence",
@@ -33,6 +34,7 @@ const STEPS: { who: string; title: string; body: string; detail: ReactNode }[] =
     title: "Call one endpoint",
     body: "Each system sends the facts with its own API key and gets back allowed or denied, the reason, and any results such as a discount.",
     detail: "POST /v1/decide/checkout-discount",
+    code: true,
   },
   {
     who: "Sales",
@@ -167,7 +169,7 @@ export function Landing() {
                   </h3>
                   <p className="mt-1 text-sm text-pretty text-muted-foreground">{s.body}</p>
                 </div>
-                <p className="mt-2 font-mono text-xs leading-relaxed text-muted-foreground sm:mt-1">{s.detail}</p>
+                <p className={cn("mt-2 text-xs leading-relaxed text-muted-foreground sm:mt-1", s.code && "font-mono")}>{s.detail}</p>
               </li>
             ))}
           </ol>
@@ -177,8 +179,9 @@ export function Landing() {
           <ul className="grid gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-2 lg:grid-cols-3">
             {TEMPLATES.map((t) => (
               <li key={t.name} className="bg-background p-4">
-                <p className="text-xs text-muted-foreground">{t.category}</p>
-                <h3 className="mt-1 font-medium">{t.name}</h3>
+                <h3 className="font-medium">
+                  {t.name} <span className="ml-1 text-sm font-normal text-muted-foreground">· {t.category}</span>
+                </h3>
                 <p className="mt-1 text-sm text-pretty text-muted-foreground">{t.body}</p>
               </li>
             ))}

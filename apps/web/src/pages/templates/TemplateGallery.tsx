@@ -8,6 +8,7 @@ import { ErrorText } from "@/components/ErrorText";
 import { PageHeader } from "@/components/PageHeader";
 import { api } from "@/lib/api";
 import type { PolicyDetail, TemplateSummary } from "@/lib/types";
+import { toSentence } from "@/lib/sentence";
 import { cn } from "@/lib/utils";
 import { can, useWorkspace } from "@/lib/workspace";
 
@@ -29,20 +30,26 @@ function TemplatePanel({ t, canUse }: { t: TemplateSummary; canUse: boolean }) {
   });
   const shown = t.preview.slice(0, 3);
   return (
-    <article aria-labelledby={`tpl-${t.id}`} className="flex flex-col gap-3 rounded-lg border p-4">
+    <article aria-labelledby={`tpl-${t.id}`} className="flex flex-col gap-3 bg-background p-4">
       <div>
         <h3 id={`tpl-${t.id}`} className="text-sm font-medium">
           {t.name}
         </h3>
-        <p className="mt-0.5 line-clamp-1 text-[13px] text-muted-foreground">{t.description}</p>
+        <p className="mt-0.5 line-clamp-2 text-[13px] text-muted-foreground">{t.description}</p>
       </div>
       <ol className="flex flex-1 flex-col gap-1.5 text-[13px] text-muted-foreground">
-        {shown.map((line, i) => (
-          <li key={i} className="flex gap-2">
-            <span aria-hidden className={cn("mt-[7px] size-1.5 shrink-0 rounded-full", allows(line) ? "bg-success" : "bg-danger")} />
-            <span className="line-clamp-2">{line}</span>
-          </li>
-        ))}
+        {shown.map((line, i) => {
+          const { sentence, reason } = toSentence(line);
+          return (
+            <li key={i} className="flex gap-2">
+              <span aria-hidden className={cn("mt-[7px] size-1.5 shrink-0 rounded-full", allows(line) ? "bg-success" : "bg-danger")} />
+              <span>
+                <span className="text-foreground/80">{sentence}</span>
+                {reason && <span> {reason}</span>}
+              </span>
+            </li>
+          );
+        })}
         {t.preview.length > shown.length && <li className="pl-3.5">+{t.preview.length - shown.length} more</li>}
       </ol>
       <ErrorText error={use.error} />
@@ -88,7 +95,7 @@ export function TemplateGallery() {
           return (
             <section key={category} aria-label={category}>
               {tab === "All" && <h2 className="mb-3 text-sm font-medium">{category}</h2>}
-              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid gap-px overflow-hidden rounded-lg border bg-border md:grid-cols-2 xl:grid-cols-3">
                 {items.map((t) => (
                   <TemplatePanel key={t.id} t={t} canUse={canUse} />
                 ))}

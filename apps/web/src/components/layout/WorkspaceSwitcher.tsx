@@ -19,10 +19,13 @@ function initialsOf(name: string) {
 }
 
 /** Current workspace with a menu to switch. `bar` is the compact phone top-bar form; `collapsed` shows only the initials tile. */
+/** The demo workspace already carries a Demo badge, so its name drops the trailing "(Demo)". */
+const shownName = (w: { name: string; isDemo?: boolean }) => (w.isDemo ? w.name.replace(/\s*\(Demo\)$/, "") : w.name);
+
 export function WorkspaceSwitcher({ variant = "sidebar", collapsed = false }: { variant?: "sidebar" | "bar"; collapsed?: boolean }) {
   const { current, list, switchTo } = useWorkspace();
   const navigate = useNavigate();
-  const name = current?.name ?? "—";
+  const name = current ? shownName(current) : "—";
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -40,9 +43,9 @@ export function WorkspaceSwitcher({ variant = "sidebar", collapsed = false }: { 
           </span>
           {!collapsed && (
             <>
-              <span className="flex min-w-0 flex-1 items-center gap-2 text-left">
+              <span className="flex min-w-0 flex-1 flex-col text-left leading-tight">
                 <span className="truncate text-sm font-semibold">{name}</span>
-                {current?.isDemo && <Badge className="bg-warning-muted text-warning">Demo</Badge>}
+                {current?.isDemo && <span className="text-xs font-normal text-warning">Demo workspace</span>}
               </span>
               <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
             </>
@@ -59,7 +62,7 @@ export function WorkspaceSwitcher({ variant = "sidebar", collapsed = false }: { 
               void navigate({ to: HOME_PATH });
             }}
           >
-            <span className="flex-1 truncate">{w.name}</span>
+            <span className="flex-1 truncate">{shownName(w)}</span>
             {w.isDemo && <Badge variant="secondary">Demo</Badge>}
             {w.id === current?.id && <Check className="size-4" aria-label="Current" />}
           </DropdownMenuItem>

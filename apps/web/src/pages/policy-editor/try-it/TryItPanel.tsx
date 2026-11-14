@@ -14,7 +14,7 @@ import { ResultCard } from "./ResultCard";
 import { SamplesMenu } from "./SamplesMenu";
 
 /** Try the draft (or the live version) with an input built from the policy's fields. */
-export function TryItPanel({ policy, draft, canEdit, initialInput, setTryResult }: EditorContext & { initialInput?: unknown }) {
+export function TryItPanel({ policy, draft, canEdit, initialInput, setTryResult, bare = false }: EditorContext & { initialInput?: unknown; bare?: boolean }) {
   const fields = draft.ruleSet.fields;
   const [values, setValues] = useState<FormValues>(() => (initialInput ? flattenInput(fields, initialInput) : {}));
   const [target, setTarget] = useState<"draft" | "live">("draft");
@@ -40,14 +40,16 @@ export function TryItPanel({ policy, draft, canEdit, initialInput, setTryResult 
   });
 
   return (
-    <section aria-labelledby="try-it-heading" className="rounded-lg border">
-      <div className="flex items-center justify-between gap-2 border-b px-4 py-2">
-        <h2 id="try-it-heading" className="text-sm font-medium">
-          Try it
-        </h2>
+    <section aria-labelledby={bare ? undefined : "try-it-heading"} aria-label={bare ? "Try it" : undefined} className={bare ? undefined : "rounded-lg border"}>
+      <div className={cn("flex items-center gap-2", bare ? "justify-end pb-3" : "justify-between border-b px-4 py-2")}>
+        {!bare && (
+          <h2 id="try-it-heading" className="text-sm font-medium">
+            Try it
+          </h2>
+        )}
         <SamplesMenu policyId={policy.id} current={input} canSave={canEdit} onLoad={(i) => setValues(flattenInput(fields, i))} />
       </div>
-      <div className="flex flex-col gap-4 p-4">
+      <div className={cn("flex flex-col gap-4", !bare && "p-4")}>
         <div role="radiogroup" aria-label="Test against" className="inline-flex h-8 w-fit items-center rounded-md border bg-muted/50 p-0.5 text-[13px]">
           {(["draft", "live"] as const).map((t) => (
             <button
@@ -70,7 +72,7 @@ export function TryItPanel({ policy, draft, canEdit, initialInput, setTryResult 
           <Play aria-hidden /> {run.isPending ? "Running…" : "Run"}
         </Button>
         <ErrorText error={run.error} />
-        {run.data && <ResultCard result={run.data} rules={draft.ruleSet.rules} />}
+        {run.data && <ResultCard result={run.data} rules={draft.ruleSet.rules} outcomes={draft.ruleSet.outcomes} />}
       </div>
     </section>
   );

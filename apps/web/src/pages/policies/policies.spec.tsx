@@ -28,7 +28,7 @@ describe("TemplateGallery", () => {
     await renderPage(<TemplateGallery />);
     const commerce = await screen.findByRole("region", { name: "Commerce" });
     expect(within(commerce).getByText("Checkout discount")).toBeInTheDocument();
-    expect(within(commerce).getByText("When Customer tier is gold → Allow")).toBeInTheDocument();
+    expect(within(commerce).getByText("When Customer tier is gold, allow")).toBeInTheDocument();
     expect(within(screen.getByRole("region", { name: "Access" })).getByText("Admin console access")).toBeInTheDocument();
   });
 });

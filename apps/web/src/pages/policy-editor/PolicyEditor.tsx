@@ -37,7 +37,8 @@ const SAVE_LABEL: Record<SaveState, ReactNode> = {
 
 export interface EditorSlots {
   /** Right column next to the rules (Try-it panel). */
-  side?: (ctx: EditorContext) => ReactNode;
+  /** The Try it panel; `bare` drops its own frame and heading when it sits inside the phone sheet. */
+  side?: (ctx: EditorContext, bare?: boolean) => ReactNode;
   /** Buttons at the top right (Rego view, Publish). */
   actions?: (ctx: EditorContext) => ReactNode;
   /** Other tabs (Versions, Settings). */
@@ -85,15 +86,14 @@ function Editor({ policy, slots, reload }: { policy: PolicyDetail; slots: Editor
       <PageHeader
         breadcrumb={[{ label: "Policies", to: "/policies" }, { label: policy.name }]}
         title={policy.name}
+        compact
         status={
-          <span className="flex items-center gap-2">
-            <StatusChip status={policy.status} />
-            {policy.liveVersion && <span className="text-[13px] text-muted-foreground">v{policy.liveVersion.number}</span>}
-          </span>
-        }
-        description={
-          <span className="flex flex-wrap items-center gap-3">
-            <code className="font-mono text-[13px]">{policy.key}</code>
+          <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-muted-foreground">
+            <span className="flex items-center gap-2">
+              <StatusChip status={policy.status} />
+              {policy.liveVersion && <span>v{policy.liveVersion.number}</span>}
+            </span>
+            <code className="font-mono">{policy.key}</code>
             {canEdit && (
               <span role="status" className="inline-flex items-center gap-1">
                 {SAVE_LABEL[draft.saveState]}
@@ -111,7 +111,7 @@ function Editor({ policy, slots, reload }: { policy: PolicyDetail; slots: Editor
           <TabsTrigger value="versions">Versions</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
-        <TabsContent value="rules" className="mt-4 w-full min-w-0">
+        <TabsContent value="rules" className="mt-3 w-full min-w-0">
           <div className="grid gap-8 pb-20 xl:grid-cols-[minmax(0,1fr)_360px] xl:pb-0">
             <RuleList ruleSet={draft.ruleSet} issues={draft.issues} disabled={!canEdit} onChange={draft.setRuleSet} matchedRuleId={matchedRuleId(draft.ruleSet, tryResult)} runId={run.id} />
             <aside className="hidden xl:sticky xl:top-6 xl:block xl:self-start">{slots.side?.(ctx)}</aside>
@@ -120,10 +120,10 @@ function Editor({ policy, slots, reload }: { policy: PolicyDetail; slots: Editor
             className="fixed inset-x-4 bottom-20 z-30 xl:hidden"
             onClick={() => setTryItOpen(true)}
           >
-            <FlaskConical aria-hidden /> Test
+            <FlaskConical aria-hidden /> Try it
           </Button>
           <ResponsiveSheet open={tryItOpen} onOpenChange={setTryItOpen} title="Try it">
-            {slots.side?.(ctx)}
+            {slots.side?.(ctx, true)}
           </ResponsiveSheet>
         </TabsContent>
         <TabsContent value="versions" className="mt-4 w-full min-w-0">

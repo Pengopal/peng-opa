@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { DecisionChip } from "@/components/DecisionChip";
-import type { Rule } from "@peng/shared";
+import type { Rule, RuleSet } from "@peng/shared";
+import { outcomeRow } from "@/lib/sentence";
 import type { TryResult } from "@/lib/types";
 
 /** "Rule 2 · Big orders" for a draft run; a live run only knows the name. */
@@ -11,7 +12,7 @@ function ruleLabel(result: TryResult, rules?: Rule[]) {
   return at >= 0 ? `Rule ${at + 1} · ${result.rule}` : result.rule;
 }
 
-export function ResultCard({ result, rules }: { result: TryResult; rules?: Rule[] }) {
+export function ResultCard({ result, rules, outcomes: defs }: { result: TryResult; rules?: Rule[]; outcomes?: RuleSet["outcomes"] }) {
   const [raw, setRaw] = useState(false);
   const outcomes = Object.entries(result.outcomes);
   return (
@@ -26,12 +27,15 @@ export function ResultCard({ result, rules }: { result: TryResult; rules?: Rule[
       <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
         <dt className="text-muted-foreground">Matched</dt>
         <dd>{ruleLabel(result, rules)}</dd>
-        {outcomes.map(([k, v]) => (
-          <div key={k} className="contents">
-            <dt className="text-muted-foreground">{k}</dt>
-            <dd className="font-mono text-[13px]">{String(v)}</dd>
-          </div>
-        ))}
+        {outcomes.map(([k, v]) => {
+          const [label, value] = outcomeRow(k, v, defs);
+          return (
+            <div key={k} className="contents">
+              <dt className="text-muted-foreground">{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          );
+        })}
       </dl>
       {result.typeErrors.length > 0 && (
         <p className="rounded-md bg-danger-muted px-3 py-2 text-xs text-danger">

@@ -14,8 +14,10 @@ test("phone: edit a condition and test it", async ({ page }) => {
   const rule1 = page.getByRole("article", { name: /^Rule 1/ }).or(page.locator('[aria-label^="Rule 1:"]'));
   await rule1.getByRole("spinbutton", { name: "Value" }).fill("300");
   await expect(page.getByText("Saved")).toBeVisible();
+  // Editing a condition inline must not widen the page past the phone screen.
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 
-  await page.getByRole("button", { name: "Test" }).click();
+  await page.getByRole("button", { name: "Try it", exact: true }).click();
   await tryIt(page, "Gold, $250", "Draft");
   await expect(page.getByText("Denied").first()).toBeVisible();
   await page.getByRole("dialog", { name: "Try it" }).getByRole("button", { name: "Close" }).click();

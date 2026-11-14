@@ -13,15 +13,18 @@ export function PageHeader({
   breadcrumb,
   status,
   actions,
+  compact = false,
 }: {
   title: ReactNode;
   description?: ReactNode;
   breadcrumb?: Crumb[];
   status?: ReactNode;
   actions?: ReactNode;
+  /** Tighter spacing for working screens where the content below should start high (the policy editor). */
+  compact?: boolean;
 }) {
   return (
-    <header className="mb-6 border-b pb-4">
+    <header className={compact ? "mb-2 pb-3" : "mb-6 border-b pb-4"}>
       {breadcrumb && (
         <nav aria-label="Breadcrumb" className="mb-2">
           <ol className="flex min-w-0 items-center gap-1.5 text-[13px] text-muted-foreground">

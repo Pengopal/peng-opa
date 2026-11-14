@@ -7,7 +7,7 @@ import { VersionsTab } from "./VersionsTab";
 
 /** The editor with its panels plugged in. */
 const slots: EditorSlots = {
-  side: (ctx) => <TryItPanel {...ctx} />,
+  side: (ctx, bare) => <TryItPanel {...ctx} bare={bare} />,
   actions: (ctx) => (
     <>
       <RegoView {...ctx} />

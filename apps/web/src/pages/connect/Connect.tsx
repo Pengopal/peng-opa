@@ -101,16 +101,23 @@ export function Connect() {
         <div className="min-w-0 overflow-hidden rounded-lg border bg-code text-code-foreground">
           <Tabs value={tab} onValueChange={setTab} className="gap-0">
             <div className="flex items-center justify-between gap-2 border-b border-white/10 px-3">
-              <TabsList variant="line" aria-label="Code sample" className="border-b-0 [&_[data-slot=tabs-trigger]]:text-code-foreground/60 [&_[data-slot=tabs-trigger][data-active]]:text-code-foreground [&_[data-slot=tabs-trigger]]:after:bg-code-foreground">
+              <TabsList variant="line" aria-label="Code sample" className="min-w-0 flex-1 border-b-0 max-sm:[mask-image:linear-gradient(to_right,#000_82%,transparent)] [&_[data-slot=tabs-trigger]]:text-code-foreground/60 [&_[data-slot=tabs-trigger][data-active]]:text-code-foreground [&_[data-slot=tabs-trigger]]:after:bg-code-foreground">
                 {languages.map((l) => (
                   <TabsTrigger key={l} value={l}>
-                    {LANGUAGE_LABELS[l]}
+                    {l === "javascript" ? (
+                      <>
+                        <span className="sm:hidden">JS</span>
+                        <span className="max-sm:hidden">{LANGUAGE_LABELS[l]}</span>
+                      </>
+                    ) : (
+                      LANGUAGE_LABELS[l]
+                    )}
                   </TabsTrigger>
                 ))}
                 <span aria-hidden className="mx-1 h-4 w-px self-center bg-white/15" />
                 <TabsTrigger value="response">Response</TabsTrigger>
               </TabsList>
-              <CopyButton text={shown} variant="ghost" className="text-code-foreground/80 hover:bg-white/10 hover:text-code-foreground" />
+              <CopyButton text={shown} variant="ghost" className="shrink-0 text-code-foreground/80 hover:bg-white/10 hover:text-code-foreground" />
             </div>
             {[...languages, "response"].map((l) => (
               <TabsContent key={l} value={l} className="w-full min-w-0">
