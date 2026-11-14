@@ -41,7 +41,7 @@ export function TryItPanel({ policy, draft, canEdit, initialInput, setTryResult,
 
   return (
     <section aria-labelledby={bare ? undefined : "try-it-heading"} aria-label={bare ? "Try it" : undefined} className={bare ? undefined : "rounded-lg border"}>
-      <div className={cn("flex items-center gap-2", bare ? "justify-end pb-3" : "justify-between border-b px-4 py-2")}>
+      <div className={cn("flex items-center gap-2", bare ? "justify-end pb-3" : "justify-between border-b bg-muted/40 px-4 py-2")}>
         {!bare && (
           <h2 id="try-it-heading" className="text-sm font-medium">
             Try it

@@ -9,6 +9,7 @@ import { openPublicDemo } from "@/lib/demo";
 import { cn } from "@/lib/utils";
 import { DecisionPreview } from "./DecisionPreview";
 import { LandingNav } from "./LandingNav";
+import { ProductTour } from "./ProductTour";
 
 const AUDIENCES = [
   { who: "Ops", what: "writes and changes the rules, without code" },
@@ -110,9 +111,9 @@ function Actions() {
 }
 
 /** A section's heading and lead, left-aligned above a 1px rule. */
-function Section({ id, title, lead, children }: { id: string; title: string; lead: string; children: ReactNode }) {
+function Section({ id, title, lead, tinted = false, children }: { id: string; title: string; lead: string; tinted?: boolean; children: ReactNode }) {
   return (
-    <section id={id} aria-labelledby={`${id}-heading`} className="scroll-mt-16 border-t">
+    <section id={id} aria-labelledby={`${id}-heading`} className={cn("scroll-mt-16 border-t", tinted && "bg-sidebar")}>
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-16">
         <div>
           <h2 id={`${id}-heading`} className="text-2xl font-semibold tracking-tight text-balance">
@@ -158,6 +159,8 @@ export function Landing() {
           </div>
         </section>
 
+        <ProductTour />
+
         <Section id="how" title="How it works" lead="The people who own a rule change it themselves. The systems that need it ask for the answer.">
           <ol className="divide-y border-y">
             {STEPS.map((s, i) => (
@@ -175,12 +178,12 @@ export function Landing() {
           </ol>
         </Section>
 
-        <Section id="templates" title="Start from a template" lead="Nine ready-made policies with sample inputs to test against. Each one opens as a draft you can change.">
+        <Section id="templates" tinted title="Start from a template" lead="Nine ready-made policies with sample inputs to test against. Each one opens as a draft you can change.">
           <ul className="grid gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-2 lg:grid-cols-3">
             {TEMPLATES.map((t) => (
               <li key={t.name} className="bg-background p-4">
                 <h3 className="font-medium">
-                  {t.name} <span className="ml-1 text-sm font-normal text-muted-foreground">· {t.category}</span>
+                  {t.name} <span className="ml-1 text-sm font-normal whitespace-nowrap text-muted-foreground">· {t.category}</span>
                 </h3>
                 <p className="mt-1 text-sm text-pretty text-muted-foreground">{t.body}</p>
               </li>

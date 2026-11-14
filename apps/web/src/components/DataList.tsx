@@ -64,10 +64,10 @@ export function DataList<T>({
   }
 
   return (
-    <div className="border-b">
+    <div className="overflow-hidden rounded-lg border">
       <Table aria-label={label}>
         <TableHeader>
-          <TableRow className="hover:bg-transparent">
+          <TableRow className="bg-muted/60 hover:bg-muted/60">
             {columns.map((c) => (
               <TableHead key={c.header} className={cn("h-8 text-xs font-medium text-muted-foreground", c.hideBelow === "lg" && "hidden lg:table-cell", c.className)}>
                 {c.header}
