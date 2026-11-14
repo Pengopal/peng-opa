@@ -1,12 +1,13 @@
 import { useState, type ReactNode } from "react";
-import { Link, useParams } from "@tanstack/react-router";
+import { useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Check, CircleAlert, FlaskConical, Loader2 } from "lucide-react";
+import { Check, CircleAlert, FlaskConical, Loader2 } from "lucide-react";
 import { ResponsiveSheet } from "@/components/ResponsiveSheet";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ErrorText } from "@/components/ErrorText";
+import { PageHeader } from "@/components/PageHeader";
 import { StatusChip } from "@/components/StatusChip";
 import { api } from "@/lib/api";
 import type { PolicyDetail } from "@/lib/types";
@@ -71,28 +72,28 @@ function Editor({ policy, slots, reload }: { policy: PolicyDetail; slots: Editor
 
   return (
     <div className="flex flex-col gap-4">
-      <Link to="/policies" className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="size-4" aria-hidden /> Policies
-      </Link>
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-semibold tracking-tight">{policy.name}</h1>
+      <PageHeader
+        breadcrumb={[{ label: "Policies", to: "/policies" }, { label: policy.name }]}
+        title={policy.name}
+        status={
+          <span className="flex items-center gap-2">
             <StatusChip status={policy.status} />
-            {policy.liveVersion && <span className="text-sm text-muted-foreground">Live v{policy.liveVersion.number}</span>}
-          </div>
-          <p className="mt-1 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <code>{policy.key}</code>
+            {policy.liveVersion && <span className="text-[13px] text-muted-foreground">v{policy.liveVersion.number}</span>}
+          </span>
+        }
+        description={
+          <span className="flex flex-wrap items-center gap-3">
+            <code className="font-mono text-[13px]">{policy.key}</code>
             {canEdit && (
               <span role="status" className="inline-flex items-center gap-1">
                 {SAVE_LABEL[draft.saveState]}
               </span>
             )}
             {errors > 0 && <span className="text-danger">{errors} issue{errors > 1 ? "s" : ""} to fix</span>}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">{slots.actions?.(ctx)}</div>
-      </header>
+          </span>
+        }
+        actions={slots.actions?.(ctx)}
+      />
 
       <Tabs value={tab} onValueChange={setTab} className="w-full">
         <TabsList>

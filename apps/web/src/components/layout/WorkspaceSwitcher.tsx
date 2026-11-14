@@ -35,7 +35,7 @@ export function WorkspaceSwitcher({ variant = "sidebar", collapsed = false }: { 
             collapsed && "w-auto justify-center px-1.5",
           )}
         >
-          <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary text-[11px] font-semibold text-primary-foreground">
+          <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-md bg-foreground text-[11px] font-semibold text-background">
             {initialsOf(name)}
           </span>
           {!collapsed && (

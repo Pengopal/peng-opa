@@ -16,7 +16,7 @@ function NavLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
       activeOptions={{ exact }}
       aria-label={collapsed ? label : undefined}
       className={cn(
-        "flex h-9 items-center gap-3 rounded-md px-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground",
+        "flex h-8 items-center gap-2.5 rounded-md px-2 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground",
         "data-[status=active]:bg-sidebar-accent data-[status=active]:text-sidebar-accent-foreground",
         collapsed && "justify-center px-0",
       )}
@@ -55,7 +55,7 @@ export function Sidebar({ collapsed, onToggle, onSearch }: { collapsed: boolean;
         onClick={onSearch}
         aria-label="Search"
         className={cn(
-          "flex h-9 items-center gap-2 rounded-md border bg-background px-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground",
+          "flex h-8 items-center gap-2 rounded-md border bg-background px-2 text-[13px] text-muted-foreground transition-colors hover:text-foreground",
           collapsed && "justify-center px-0",
         )}
       >
@@ -71,7 +71,7 @@ export function Sidebar({ collapsed, onToggle, onSearch }: { collapsed: boolean;
         {main.map((n) => (
           <NavLink key={n.to} item={n} collapsed={collapsed} />
         ))}
-        {collapsed ? <div className="my-2 border-t" /> : <p className="mt-4 mb-1 px-2.5 text-xs font-medium text-muted-foreground">Developers</p>}
+        {collapsed ? <div className="my-2 border-t" /> : <p className="mt-4 mb-1 px-2 text-xs font-medium text-muted-foreground">Developers</p>}
         {dev.map((n) => (
           <NavLink key={n.to} item={n} collapsed={collapsed} />
         ))}
@@ -83,7 +83,7 @@ export function Sidebar({ collapsed, onToggle, onSearch }: { collapsed: boolean;
         <div className="mt-1 border-t pt-2">
           <UserMenu compact={collapsed} />
         </div>
-        {!collapsed && <p className="px-2.5 pt-1 text-[11px] text-muted-foreground">by Pengopal</p>}
+        {!collapsed && <p className="px-2 pt-1 text-[11px] text-muted-foreground">by Pengopal</p>}
       </div>
     </div>
   );
