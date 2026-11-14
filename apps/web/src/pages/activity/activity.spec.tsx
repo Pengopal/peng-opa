@@ -4,6 +4,7 @@ import { api } from "@/lib/api";
 import { fakeWorkspace, renderPage, serveApi } from "@/test/render";
 import { decisionsQueryString, parseFilters } from "./filters";
 import { DecisionDetailSheet } from "./DecisionDetailSheet";
+import { rangeFor } from "./date-range";
 
 vi.mock("@/lib/api", async (orig) => ({ ...(await orig<typeof import("@/lib/api")>()), api: vi.fn() }));
 vi.mock("@/lib/workspace", async (orig) => ({
@@ -50,5 +51,14 @@ describe("DecisionDetailSheet", () => {
     await userEvent.click(screen.getByRole("link", { name: /Replay in playground/ }));
     await waitFor(() => expect(router.state.location.href).toBe("/policies/p1?replay=d1"));
     expect(vi.mocked(api)).toHaveBeenCalledWith("/api/decisions/d1");
+  });
+});
+
+describe("rangeFor", () => {
+  it("starts 'today' at local midnight", () => {
+    const now = new Date(2026, 10, 14, 23, 59);
+    expect(new Date(rangeFor("today", now).from!).getTime()).toBe(new Date(2026, 10, 14, 0, 0).getTime());
+    expect(new Date(rangeFor("7d", now).from!).getTime()).toBe(new Date(2026, 10, 8, 0, 0).getTime());
+    expect(rangeFor("all", now)).toEqual({});
   });
 });
