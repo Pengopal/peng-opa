@@ -12,7 +12,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SettingsSection } from "@/components/SettingsSection";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ErrorText } from "@/components/ErrorText";
@@ -42,14 +42,7 @@ export function DemoControls() {
   const on = traffic.data?.on ?? false;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <h2>Demo</h2>
-        </CardTitle>
-        <CardDescription>Show the product live: send simulated requests, or put everything back the way it started.</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
+    <SettingsSection id="demo" title="Demo" description="Show the product live: send simulated requests, or put everything back the way it started.">
         <div className="flex items-center gap-3">
           <Switch id="demo-traffic" checked={on} disabled={toggle.isPending} onCheckedChange={(v) => toggle.mutate(v)} />
           <Label htmlFor="demo-traffic">Simulate traffic (about 1 request a second)</Label>
@@ -57,7 +50,7 @@ export function DemoControls() {
         </div>
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="outline" className="self-start">
+            <Button variant="outline" size="sm" className="self-start">
               Reset demo
             </Button>
           </AlertDialogTrigger>
@@ -73,7 +66,6 @@ export function DemoControls() {
           </AlertDialogContent>
         </AlertDialog>
         <ErrorText error={toggle.error ?? reset.error} />
-      </CardContent>
-    </Card>
+    </SettingsSection>
   );
 }

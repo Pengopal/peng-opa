@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SettingsSection } from "@/components/SettingsSection";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CopyButton } from "@/components/CopyButton";
 import { DataList, type DataColumn } from "@/components/DataList";
@@ -83,19 +83,7 @@ export function MembersCard({ isOwner }: { isOwner: boolean }) {
   ];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <h2>Members</h2>
-        </CardTitle>
-        <CardDescription>Owners manage people and keys, editors publish policies, viewers can look and test.</CardDescription>
-        {isOwner && (
-          <CardAction>
-            <InviteDialog />
-          </CardAction>
-        )}
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
+    <SettingsSection id="members" title="Members" description="Owners manage people and keys, editors publish policies, viewers can look and test." action={isOwner && <InviteDialog />}>
         <ErrorText error={members.error} />
         <DataList
           label="Members"
@@ -134,7 +122,7 @@ export function MembersCard({ isOwner }: { isOwner: boolean }) {
             <h3 id="pending-h" className="mb-2 text-sm font-medium">
               Pending invites
             </h3>
-            <ul className="divide-y rounded-lg border">
+            <ul className="divide-y border-y">
               {invites.data.map((i) => (
                 <li key={i.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-sm">
                   <span>
@@ -151,7 +139,6 @@ export function MembersCard({ isOwner }: { isOwner: boolean }) {
             </ul>
           </section>
         )}
-      </CardContent>
-    </Card>
+    </SettingsSection>
   );
 }

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SettingsSection } from "@/components/SettingsSection";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,18 +29,13 @@ export function DangerZone() {
   if (!current) return null;
 
   return (
-    <Card className="border-danger/40">
-      <CardHeader>
-        <CardTitle>
-          <h2>Danger zone</h2>
-        </CardTitle>
-        <CardDescription>Deleting the workspace removes its policies, versions, keys and decision history for everyone. It can't be undone.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Button variant="destructive" onClick={() => setOpen(true)}>
+    <SettingsSection id="danger" title="Danger zone" tone="danger" description="Deleting the workspace removes its policies, versions, keys and decision history for everyone. It can't be undone.">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm">Delete this workspace</p>
+        <Button variant="destructive" size="sm" onClick={() => setOpen(true)}>
           Delete workspace
         </Button>
-      </CardContent>
+      </div>
       <Dialog
         open={open}
         onOpenChange={(o) => {
@@ -68,6 +63,6 @@ export function DangerZone() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </Card>
+    </SettingsSection>
   );
 }
