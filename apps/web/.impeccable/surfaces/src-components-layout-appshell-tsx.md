@@ -27,6 +27,6 @@ STORY: The ops person opens a policy, reads each rule as a sentence, changes one
 
 FIRST VIEWPORT: Policy editor. 240px white sidebar (workspace switcher, search, nav). A 48px top bar with breadcrumb "Policies / Checkout discount", Live status, "Saved", and Rego and Publish on the right. Below, the rule list as divided rows: a number, the rule name, then one sentence with inline token pickers ("When customer tier is gold and order total is at least 200, allow with 15% discount"). Try it is a sticky 360px right column with Draft/Live, inputs and Run.
 
-FORM: Category standard (canon), chosen by the user over the roll; seed:e465fca76afd026b. Signature interaction: running Try it marks the matched rule in the list (scrolled into view, accent bar, "Matched" tag) and briefly dims the rules it skipped above it. Motion grammar: 150 to 200ms ease-out, no bounce, honours reduced motion.
+FORM: Category standard (canon), chosen by the user over the roll; seed:e465fca76afd026b. Signature interaction: running Try it marks the matched rule in the list (scrolled into view, a 6% accent tint and a "Matched" label, no side bar) and briefly dims the rules it skipped above it. Motion grammar: 150 to 200ms ease-out, no bounce, honours reduced motion.
 
 FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
