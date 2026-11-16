@@ -2,7 +2,7 @@
 name: PengOPA
 description: Plain-language business rules in front of Open Policy Agent; every decision explains itself.
 colors:
-  primary: "#4f46e5"
+  primary: "#2b77c0"
   primary-foreground: "#ffffff"
   matched-tint: "#f4f4fd"
   background: "#ffffff"
@@ -146,14 +146,14 @@ components:
 
 **Creative North Star: "The Self-Explaining Decision"**
 
-PengOPA is the category-standard SaaS look executed at the precision of Linear, Vercel and Clerk: a white ground, near-black ink, a cool zinc grey scale and one indigo accent. The world has no theme or motif; its character comes from what it refuses. Sections are not boxed as bordered cards on a grey canvas. Structure is drawn with 1px dividers and spacing, and the one place the accent carries meaning beyond action is the matched rule, where a decision shows the path it took.
+PengOPA is the category-standard SaaS look executed at the precision of Linear, Vercel and Clerk: a white ground, Pengopal navy ink (#12224a), navy-tinted greys, an opal blue accent and the Pengopal opal mosaic for the brand moments (logo, "OPA" wordmark, primary-button frame). The world has no theme or motif; its character comes from what it refuses. Sections are not boxed as bordered cards on a grey canvas. Structure is drawn with 1px dividers and spacing, and the one place the accent carries meaning beyond action is the matched rule, where a decision shows the path it took.
 
-The signature grammar is shared by the app and the landing page: rules are written as sentences with inline dotted-underline tokens, a run marks the rule that matched with a faint indigo tint and the word "Matched", and the rules it never reached are dimmed. Allow and Deny are never filled pills; they are a coloured dot followed by the word. Density is working-tool density (13 to 14px UI type, 32px rows and controls) without the grey, gridded look of enterprise software.
+The signature grammar is shared by the app and the landing page: rules are written as sentences with inline dotted-underline tokens, a run marks the rule that matched with a faint opal blue tint and the word "Matched", and the rules it never reached are dimmed. Allow and Deny are never filled pills; they are a coloured dot followed by the word. Density is working-tool density (13 to 14px UI type, 32px rows and controls) without the grey, gridded look of enterprise software.
 
-Light is the default theme. Dark is opt-in from the account menu (light, dark or system), stored per browser and applied with a `.dark` class on the root.
+Light is the default theme. Dark (Pengopal navy #0e1a3a ground) is opt-in from the account menu (light, dark or system), stored per browser and applied with a `.dark` class on the root.
 
 **Key Characteristics:**
-- White ground, near-black ink, cool zinc neutrals, one indigo accent
+- White ground, Pengopal navy ink, navy-tinted greys, opal blue accent, opal mosaic for brand moments
 - Structure from 1px dividers and spacing, not nested cards
 - Allow/Deny as a coloured dot plus a word
 - Matched rule: 6% primary tint plus a "Matched" label; skipped rules dimmed "Not reached"
@@ -163,10 +163,10 @@ Light is the default theme. Dark is opt-in from the account menu (light, dark or
 
 ## Colors
 
-A neutral zinc ramp on white with a single indigo voice; green, red and amber appear only as meaning, never as decoration.
+A neutral zinc ramp on white with a single opal blue voice; green, red and amber appear only as meaning, never as decoration.
 
 ### Primary
-- **Decision Indigo** (`primary`): primary buttons, focus rings, selection, links, the logo mark, the "Matched" label. In dark it lifts to a lighter indigo so it holds contrast on near-black.
+- **Opal Blue** (`primary`): primary buttons, focus rings, selection, links, the "Matched" label. In dark it lifts to a lighter opal blue so it holds contrast on near-black.
 - **Matched Tint** (`matched-tint`): the primary at 6% over the ground (`bg-primary/[0.06]`). Used only to mark the rule a decision matched, in the policy editor and in the landing decision trail.
 
 ### Neutral
@@ -185,7 +185,7 @@ A neutral zinc ramp on white with a single indigo voice; green, red and amber ap
 - **Chart pair** (`chart-allowed`, `chart-denied`): allowed and denied series on Home and Activity charts, validated for colour-vision deficiency (deutan/protan delta E 18.2 in light, 9.7 in dark).
 
 ### Named Rules
-**The One Voice Rule.** Indigo means action, focus, selection or "this rule matched". It never means allow, deny or status.
+**The One Voice Rule.** Opal blue means action, focus, selection or "this rule matched". It never means allow, deny or status.
 
 **The Meaning-Only Rule.** Green, red and amber are reserved for decision outcome and policy status. They are never used as decorative category colours.
 
@@ -238,7 +238,7 @@ The system is flat at rest. In-page surfaces carry no shadow; depth is expressed
 
 ## Shapes
 
-Gently rounded and consistent: controls and sentence tokens at 6px, the framed panels that remain (decision trail, danger zone, cards, popovers) at 8px, dialogs at 12px. Status dots are 6px circles. Dividers are always 1px. The logo is a 52-unit square with a 14-unit corner, cut on the diagonal: the filled half a yes, the outlined half a no, drawn in indigo beside an ink wordmark.
+Gently rounded and consistent: controls and sentence tokens at 6px, the framed panels that remain (decision trail, danger zone, cards, popovers) at 8px, dialogs at 12px. Status dots are 6px circles. Dividers are always 1px. The logo is a 52-unit square with a 14-unit corner, cut on the diagonal: the filled half a yes, the outlined half a no, painted with the Pengopal opal mosaic (deepened with brightness 0.7 / saturate 1.25 on light grounds) beside a wordmark with "Peng" in ink and "OPA" clipped to the same mosaic.
 
 **The No-Bar Rule.** No coloured side stripe wider than 1px on any row, card or callout. Emphasis is a tint plus a word.
 
@@ -247,9 +247,9 @@ Gently rounded and consistent: controls and sentence tokens at 6px, the framed p
 ### Buttons
 Quiet and precise.
 - **Shape:** gently rounded (6px), 32px tall (28px small, 36px large, 44px minimum on touch).
-- **Primary:** indigo fill, white label, 14px medium; at most one per view. Hover drops to 90% opacity, press nudges 1px down.
+- **Primary:** Pengopal navy (#12224a) fill framed by a 2px opal-mosaic border, white label, opal glow on hover, 14px medium; at most one per view. Hover drops to 90% opacity, press nudges 1px down.
 - **Secondary / Ghost / Outline:** zinc wash fill, transparent with a zinc wash hover, or a hairline stroke on white.
-- **Focus:** indigo border plus a 3px indigo ring at 50%.
+- **Focus:** opal blue border plus a 3px opal blue ring at 50%.
 - **Destructive:** 10% red tint with red text, never a solid red fill.
 
 ### Decision and Status chips
@@ -258,7 +258,7 @@ Quiet and precise.
 
 ### Inputs / Fields
 - **Style:** 1px hairline stroke, transparent ground, 6px radius, 32px tall.
-- **Focus:** indigo border plus a 3px indigo ring at 50%.
+- **Focus:** opal blue border plus a 3px opal blue ring at 50%.
 - **Error / Disabled:** red border and red ring at 20%; disabled at 50% opacity on a wash.
 - **Inline variant:** rule names render borderless until hover or focus, so the rule reads as text.
 
@@ -274,7 +274,7 @@ A rule is a divided row that reads as a sentence: a muted number and drag handle
 The variable word in a rule sentence: 14px medium, a dotted underline at 60% slate offset 4px, 28px tall with 6px padding and radius, a zinc wash on hover and while its picker is open.
 
 ### Try it and the decision trail (signature)
-Running Try it on the draft scrolls the matched rule into view, tints it with Matched Tint and adds a caption-size indigo "Matched" label; the rules above it briefly dim (opacity 0.6 back to 1 over 600ms, ease-out, skipped under reduced motion). The result reads top down after a divider: the DecisionChip with target and latency, the quoted reason, then a key/value list naming the matched rule and its results. The landing page shows the same grammar statically in the decision trail: a framed 8px panel of labelled steps (Input, Rules in order, Answer, Call) split by 1px rules, the matched rule tinted with "Matched" and the later rules dimmed to 70% with "Not reached".
+Running Try it on the draft scrolls the matched rule into view, tints it with Matched Tint and adds a caption-size opal blue "Matched" label; the rules above it briefly dim (opacity 0.6 back to 1 over 600ms, ease-out, skipped under reduced motion). The result reads top down after a divider: the DecisionChip with target and latency, the quoted reason, then a key/value list naming the matched rule and its results. The landing page shows the same grammar statically in the decision trail: a framed 8px panel of labelled steps (Input, Rules in order, Answer, Call) split by 1px rules, the matched rule tinted with "Matched" and the later rules dimmed to 70% with "Not reached".
 
 ### Motion
 State transitions run 150 to 200ms ease-out with no bounce; reduced motion is honoured. The landing page has no motion beyond hover colour and nothing autoplays.
@@ -285,7 +285,7 @@ State transitions run 150 to 200ms ease-out with no bounce; reduced motion is ho
 - **Do** show every outcome with DecisionChip: a 6px coloured dot plus the word Allowed or Denied.
 - **Do** mark the matched rule with the 6% primary tint and a "Matched" label, and dim the rules it skipped as "Not reached".
 - **Do** build structure from 1px dividers and spacing; group with a divider and a heading.
-- **Do** keep one primary (indigo) button per view.
+- **Do** keep one primary (opal blue) button per view.
 - **Do** use Geist Mono only for keys, values, paths and code.
 - **Do** design and check light first; dark is opt-in and must hold the same rules.
 - **Do** keep tables and controls at 32px, growing to 44px on touch.
@@ -295,6 +295,6 @@ State transitions run 150 to 200ms ease-out with no bounce; reduced motion is ho
 - **Don't** use a coloured side bar wider than 1px to mark a matched, selected or warning row.
 - **Don't** nest cards inside cards or box every section on a grey canvas.
 - **Don't** add eyebrows or kicker labels above headings, sparklines, or icons in tinted tiles.
-- **Don't** use indigo to mean allow, deny or status.
+- **Don't** use opal blue to mean allow, deny or status.
 - **Don't** put shadows on in-page surfaces.
 - **Don't** use mono for headings, buttons or prose.
