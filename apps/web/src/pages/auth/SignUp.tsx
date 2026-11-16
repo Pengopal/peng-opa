@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ErrorText } from "@/components/ErrorText";
-import { GoogleLogo, ProviderButton } from "@/components/ProviderButton";
-import { signIn, signUp } from "@/lib/auth";
+import { GoogleLogo, ProviderButton, TenantryLogo } from "@/components/ProviderButton";
+import { signIn, signInWithTenantry, signUp } from "@/lib/auth";
 import { useConfig } from "@/lib/config";
+import { withTenantryLanding } from "@/lib/tenantry";
 import { AuthCard, OrDivider } from "./AuthCard";
 
 export function SignUp() {
@@ -45,16 +46,21 @@ export function SignUp() {
         </>
       }
     >
-      {config?.googleEnabled && (
-        <>
-          <ProviderButton
-            logo={<GoogleLogo />}
-            label="Continue with Google"
-            onClick={() => void signIn.social({ provider: "google", callbackURL: next })}
-          />
-          <OrDivider />
-        </>
+      {config?.tenantryEnabled && (
+        <ProviderButton
+          logo={<TenantryLogo />}
+          label="Sign in with Tenantry"
+          onClick={() => void signInWithTenantry(withTenantryLanding(next))}
+        />
       )}
+      {config?.googleEnabled && (
+        <ProviderButton
+          logo={<GoogleLogo />}
+          label="Continue with Google"
+          onClick={() => void signIn.social({ provider: "google", callbackURL: next })}
+        />
+      )}
+      {(config?.tenantryEnabled || config?.googleEnabled) && <OrDivider />}
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <div className="grid gap-2">
           <Label htmlFor="name">Your name</Label>

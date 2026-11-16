@@ -4,7 +4,7 @@ import { PrismaClient } from "../generated/prisma/client.js";
 import { APP_CONFIG, AppConfig } from "../config/config.js";
 import { workspaceScope } from "./workspace-scope.js";
 
-function createClient(databaseUrl: string) {
+export function createClient(databaseUrl: string) {
   const url = new URL(databaseUrl);
   const schema = url.searchParams.get("schema") ?? undefined;
   url.searchParams.delete("schema");

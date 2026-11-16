@@ -35,10 +35,11 @@ import { DemoController } from "./demo/demo.controller.js";
 import { DemoService } from "./demo/demo.service.js";
 import { HistorySeeder } from "./demo/history-seeder.js";
 import { TrafficSimulator } from "./demo/traffic-simulator.service.js";
+import { TenantryController } from "./tenantry/tenantry.controller.js";
 
 @Module({
   imports: [ConfigModule, PrismaModule, OpaGatewayModule, AuthModule],
-  controllers: [HealthController, ConfigController, WorkspacesController, MembersController, ApiKeysController, PoliciesController, VersionsController, EventsController, DecideController, PlaygroundController, DecisionsController, TemplatesController, InsightsController, DemoController],
+  controllers: [HealthController, ConfigController, WorkspacesController, MembersController, ApiKeysController, PoliciesController, VersionsController, EventsController, DecideController, PlaygroundController, DecisionsController, TemplatesController, InsightsController, DemoController, TenantryController],
   providers: [WorkspacesService, MembersService, Mailer, ApiKeysService, ApiKeyGuard, PoliciesService, PolicyEventsService, PublishingService, DecideService, RateLimiter, PlaygroundService, TemplatesService, InsightsService, DemoService, HistorySeeder, TrafficSimulator, DbAuditWriter, { provide: AUDIT_WRITER, useExisting: DbAuditWriter }],
 })
 export class AppModule {}

@@ -34,13 +34,17 @@ export function useThemeChoice() {
   return [theme, choose] as const;
 }
 
-/** Signs out, clears cached data and goes to the sign-in page. */
+/**
+ * Signs out, clears cached data and goes to the sign-in page. A Tenantry session also ends at Tenantry: the
+ * auth client follows Keycloak's sign-out address, which returns to the sign-in page itself.
+ */
 export function useSignOut() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   return async () => {
-    await signOut();
+    const res = await signOut();
     qc.clear();
+    if (res.data?.redirect && res.data.url) return;
     void navigate({ to: "/sign-in", search: { redirect: undefined } });
   };
 }

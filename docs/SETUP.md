@@ -59,12 +59,38 @@ All settings are read from `.env` at the repository root.
 | `OPA_PORT` | No | Port of the bundled OPA (default 8181, bound to 127.0.0.1) |
 | `OPA_URL` | No | Use an OPA you run yourself instead of the bundled one |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | No | Turns on "Continue with Google" |
+| `TENANTRY_ISSUER`, `TENANTRY_CLIENT_ID`, `TENANTRY_CLIENT_SECRET` | No (all or none) | Turns on "Sign in with Tenantry" (below) |
+| `TENANTRY_INTERNAL_URL` | No | Keycloak's direct address, for when this server cannot resolve the issuer's host (local `*.localhost`) |
 | `RATE_LIMIT_RPS` | No | Decision requests per second per workspace (default 50) |
 | `DEMO_PUBLIC` | No | `true` shows "Try the live demo" on the sign-in page (one shared, read-only account) |
 | `RESEND_API_KEY` | No | Sends invite emails through [Resend](https://resend.com). Without email set up, invites are shown as links to copy |
 | `MAIL_FROM` | With `RESEND_API_KEY` | Sender address on a domain verified in Resend, e.g. `peng-opa <no-reply@pengopal.com>` |
 | `SMTP_URL` | No | Sends invite emails through an SMTP server instead (used only when `RESEND_API_KEY` is not set) |
 | `TEST_DATABASE_URL` | Tests only | A database the API tests may create and drop schemas in |
+
+## Sign in with Tenantry locally
+
+PengOPA can offer "Sign in with Tenantry", Pengopal's sign-in service, next to email and Google. To try it, run
+[Tenantry](https://github.com/mfurqanwork/tenantry-keycloak-multitenancy) on the same machine (`pnpm dev:stack`,
+port 80) and set:
+
+```
+TENANTRY_ISSUER=http://auth.tenantry.localhost/realms/platform
+TENANTRY_INTERNAL_URL=http://127.0.0.1:8180
+TENANTRY_CLIENT_ID=pengopa
+TENANTRY_CLIENT_SECRET=dev-pengopa-secret
+```
+
+If Tenantry runs on another port (its `TENANTRY_HTTP_PORT`), add it to the issuer. Tenantry's dev realm already has
+the `pengopa` client, with the sign-in address `http://localhost:5180` and
+back-channel sign-out to this server on port 3000 (Keycloak reaches it as `host.docker.internal`).
+
+- **Signing in** puts you in the PengOPA workspace linked to the Tenantry workspace you choose, with the role your
+  Tenantry groups give: owners are Owners, admins Editors, members Viewers. The first sign-in from a Tenantry workspace
+  makes its PengOPA workspace; to use an existing one instead, link it first:
+  `pnpm --filter server build && pnpm --filter server tenantry:link <workspace-slug> <tenantry-alias>`.
+- **Signing out** of PengOPA also ends the Tenantry session. Signing out of Tenantry ends the PengOPA sessions it made
+  at once (sessions made with email or Google are untouched).
 
 ## Running the tests
 

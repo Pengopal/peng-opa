@@ -30,3 +30,13 @@ export function GoogleLogo() {
     </svg>
   );
 }
+
+/** Tenantry's mark (Pengopal's sign-in service): navy tiles on light pages, pale ones on dark. */
+export function TenantryLogo() {
+  return (
+    <>
+      <img src="/brand/tenantry-mark.svg" alt="" className="size-[18px] dark:hidden" />
+      <img src="/brand/tenantry-mark-dark.svg" alt="" className="hidden size-[18px] dark:block" />
+    </>
+  );
+}

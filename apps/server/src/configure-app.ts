@@ -26,6 +26,8 @@ export function configureApp(app: INestApplication) {
     next();
   });
   server.all("/api/auth/{*splat}", toNodeHandler(auth));
+  // Keycloak posts back-channel logout tokens as a form (OpenID Connect Back-Channel Logout 1.0).
+  app.use("/api/tenantry/backchannel-logout", express.urlencoded({ extended: false, limit: "16kb" }));
   app.use(express.json({ limit: BODY_LIMIT }));
   // Body-parser failures happen before Nest; give them the same error shape as everything else.
   app.use((err: { type?: string; status?: number }, req: express.Request, res: express.Response, next: express.NextFunction) => {

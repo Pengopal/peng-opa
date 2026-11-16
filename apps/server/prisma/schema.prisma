@@ -26,15 +26,16 @@ model User {
 }
 
 model Session {
-  id        String   @id
+  id        String           @id
   expiresAt DateTime
-  token     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  token     String           @unique
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
   ipAddress String?
   userAgent String?
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenantry  TenantrySession?
 
   @@index([userId])
   @@map("session")
@@ -104,12 +105,14 @@ enum PolicyEventType {
 }
 
 model Workspace {
-  id        String   @id @default(uuid())
-  name      String
-  slug      String   @unique
-  shortId   String   @unique
-  isDemo    Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  shortId     String   @unique
+  isDemo      Boolean  @default(false)
+  /// The Tenantry workspace (organization alias) whose people sign in here (Tenantry ADR-0032).
+  tenantryOrg String?  @unique
+  createdAt   DateTime @default(now())
 
   members  Member[]
   invites  Invite[]
@@ -262,4 +265,22 @@ model UsageDaily {
 
   @@id([workspaceId, policyId, date])
   @@map("usage_daily")
+}
+
+/// A session made by Sign in with Tenantry, with the Keycloak session it belongs to, so Keycloak's
+/// back-channel sign-out can end it. Sessions made any other way have no row here.
+model TenantrySession {
+  sessionId   String   @id
+  session     Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  /// Keycloak's session id (the ID token's sid).
+  sid         String?
+  /// The person's Keycloak user id.
+  sub         String
+  /// The PengOPA workspace this sign-in landed in.
+  workspaceId String?
+  createdAt   DateTime @default(now())
+
+  @@index([sid])
+  @@index([sub])
+  @@map("tenantry_sessions")
 }
