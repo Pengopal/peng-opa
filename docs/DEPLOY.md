@@ -34,6 +34,7 @@ Open the peng-opa service, go to **Variables**, and add:
 | `DEMO_PUBLIC` | Optional: `true` for the shared read-only demo on the sign-in page |
 | `RESEND_API_KEY`, `MAIL_FROM` | Optional: send invite emails through Resend (see below) |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Optional: "Continue with Google" |
+| `TENANTRY_ISSUER`, `TENANTRY_CLIENT_ID`, `TENANTRY_CLIENT_SECRET` | Optional: "Sign in with Tenantry" (see below) |
 
 Do not set `PORT` (Railway sets it) or `OPA_URL` (the bundled OPA is used). Never reuse the secrets from your local
 `.env`.
@@ -128,6 +129,22 @@ Railway blocks outbound SMTP on most plans, so peng-opa sends email through Rese
    For local development, also add `http://localhost:5180` and `http://localhost:5180/api/auth/callback/google`.
 3. Copy the client ID and secret into Railway as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. After the redeploy,
    the sign-in page shows **Continue with Google**.
+
+## Sign in with Tenantry
+
+Tenantry's platform realm has a `pengopa` client for `https://opa.pengopal.com` (Tenantry ADR-0032). Its secret is
+`PENGOPA_CLIENT_SECRET` in the Tenantry VM's `/opt/tenantry/.env`. Set in Railway:
+
+| Variable | Value |
+|---|---|
+| `TENANTRY_ISSUER` | `https://auth.tenantry.pengopal.com/realms/platform` |
+| `TENANTRY_CLIENT_ID` | `pengopa` |
+| `TENANTRY_CLIENT_SECRET` | the same value as Tenantry's `PENGOPA_CLIENT_SECRET` |
+
+After the redeploy, sign-in and sign-up show **Sign in with Tenantry**. Keycloak calls
+`https://opa.pengopal.com/api/tenantry/backchannel-logout` when someone signs out of Tenantry, so that path must stay
+reachable from the internet. To have the Pengopal workspace's people land in an existing PengOPA workspace, run
+`pnpm --filter server tenantry:link <workspace-slug> pengopal` once in a Railway shell.
 
 ## Keep it to one replica
 

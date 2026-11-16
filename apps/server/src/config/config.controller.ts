@@ -10,6 +10,7 @@ export class ConfigController {
   get() {
     return {
       googleEnabled: !!(this.config.googleClientId && this.config.googleClientSecret),
+      tenantryEnabled: !!this.config.tenantry,
       demoPublic: this.config.demoPublic,
       smtpEnabled: !!(this.config.resendApiKey || this.config.smtpUrl),
     };

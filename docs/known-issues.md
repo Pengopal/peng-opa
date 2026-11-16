@@ -20,8 +20,11 @@ the [build log](superpowers/build-log-2026-11-11.md).
 | Saving while a save is already in flight | `flush()` in the editor doesn't wait for the in-flight save, so a publish immediately after typing may miss the last keystrokes |
 | Reopening the Publish dialog | Shows the previous change summary for a moment while it refreshes |
 | "Try the live demo" failing | If the public demo can't sign in, the sign-in page shows no error message |
+| Removed from a Tenantry workspace | Keeps their PengOPA membership until an owner removes it; they can no longer pick that workspace when signing in with Tenantry |
+| PengOPA down when someone signs out of Tenantry | Keycloak's back-channel call is not retried, so that PengOPA session lasts until it expires |
+| Tenantry Enterprise workspaces | Sign in with Tenantry covers Standard workspaces only; Enterprise ones have their own sign-in address |
 
 ## Not in v1
 
-Billing, Arabic and right-to-left layouts, SSO beyond Google, and a bundle server for OPA (the gateway is built so it
+Billing, Arabic and right-to-left layouts, SSO beyond Google and Tenantry, and a bundle server for OPA (the gateway is built so it
 can be added without touching the rest of the app).

@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, setWorkspaceId } from "./api";
+import { isTenantryLanding, withoutTenantryLanding } from "./tenantry";
 import type { Workspace } from "./types";
 
 const STORAGE_KEY = "peng-opa.workspace";
@@ -54,6 +55,18 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     },
     [qc],
   );
+
+  // Back from Sign in with Tenantry: open the workspace linked to the Tenantry workspace chosen there.
+  useEffect(() => {
+    if (!isTenantryLanding(window.location.search)) return;
+    window.history.replaceState(window.history.state, "", withoutTenantryLanding(`${window.location.pathname}${window.location.search}`));
+    void (async () => {
+      const { workspaceId } = await api<{ workspaceId: string | null }>("/api/tenantry/session").catch(() => ({ workspaceId: null }));
+      if (!workspaceId) return;
+      await refetch();
+      switchTo(workspaceId);
+    })();
+  }, [refetch, switchTo]);
 
   const value = useMemo(
     () => ({ current, list, isLoading, switchTo, refresh: async () => void (await refetch()) }),

@@ -101,7 +101,8 @@ page offers a shared, read-only demo for website visitors.
 - **Roles:** Owner (everything), Editor (policies, publish, test) and Viewer (read-only plus Try it).
 - **Invites:** sent by email through [Resend](https://resend.com) (or any SMTP server) when configured; otherwise
   shown as a link to copy.
-- **Sign-in:** email and password, plus optional "Continue with Google".
+- **Sign-in:** email and password, plus optional "Continue with Google" and "Sign in with Tenantry" (single sign-on
+  and sign-out with Pengopal's sign-in service; see [docs/SETUP.md](docs/SETUP.md)).
 
 ## How it keeps workspaces apart
 
