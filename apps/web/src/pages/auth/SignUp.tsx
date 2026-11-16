@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ErrorText } from "@/components/ErrorText";
+import { GoogleLogo, ProviderButton } from "@/components/ProviderButton";
 import { signIn, signUp } from "@/lib/auth";
 import { useConfig } from "@/lib/config";
 import { AuthCard, OrDivider } from "./AuthCard";
@@ -46,9 +47,11 @@ export function SignUp() {
     >
       {config?.googleEnabled && (
         <>
-          <Button variant="outline" className="h-9" onClick={() => void signIn.social({ provider: "google", callbackURL: next })}>
-            Continue with Google
-          </Button>
+          <ProviderButton
+            logo={<GoogleLogo />}
+            label="Continue with Google"
+            onClick={() => void signIn.social({ provider: "google", callbackURL: next })}
+          />
           <OrDivider />
         </>
       )}
