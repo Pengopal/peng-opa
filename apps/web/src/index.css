@@ -63,38 +63,40 @@
 }
 
 :root {
-    /* PengOPA: white ground, cool neutrals; indigo only for primary action, focus and selection. */
+    /* PengOPA wears the Pengopal palette: navy ink on white, cool navy-tinted greys, and the opal mosaic
+       (generated from the Pengopal logo) for the logo, the "OPA" wordmark and the frame of primary buttons. */
     --background: #ffffff;
     --canvas: #ffffff;
-    --foreground: #0a0a0b;
+    --foreground: #12224a;
     --card: #ffffff;
-    --card-foreground: #0a0a0b;
+    --card-foreground: #12224a;
     --popover: #ffffff;
-    --popover-foreground: #0a0a0b;
-    --primary: #4f46e5;
+    --popover-foreground: #12224a;
+    /* Accent for links, the "Matched" label, selection and switches: the logo's opal blue (4.7:1 on white). */
+    --primary: #2b77c0;
     --primary-foreground: #ffffff;
-    --secondary: #f4f4f5;
-    --secondary-foreground: #0a0a0b;
-    --muted: #f4f4f5;
-    --muted-foreground: #71717a;
-    --accent: #f4f4f5;
-    --accent-foreground: #0a0a0b;
+    --secondary: #f5f6fa;
+    --secondary-foreground: #12224a;
+    --muted: #f5f6fa;
+    --muted-foreground: #4a5a86;
+    --accent: #f5f6fa;
+    --accent-foreground: #12224a;
     --destructive: #dc2626;
-    --border: #e4e4e7;
-    --input: #e4e4e7;
-    --ring: #4f46e5;
+    --border: #dfe3ef;
+    --input: #dfe3ef;
+    --ring: #5f6bff;
     --radius: 0.5rem;
-    --code: #0a0a0b;
-    --code-foreground: #ededf0;
-    /* App frame: the sidebar and the ground around the page panel share one soft grey; pages sit on white. */
-    --sidebar: #f4f4f5;
-    --sidebar-foreground: #0a0a0b;
-    --sidebar-primary: #4f46e5;
+    --code: #0e1a3a;
+    --code-foreground: #eef2ff;
+    /* App frame: the sidebar and the ground around the page panel share Pengopal's soft grey; pages sit on white. */
+    --sidebar: #f5f6fa;
+    --sidebar-foreground: #12224a;
+    --sidebar-primary: #2b77c0;
     --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: #e9e9ec;
-    --sidebar-accent-foreground: #0a0a0b;
-    --sidebar-border: #e4e4e7;
-    --sidebar-ring: #4f46e5;
+    --sidebar-accent: #e8ebf4;
+    --sidebar-accent-foreground: #12224a;
+    --sidebar-border: #dfe3ef;
+    --sidebar-ring: #5f6bff;
     --success: #15803d;
     --success-foreground: #ffffff;
     --success-muted: #ecfdf3;
@@ -107,56 +109,82 @@
     /* Allowed/denied chart pair, validated (dataviz): deutan/protan ΔE 18.2 light */
     --chart-1: oklch(0.50 0.12 160);
     --chart-2: oklch(0.76 0.14 55);
-    --chart-3: #4f46e5;
-    --chart-4: #71717a;
+    --chart-3: #2b77c0;
+    --chart-4: #7c87a9;
     --chart-5: #b54708;
+    /* Pengopal opal (from pengopal-web tokens.css). */
+    --ink: #12224a;
+    --opal-mosaic: url("/brand/opal-mosaic.webp");
+    --opal-mosaic-dim: brightness(0.7) saturate(1.25); /* deepened on light grounds so the texture holds 3:1 on white */
+    --opal-text-fallback: linear-gradient(90deg, #1789ad, #5f6bff, #a35cff, #d14a87);
+    --opal-glow: rgb(86 175 233 / 35%);
 }
 
 .dark {
-    --background: #0a0a0b;
-    --canvas: #0a0a0b;
-    --foreground: #fafafa;
-    --card: #0f0f11;
-    --card-foreground: #fafafa;
-    --popover: #111113;
-    --popover-foreground: #fafafa;
-    --primary: #818cf8;
-    --primary-foreground: #0c0c0e;
-    --secondary: #18181b;
-    --secondary-foreground: #fafafa;
-    --muted: #18181b;
-    --muted-foreground: #a1a1aa;
-    --accent: #18181b;
-    --accent-foreground: #fafafa;
+    --background: #0e1a3a;
+    --canvas: #0e1a3a;
+    --foreground: #eef2ff;
+    --card: #13224a;
+    --card-foreground: #eef2ff;
+    --popover: #13224a;
+    --popover-foreground: #eef2ff;
+    --primary: #6fb6f0;
+    --primary-foreground: #0e1a3a;
+    --secondary: #172a5a;
+    --secondary-foreground: #eef2ff;
+    --muted: #172a5a;
+    --muted-foreground: #afc0f5;
+    --accent: #172a5a;
+    --accent-foreground: #eef2ff;
     --destructive: #f87171;
-    --border: #27272a;
-    --input: #27272a;
-    --ring: #818cf8;
-    --code: #0a0a0c;
-    --code-foreground: #ededf0;
-    --sidebar: #060607;
-    --sidebar-foreground: #fafafa;
-    --sidebar-primary: #818cf8;
-    --sidebar-primary-foreground: #0c0c0e;
-    --sidebar-accent: #18181b;
-    --sidebar-accent-foreground: #fafafa;
-    --sidebar-border: #27272a;
-    --sidebar-ring: #818cf8;
+    --border: #2a3d78;
+    --input: #2a3d78;
+    --ring: #8fa8ff;
+    --code: #0a1430;
+    --code-foreground: #eef2ff;
+    --sidebar: #0a1430;
+    --sidebar-foreground: #eef2ff;
+    --sidebar-primary: #6fb6f0;
+    --sidebar-primary-foreground: #0e1a3a;
+    --sidebar-accent: #172a5a;
+    --sidebar-accent-foreground: #eef2ff;
+    --sidebar-border: #2a3d78;
+    --sidebar-ring: #8fa8ff;
     --success: #4ade80;
-    --success-foreground: #0c0c0e;
+    --success-foreground: #0e1a3a;
     --success-muted: #0f2a1a;
     --danger: #f87171;
-    --danger-foreground: #0c0c0e;
+    --danger-foreground: #0e1a3a;
     --danger-muted: #2a1214;
     --warning: #fbbf24;
-    --warning-foreground: #0c0c0e;
+    --warning-foreground: #0e1a3a;
     --warning-muted: #2a1f08;
     /* dark pair validated on the dark surface: protan ΔE 9.7 */
     --chart-1: oklch(0.50 0.11 160);
     --chart-2: oklch(0.67 0.16 50);
-    --chart-3: #818cf8;
-    --chart-4: #a1a1aa;
+    --chart-3: #6fb6f0;
+    --chart-4: #7c87a9;
     --chart-5: #fdb022;
+    --opal-mosaic-dim: none;
+    --opal-text-fallback: linear-gradient(90deg, #6fe0f2, #8fa8ff, #d3a6ff, #ffb6d3);
+}
+
+/* Pengopal opal mosaic: text clipped to the texture, and the navy button framed by it (as on pengopal.com). */
+@utility opal-text {
+    background: var(--opal-mosaic) 0 0 / 420px auto, var(--opal-text-fallback);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: var(--opal-mosaic-dim);
+}
+@utility opal-frame {
+    border: 2px solid transparent;
+    background-color: var(--ink);
+    background-image: linear-gradient(var(--ink), var(--ink)), var(--opal-mosaic);
+    background-origin: padding-box, border-box;
+    background-clip: padding-box, border-box;
+    background-size: auto, 240px auto;
+    color: #ffffff;
 }
 
 @layer base {
