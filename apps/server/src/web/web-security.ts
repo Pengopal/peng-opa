@@ -1,4 +1,5 @@
 import express from "express";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 /** The web app's own scripts only, API calls to this host, never framed. Monaco needs inline styles. */
@@ -43,10 +44,12 @@ const FILE_LIKE = /\.[A-Za-z0-9]+$|\/\./;
  * "Page not found"; a missing file (/.env, /wp-login.php, /app.js.map) is a plain 404.
  */
 export function serveWebApp(server: express.Express, dist: string, apiPaths: RegExp) {
+  // Read once: the page routes then never touch the disk.
+  const indexHtml = readFileSync(join(dist, "index.html"), "utf8");
   server.use(express.static(dist, { index: false, maxAge: "1h" }));
   server.get("{*splat}", (req, res, next) => {
     if (apiPaths.test(req.path)) return next();
     if (FILE_LIKE.test(req.path)) return res.status(404).type("text/plain").send("Not found");
-    res.sendFile(join(dist, "index.html"));
+    res.type("html").send(indexHtml);
   });
 }
