@@ -17,6 +17,10 @@ export interface AppConfig {
   mailFrom?: string;
   /** Sign in with Tenantry (Tenantry ADR-0032); unset when Tenantry sign-in is off. */
   tenantry?: TenantryConfig;
+  /** PostHog project key (public, phc_…); unset turns analytics off. */
+  posthogKey?: string;
+  /** PostHog ingestion host; EU cloud unless set. */
+  posthogHost: string;
 }
 
 export interface TenantryConfig {
@@ -54,6 +58,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     smtpUrl: optional(env.SMTP_URL),
     resendApiKey: optional(env.RESEND_API_KEY),
     mailFrom: optional(env.MAIL_FROM),
+    posthogKey: optional(env.POSTHOG_KEY),
+    posthogHost: (optional(env.POSTHOG_HOST) ?? "https://eu.i.posthog.com").replace(/\/+$/, ""),
     ...(tenantry ? { tenantry } : {}),
   };
 }

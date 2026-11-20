@@ -4,6 +4,7 @@ import type { CurrentMember as Member } from "../auth/request-types.js";
 import { readString } from "../common/validate.js";
 import { parseRuleSet } from "./parse-ruleset.js";
 import { PoliciesService, WorkspaceRef } from "./policies.service.js";
+import { Track } from "../analytics/track.js";
 
 const ref = (m: Member): WorkspaceRef => ({ workspaceId: m.workspaceId, workspaceShortId: m.workspaceShortId, userId: m.userId });
 
@@ -19,6 +20,7 @@ export class PoliciesController {
 
   @Post()
   @WorkspaceRoute("EDITOR")
+  @Track("policy_created", (req) => ({ with_rules: (req.body as { ruleSet?: unknown })?.ruleSet !== undefined }))
   create(@CurrentMember() member: Member, @Body() body: Record<string, unknown>) {
     return this.policies.create(ref(member), {
       key: readString(body, "key", { max: 60 })!,
@@ -53,6 +55,7 @@ export class PoliciesController {
   @Delete(":id")
   @HttpCode(204)
   @WorkspaceRoute("EDITOR")
+  @Track("policy_deleted")
   async remove(@CurrentMember() member: Member, @Param("id") id: string) {
     await this.policies.delete(ref(member), id);
   }

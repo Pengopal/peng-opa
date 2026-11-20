@@ -5,6 +5,9 @@ import type { CurrentMember as Member, SessionUser } from "../auth/request-types
 import { PrismaService } from "../prisma/prisma.service.js";
 import { DemoService } from "./demo.service.js";
 import { TrafficSimulator } from "./traffic-simulator.service.js";
+import { resultId, Track } from "../analytics/track.js";
+import { Analytics, PUBLIC_DEMO_DISTINCT_ID } from "../analytics/analytics.service.js";
+import { PUBLIC_DEMO_EMAIL } from "./public-demo.js";
 
 const ref = (m: Member) => ({ workspaceId: m.workspaceId, workspaceShortId: m.workspaceShortId, userId: m.userId });
 
@@ -14,10 +17,12 @@ export class DemoController {
     private readonly demo: DemoService,
     private readonly traffic: TrafficSimulator,
     private readonly prisma: PrismaService,
+    private readonly analytics: Analytics,
   ) {}
 
   @Post()
   @SignedIn()
+  @Track("demo_workspace_created", (_req, result) => ({ workspace_id: resultId(result) }))
   create(@CurrentUser() user: SessionUser) {
     return this.demo.create(user.id);
   }
@@ -49,6 +54,7 @@ export class DemoController {
     const { workspaceId, headers } = await this.demo.publicLogin();
     const cookies = headers.getSetCookie();
     if (cookies.length) res.setHeader("Set-Cookie", cookies);
+    this.analytics.capture("public_demo_opened", { id: PUBLIC_DEMO_DISTINCT_ID, email: PUBLIC_DEMO_EMAIL }, { workspace_id: workspaceId });
     return { workspaceId };
   }
 }

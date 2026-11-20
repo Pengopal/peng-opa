@@ -7,10 +7,12 @@ import { PUBLIC_DEMO_EMAIL, publicDemoMayDo } from "./demo/public-demo.js";
 import { AuthService } from "./auth/auth.service.js";
 import { publicErrorBody } from "./decisions/public-error.js";
 import { serveWebApp, useSecurityHeaders } from "./web/web-security.js";
+import { APP_CONFIG, type AppConfig } from "./config/config.js";
+import { ingestRelay } from "./analytics/ingest-relay.js";
 
 const BODY_LIMIT = "64kb";
 const WEB_DIST = join(import.meta.dirname, "..", "..", "web", "dist");
-const API_PATHS = /^\/(api|v1|health)(\/|$)/;
+const API_PATHS = /^\/(api|v1|health|ingest)(\/|$)/;
 
 /**
  * Wiring shared by main.ts and tests. Better Auth must see the raw body, so its handler is
@@ -20,6 +22,9 @@ export function configureApp(app: INestApplication) {
   const server = app.getHttpAdapter().getInstance() as express.Express;
   const auth = app.get(AuthService).auth;
   useSecurityHeaders(server);
+  // Browser analytics reach PostHog through this origin (analytics/ingest-relay.ts); raw bodies, so before the JSON parser.
+  const config = app.get<AppConfig>(APP_CONFIG);
+  server.use("/ingest", ingestRelay(config.posthogKey, config.posthogHost));
   // The shared public-demo account may not change itself (rename, revoke everyone's sessions, …).
   server.all("/api/auth/{*splat}", async (req, res, next) => {
     if (publicDemoMayDo(req.method, req.path)) return next();

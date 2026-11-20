@@ -6,6 +6,8 @@ export interface PublicConfig {
   tenantryEnabled: boolean;
   demoPublic: boolean;
   smtpEnabled: boolean;
+  /** PostHog project key; null when analytics are off. */
+  posthogKey: string | null;
 }
 
 /** What this installation has switched on (Google and Tenantry sign-in, public demo, invite emails). */

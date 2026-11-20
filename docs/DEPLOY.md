@@ -35,6 +35,7 @@ Open the peng-opa service, go to **Variables**, and add:
 | `RESEND_API_KEY`, `MAIL_FROM` | Optional: send invite emails through Resend (see below) |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Optional: "Continue with Google" |
 | `TENANTRY_ISSUER`, `TENANTRY_CLIENT_ID`, `TENANTRY_CLIENT_SECRET` | Optional: "Sign in with Tenantry" (see below) |
+| `POSTHOG_KEY` | Optional: product analytics, the PostHog project key `phc_…` (EU cloud; see the README) |
 
 Do not set `PORT` (Railway sets it) or `OPA_URL` (the bundled OPA is used). Never reuse the secrets from your local
 `.env`.

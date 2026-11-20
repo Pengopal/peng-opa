@@ -3,6 +3,7 @@ import { CurrentMember, WorkspaceRoute } from "../auth/decorators.js";
 import type { CurrentMember as Member } from "../auth/request-types.js";
 import { readString } from "../common/validate.js";
 import { TemplatesService } from "./templates.service.js";
+import { Track } from "../analytics/track.js";
 
 @Controller("api/templates")
 export class TemplatesController {
@@ -16,6 +17,7 @@ export class TemplatesController {
 
   @Post(":id/use")
   @WorkspaceRoute("EDITOR")
+  @Track("template_used", (req) => ({ template: String(req.params.id).slice(0, 60) }))
   use(@CurrentMember() m: Member, @Param("id") id: string, @Body() body: unknown) {
     return this.templates.use({ workspaceId: m.workspaceId, workspaceShortId: m.workspaceShortId, userId: m.userId }, id, {
       key: readString(body, "key", { max: 60, optional: true }),

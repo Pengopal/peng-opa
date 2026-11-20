@@ -1,5 +1,6 @@
 import { createRootRoute, createRoute, createRouter, Outlet, redirect, type RouterHistory } from "@tanstack/react-router";
 import { authClient } from "@/lib/auth";
+import { identifyUser } from "@/lib/analytics";
 import { WorkspaceProvider } from "@/lib/workspace";
 import { AppShell } from "@/components/layout/AppShell";
 import { Toaster } from "@/components/ui/sonner";
@@ -51,6 +52,8 @@ const authedRoute = createRoute({
   beforeLoad: async ({ location }) => {
     const { data } = await authClient.getSession();
     if (!data) throw redirect({ to: "/sign-in", search: { redirect: location.href } });
+    // The shared public demo stays an anonymous visitor.
+    if (data.user.email !== "demo@peng-opa.local") identifyUser(data.user.id);
   },
   component: () => (
     <WorkspaceProvider>
