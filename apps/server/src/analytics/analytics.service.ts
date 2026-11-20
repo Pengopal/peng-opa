@@ -13,6 +13,9 @@ export interface Actor {
 /** Everyone using the shared public demo is one anonymous visitor in PostHog, never a person. */
 export const PUBLIC_DEMO_DISTINCT_ID = "public-demo";
 
+/** Every event says which product it came from: Pengopal's sites share one PostHog project. */
+export const PRODUCT = "pengopal-opa";
+
 /**
  * Product events sent to PostHog from the server, so counts do not depend on ad blockers.
  * No POSTHOG_KEY (local, tests): every call does nothing. Sending never blocks or fails a request.
@@ -35,6 +38,7 @@ export class Analytics {
       timestamp: new Date().toISOString(),
       properties: {
         ...props,
+        product: PRODUCT,
         $lib: "peng-opa-server",
         ...(demo ? { demo: true, $process_person_profile: false } : {}),
       },

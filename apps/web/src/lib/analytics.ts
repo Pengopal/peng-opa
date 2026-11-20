@@ -50,8 +50,13 @@ function cleanProps(props: Record<string, unknown> | undefined) {
   for (const k of URL_PROPS) if (typeof props[k] === "string") props[k] = cleanUrl(props[k] as string);
 }
 
+/** Pengopal's sites share one PostHog project; every event says which product it came from. */
+const PRODUCT = "pengopal-opa";
+
+/** Runs on every event before it leaves the browser: tags the product and cleans the URLs. */
 export function cleanEvent(event: CaptureResult | null): CaptureResult | null {
   if (!event) return event;
+  event.properties.product = PRODUCT;
   cleanProps(event.properties);
   cleanProps(event.$set);
   cleanProps(event.$set_once);

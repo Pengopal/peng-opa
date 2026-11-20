@@ -127,7 +127,8 @@ Server events are counted even when an ad blocker stops the browser:
 | Integration | `api_key_created`, `api_key_revoked` |
 | Teams | `member_invited`, `invite_accepted`, `member_role_changed`, `member_removed` |
 
-The browser adds `$pageview` and `$pageleave`.
+The browser adds `$pageview` and `$pageleave`. Every event carries `product: pengopal-opa`, so PengOPA can share one
+PostHog project with Pengopal's other sites.
 
 ## How it keeps workspaces apart
 

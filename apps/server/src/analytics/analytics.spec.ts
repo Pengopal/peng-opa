@@ -70,7 +70,7 @@ test("@Track sends the event as the signed-in user after the route succeeds, and
     await run({ id: "u1", email: "owner@example.com" });
     await run({ id: "u2", email: PUBLIC_DEMO_EMAIL });
 
-    expect(captured[0]).toMatchObject({ event: "member_invited", distinct_id: "u1", properties: { workspace_id: "ws1", role: "EDITOR" } });
+    expect(captured[0]).toMatchObject({ event: "member_invited", distinct_id: "u1", properties: { workspace_id: "ws1", role: "EDITOR", product: "pengopal-opa" } });
     expect(JSON.stringify(captured[0])).not.toContain("example.com");
     expect(captured[1]).toMatchObject({ distinct_id: "public-demo", properties: { demo: true, $process_person_profile: false } });
   } finally {

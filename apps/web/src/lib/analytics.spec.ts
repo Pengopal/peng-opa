@@ -19,6 +19,7 @@ describe("analytics URL cleaning", () => {
     } as never);
     expect(event?.properties.$current_url).toBe("https://opa.pengopal.com/invite/[token]");
     expect(event?.properties.$pathname).toBe("/invite/[token]");
+    expect(event?.properties.product).toBe("pengopal-opa");
     expect(event?.$set_once?.$initial_current_url).toBe("https://opa.pengopal.com/sign-in");
   });
 });
