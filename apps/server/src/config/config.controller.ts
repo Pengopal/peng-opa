@@ -13,6 +13,8 @@ export class ConfigController {
       tenantryEnabled: !!this.config.tenantry,
       demoPublic: this.config.demoPublic,
       smtpEnabled: !!(this.config.resendApiKey || this.config.smtpUrl),
+      /** Public by design (PostHog project keys only write events); null turns browser analytics off. */
+      posthogKey: this.config.posthogKey ?? null,
     };
   }
 }

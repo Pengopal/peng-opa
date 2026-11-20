@@ -104,6 +104,31 @@ page offers a shared, read-only demo for website visitors.
 - **Sign-in:** email and password, plus optional "Continue with Google" and "Sign in with Tenantry" (single sign-on
   and sign-out with Pengopal's sign-in service; see [docs/SETUP.md](docs/SETUP.md)).
 
+### Analytics without cookies
+
+With `POSTHOG_KEY` set, PengOPA sends product analytics to [PostHog](https://posthog.com) (EU cloud), set up so no
+cookie banner is needed:
+
+- **No cookies or storage.** The browser keeps its anonymous id in memory for one page load.
+- **First-party.** The browser posts to `/ingest` on this site, and the server passes it on to PostHog. The relay
+  accepts only event posts carrying this installation's key, so it cannot be used as an open proxy. The page's
+  CSP stays `connect-src 'self'`, and no PostHog script is loaded.
+- **Little data.** There is no autocapture, session recording, survey or feature flag. URLs lose their query (except
+  `utm_*` tags) and invite tokens. People are identified by user id only, never by email or name. Do Not Track and
+  Global Privacy Control are honoured. The shared public demo is one anonymous visitor.
+
+Server events are counted even when an ad blocker stops the browser:
+
+| Area | Events |
+| --- | --- |
+| Accounts | `user_signed_up`, `user_signed_in` (with `method`: email, google, tenantry) |
+| Workspaces | `workspace_created`, `workspace_deleted`, `demo_workspace_created`, `public_demo_opened` |
+| Policies | `policy_created`, `template_used`, `policy_tested`, `policy_published`, `policy_rolled_back`, `policy_paused`, `policy_resumed`, `policy_deleted` |
+| Integration | `api_key_created`, `api_key_revoked` |
+| Teams | `member_invited`, `invite_accepted`, `member_role_changed`, `member_removed` |
+
+The browser adds `$pageview` and `$pageleave`.
+
 ## How it keeps workspaces apart
 
 Every request is scoped to one workspace, and the scoping is enforced below the application code.

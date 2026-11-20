@@ -2,6 +2,7 @@ import { BadRequestException, Body, Controller, Delete, Get, HttpCode, Patch, Po
 import { CurrentMember, CurrentUser, SignedIn, WorkspaceRoute } from "../auth/decorators.js";
 import type { CurrentMember as Member, SessionUser } from "../auth/request-types.js";
 import { WorkspacesService } from "./workspaces.service.js";
+import { resultId, Track } from "../analytics/track.js";
 
 function workspaceName(body: unknown): string {
   const name = (body as { name?: unknown })?.name;
@@ -17,6 +18,7 @@ export class WorkspacesController {
 
   @Post()
   @SignedIn()
+  @Track("workspace_created", (_req, result) => ({ workspace_id: resultId(result) }))
   create(@CurrentUser() user: SessionUser, @Body() body: unknown) {
     return this.workspaces.create(user.id, workspaceName(body));
   }
@@ -37,6 +39,7 @@ export class WorkspacesController {
   @Delete("current")
   @HttpCode(204)
   @WorkspaceRoute("OWNER")
+  @Track("workspace_deleted")
   async remove(@CurrentMember() member: Member) {
     await this.workspaces.delete(member.workspaceId, member.workspaceShortId);
   }

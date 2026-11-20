@@ -5,6 +5,7 @@ import { readString } from "../common/validate.js";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { PoliciesService } from "../policies/policies.service.js";
 import { PlaygroundService } from "./playground.service.js";
+import { Track } from "../analytics/track.js";
 
 @Controller("api/policies/:id")
 export class PlaygroundController {
@@ -17,6 +18,7 @@ export class PlaygroundController {
   /** Any member may test; testing never changes the policy. */
   @Post("try")
   @WorkspaceRoute("VIEWER")
+  @Track("policy_tested", (req) => ({ target: (req.body as { target?: string })?.target ?? "draft" }))
   try(@CurrentMember() m: Member, @Param("id") id: string, @Body() body: Record<string, unknown>) {
     const target = body?.target ?? "draft";
     if (target !== "draft" && target !== "live") throw new BadRequestException('target must be "draft" or "live"');

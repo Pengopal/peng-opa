@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signOut, useSession } from "@/lib/auth";
+import { forgetUser } from "@/lib/analytics";
 import { applyTheme, readTheme, type ThemeChoice } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +45,7 @@ export function useSignOut() {
   return async () => {
     const res = await signOut();
     qc.clear();
+    forgetUser();
     if (res.data?.redirect && res.data.url) return;
     void navigate({ to: "/sign-in", search: { redirect: undefined } });
   };

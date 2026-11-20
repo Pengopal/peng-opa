@@ -4,6 +4,7 @@ import type { CurrentMember as Member } from "../auth/request-types.js";
 import { readString } from "../common/validate.js";
 import { PublishingService } from "./publishing.service.js";
 import type { WorkspaceRef } from "./policies.service.js";
+import { Track } from "../analytics/track.js";
 
 const ref = (m: Member): WorkspaceRef => ({ workspaceId: m.workspaceId, workspaceShortId: m.workspaceShortId, userId: m.userId });
 const note = (body: unknown) => readString(body, "note", { max: 500, optional: true });
@@ -20,6 +21,7 @@ export class VersionsController {
 
   @Post("publish")
   @WorkspaceRoute("EDITOR")
+  @Track("policy_published")
   publish(@CurrentMember() m: Member, @Param("id") id: string, @Body() body: unknown) {
     return this.publishing.publishDraft(ref(m), id, note(body));
   }
@@ -44,18 +46,21 @@ export class VersionsController {
 
   @Post("versions/:n/rollback")
   @WorkspaceRoute("EDITOR")
+  @Track("policy_rolled_back")
   rollback(@CurrentMember() m: Member, @Param("id") id: string, @Param("n", ParseIntPipe) n: number, @Body() body: unknown) {
     return this.publishing.rollback(ref(m), id, n, note(body));
   }
 
   @Post("pause")
   @WorkspaceRoute("EDITOR")
+  @Track("policy_paused")
   pause(@CurrentMember() m: Member, @Param("id") id: string) {
     return this.publishing.pause(ref(m), id);
   }
 
   @Post("resume")
   @WorkspaceRoute("EDITOR")
+  @Track("policy_resumed")
   resume(@CurrentMember() m: Member, @Param("id") id: string) {
     return this.publishing.resume(ref(m), id);
   }
