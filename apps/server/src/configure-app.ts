@@ -6,6 +6,7 @@ import { fromNodeHeaders, toNodeHandler } from "better-auth/node";
 import { PUBLIC_DEMO_EMAIL, publicDemoMayDo } from "./demo/public-demo.js";
 import { AuthService } from "./auth/auth.service.js";
 import { publicErrorBody } from "./decisions/public-error.js";
+import { serveWebApp, useSecurityHeaders } from "./web/web-security.js";
 
 const BODY_LIMIT = "64kb";
 const WEB_DIST = join(import.meta.dirname, "..", "..", "web", "dist");
@@ -18,6 +19,7 @@ const API_PATHS = /^\/(api|v1|health)(\/|$)/;
 export function configureApp(app: INestApplication) {
   const server = app.getHttpAdapter().getInstance() as express.Express;
   const auth = app.get(AuthService).auth;
+  useSecurityHeaders(server);
   // The shared public-demo account may not change itself (rename, revoke everyone's sessions, …).
   server.all("/api/auth/{*splat}", async (req, res, next) => {
     if (publicDemoMayDo(req.method, req.path)) return next();
@@ -43,10 +45,7 @@ export function configureApp(app: INestApplication) {
     }
     return next(err);
   });
-  // Production: serve the built web app; unknown non-API paths get index.html for client-side routing.
-  if (existsSync(join(WEB_DIST, "index.html"))) {
-    server.use(express.static(WEB_DIST, { index: false, maxAge: "1h" }));
-    server.get("{*splat}", (req, res, next) => (API_PATHS.test(req.path) ? next() : res.sendFile(join(WEB_DIST, "index.html"))));
-  }
+  // Production: serve the built web app (web/web-security.ts).
+  if (existsSync(join(WEB_DIST, "index.html"))) serveWebApp(server, WEB_DIST, API_PATHS);
   app.enableShutdownHooks();
 }

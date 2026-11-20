@@ -17,6 +17,7 @@ import { Activity } from "@/pages/activity/Activity";
 import { parseFilters } from "@/pages/activity/filters";
 import { Connect } from "@/pages/connect/Connect";
 import { Settings } from "@/pages/settings/Settings";
+import { NotFound } from "@/pages/not-found/NotFound";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -89,7 +90,8 @@ const routeTree = rootRoute.addChildren([
 ]);
 
 /** The app router; tests pass a memory history. */
-export const createAppRouter = (history?: RouterHistory) => createRouter({ routeTree, history, defaultPreload: "intent" });
+export const createAppRouter = (history?: RouterHistory) =>
+  createRouter({ routeTree, history, defaultPreload: "intent", defaultNotFoundComponent: NotFound });
 
 export const router = createAppRouter();
 
