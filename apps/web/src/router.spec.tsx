@@ -32,3 +32,15 @@ test("signed-in user at / goes to /home", async () => {
   await router.load();
   expect(router.state.location.pathname).toBe("/home");
 });
+
+test("an unknown address says page not found and links home", async () => {
+  session(false);
+  const router = createAppRouter(createMemoryHistory({ initialEntries: ["/no-such-page"] }));
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>,
+  );
+  expect(await screen.findByRole("heading", { level: 1, name: "Page not found" })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Go to the home page" })).toHaveAttribute("href", "/");
+});
